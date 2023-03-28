@@ -1,13 +1,13 @@
-package com.switchfully.eurder.ItemComponent;
+package com.switchfully.eurder.api.dto.item;
 
-class Item{
+public class CreateItemDTO {
 
     private final String name;
     private final String description;
     private final double price;
     private final int amount;
 
-    public Item(String name, String description, double price, int amount) {
+    public CreateItemDTO(String name, String description, double price, int amount) {
         this.name = name;
         this.description = description;
         this.price = price;

@@ -2,7 +2,8 @@ package com.switchfully.eurder.CustomerComponent;
 
 import com.switchfully.eurder.api.dto.customer.CreateCustomerDTO;
 import com.switchfully.eurder.api.dto.customer.CustomerDTO;
-import com.switchfully.eurder.exception.MandatoryFieldException;
+//import com.switchfully.eurder.exception.MandatoryFieldException;
+import com.switchfully.eurder.zExceptions.MandatoryFieldException;
 import org.junit.jupiter.api.*;
 import org.mockito.Mockito;
 
@@ -131,7 +132,7 @@ class CustomerServiceTest {
             });
         }
         @Test
-        void createNewCustomer_CreateCustomerDTOemailAddressNotPresent_returnsMandatoryFieldException() {
+        void createNewCustomer_CreateCustomerDTOEmailAddressNotPresent_returnsMandatoryFieldException() {
             Assertions.assertThrows(MandatoryFieldException.class, () -> {
                 customerService.createNewCustomer(new CreateCustomerDTO(
                         "firstName",

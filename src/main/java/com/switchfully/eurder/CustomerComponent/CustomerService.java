@@ -2,7 +2,7 @@ package com.switchfully.eurder.CustomerComponent;
 
 import com.switchfully.eurder.api.dto.customer.CreateCustomerDTO;
 import com.switchfully.eurder.api.dto.customer.CustomerDTO;
-import com.switchfully.eurder.exception.MandatoryFieldException;
+import com.switchfully.eurder.zExceptions.MandatoryFieldException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,10 +20,12 @@ class CustomerService implements ICustomerService {
         this.customerMapper = customerMapper;
     }
 
+    @Override
     public List<CustomerDTO> getListCustomerDTO() {
         return customerMapper.mapToDTO(customerRepository.getCustomers());
     }
 
+    @Override
     public CustomerDTO createNewCustomer(CreateCustomerDTO createCustomerDTO) {
         validateRequiredFields(createCustomerDTO);
         Customer customerToBeAdded = customerMapper.mapToDomain(createCustomerDTO);
@@ -32,6 +34,7 @@ class CustomerService implements ICustomerService {
 
     }
 
+    @Override
     public CustomerDTO getCustomerByName(String name) {
         return customerMapper.mapToDTO(customerRepository.getCustomerByName(name).orElse(null));
     }

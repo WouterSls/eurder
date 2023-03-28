@@ -16,7 +16,7 @@ public class CustomerController {
     private final ICustomerService customerService;
 
     @Autowired
-    private CustomerController(ICustomerService customerService){
+    public CustomerController(ICustomerService customerService){
         this.customerService = customerService;
     }
 
