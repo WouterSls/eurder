@@ -1,7 +1,9 @@
-package com.switchfully.eurder.dto.customer;
+package com.switchfully.eurder.api.dto.customer;
 
 
-class CustomerDTO{
+import com.switchfully.eurder.api.dto.customer.address.AddressDTO;
+
+public class CustomerDTO{
     private final String firstName;
     private final String lastName;
     private final String emailAddress;
@@ -14,5 +16,25 @@ class CustomerDTO{
         this.emailAddress = emailAddress;
         this.address = address;
         this.phoneNumber = phoneNumber;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public String getEmailAddress() {
+        return emailAddress;
+    }
+
+    public AddressDTO getAddress() {
+        return address;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
     }
 }
