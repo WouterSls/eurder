@@ -26,6 +26,6 @@ class CustomerMapper {
     }
 
     Customer mapToDomain(CreateCustomerDTO createCustomerDTO){
-        return new Customer(createCustomerDTO.getFirstName(), createCustomerDTO.getLastName(), createCustomerDTO.getEmailAddress(), null, createCustomerDTO.getPhoneNumber());
+        return new Customer(createCustomerDTO.getFirstName(), createCustomerDTO.getLastName(), createCustomerDTO.getEmailAddress(), addressMapper.mapToDomain(createCustomerDTO.getAddress()), createCustomerDTO.getPhoneNumber());
     }
 }

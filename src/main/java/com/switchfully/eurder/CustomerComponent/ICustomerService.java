@@ -10,4 +10,7 @@ public interface ICustomerService {
     List<CustomerDTO> getListCustomerDTO();
 
     CustomerDTO createNewCustomer(CreateCustomerDTO createCustomerDTO);
+
+    CustomerDTO getCustomerByName(String name);
+
 }

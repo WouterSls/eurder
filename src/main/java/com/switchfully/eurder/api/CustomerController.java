@@ -1,13 +1,11 @@
 package com.switchfully.eurder.api;
 
+import com.switchfully.eurder.api.dto.customer.CreateCustomerDTO;
 import com.switchfully.eurder.api.dto.customer.CustomerDTO;
 import com.switchfully.eurder.CustomerComponent.ICustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -15,17 +13,23 @@ import java.util.List;
 @RequestMapping(value = "customers")
 public class CustomerController {
 
-    ICustomerService customerService;
+    private final ICustomerService customerService;
 
     @Autowired
-    public CustomerController(ICustomerService customerService){
+    private CustomerController(ICustomerService customerService){
         this.customerService = customerService;
     }
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping(produces = "application/json")
-    List<CustomerDTO> getAllCustomers(){
+    public List<CustomerDTO> getAllCustomers(){
         return customerService.getListCustomerDTO();
+    }
+
+    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping(path ="/create", produces="application/json",consumes = "application/json")
+    CustomerDTO createNewCustomer(@RequestBody CreateCustomerDTO createCustomerDTO){
+        return customerService.createNewCustomer(createCustomerDTO);
     }
 
 }
