@@ -21,12 +21,10 @@ class CustomerServiceTest {
         private CustomerService customerService;
         private CustomerRepository customerRepoMock;
         private CustomerMapper customerMapperMock;
-        private final AddressMapper addressMapper = new AddressMapper();
 
 
-        private final Address TEST_ADDRESS = new Address("fooStreet", "barNumber", "fooPostal", "barCity", "foobarCountry");
-        private final Customer TEST_CUSTOMER = new Customer("Foo", "Bar", "foobar@email.com", TEST_ADDRESS, "0032foo456bar");
-        private final CreateCustomerDTO TEST_CUSTOMER_CREATE = new CreateCustomerDTO("Create", "Customer", "createdCustomer@email.com", addressMapper.mapToDTO(TEST_ADDRESS), "0031create456customer");
+        private final Customer TEST_CUSTOMER = new Customer("Foo", "Bar", "foobar@email.com", "fooStreetBar", "0032foo456bar");
+        private final CreateCustomerDTO TEST_CUSTOMER_CREATE = new CreateCustomerDTO("Create", "Customer", "createdCustomer@email.com", "createdStreetCustomer", "0031create456customer");
 
         @BeforeEach
         void setup() {
@@ -115,7 +113,7 @@ class CustomerServiceTest {
                         null,
                         "lastName",
                         "emailAddress",
-                        addressMapper.mapToDTO(TEST_ADDRESS),
+                        "address",
                         "phoneNumber")
                 );
             });
@@ -127,7 +125,7 @@ class CustomerServiceTest {
                         "firstName",
                         null,
                         "emailAddress",
-                        addressMapper.mapToDTO(TEST_ADDRESS),
+                        "address",
                         "phoneNumber")
                 );
             });
@@ -139,7 +137,7 @@ class CustomerServiceTest {
                         "firstName",
                         "lastName",
                         null,
-                        addressMapper.mapToDTO(TEST_ADDRESS),
+                        "address",
                         "phoneNumber")
                 );
             });
@@ -163,7 +161,7 @@ class CustomerServiceTest {
                         "firstName",
                         "lastName",
                         "emailAddress",
-                        addressMapper.mapToDTO(TEST_ADDRESS),
+                        "address",
                         null)
                 );
             });

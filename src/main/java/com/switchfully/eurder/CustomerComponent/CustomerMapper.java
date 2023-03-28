@@ -9,8 +9,6 @@ import java.util.List;
 @Component
 class CustomerMapper {
 
-    private AddressMapper addressMapper = new AddressMapper();
-
     List<CustomerDTO> mapToDTO(List<Customer> customerList){
         return customerList.stream()
                 .map(this::mapToDTO)
@@ -21,11 +19,11 @@ class CustomerMapper {
         return new CustomerDTO(customer.getFirstName(),
                 customer.getLastName(),
                 customer.getEmailAddress(),
-                addressMapper.mapToDTO(customer.getAddress()),
+                customer.getAddress(),
                 customer.getPhoneNumber());
     }
 
     Customer mapToDomain(CreateCustomerDTO createCustomerDTO){
-        return new Customer(createCustomerDTO.getFirstName(), createCustomerDTO.getLastName(), createCustomerDTO.getEmailAddress(), addressMapper.mapToDomain(createCustomerDTO.getAddress()), createCustomerDTO.getPhoneNumber());
+        return new Customer(createCustomerDTO.getFirstName(), createCustomerDTO.getLastName(), createCustomerDTO.getEmailAddress(), createCustomerDTO.getAddress(), createCustomerDTO.getPhoneNumber());
     }
 }

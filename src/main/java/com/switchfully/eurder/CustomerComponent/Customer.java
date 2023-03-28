@@ -7,10 +7,10 @@ class Customer{
     private String firstName;
     private String lastName;
     private String emailAddress;
-    private Address address;
+    private String address;
     private String phoneNumber;
 
-    Customer(String firstName, String lastName, String emailAddress, Address address, String phoneNumber) {
+    Customer(String firstName, String lastName, String emailAddress, String address, String phoneNumber) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.emailAddress = emailAddress;
@@ -30,7 +30,7 @@ class Customer{
         return emailAddress;
     }
 
-    Address getAddress() {
+    String getAddress() {
         return address;
     }
 

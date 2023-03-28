@@ -12,8 +12,7 @@ class CustomerRepository{
 
     private List<Customer> customers;
 
-    private Address testAddress = new Address("fooStreet","barNumber","fooPostal","barCity","foobarCountry");
-    private Customer testCustomer = new Customer("foo","bar","foobar@hotmail.com",testAddress,"fooNumberBar");
+    private Customer testCustomer = new Customer("foo","bar","foobar@hotmail.com","fooStreetBar","fooNumberBar");
 
     CustomerRepository(){
         this.customers = new ArrayList<>();
