@@ -42,7 +42,7 @@ class CustomerService implements ICustomerService {
             throw new MandatoryFieldException("Please provide a customer to be created");
         }
         if (createCustomerDTO.getAddress() == null){
-            throw new MandatoryFieldException("The address of the user can't be null");
+            throw new MandatoryFieldException("The address of the user is required");
         }
         if (createCustomerDTO.getFirstName() == null){
             throw new MandatoryFieldException("The firstname of the customer is required");
