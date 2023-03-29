@@ -2,8 +2,10 @@ package com.switchfully.eurder.CustomerComponent;
 
 
 import java.util.Objects;
+import java.util.UUID;
 
 class Customer{
+    private final UUID id;
     private String firstName;
     private String lastName;
     private String emailAddress;
@@ -16,6 +18,7 @@ class Customer{
         this.emailAddress = emailAddress;
         this.address = address;
         this.phoneNumber = phoneNumber;
+        this.id = UUID.randomUUID();
     }
 
     String getFirstName() {
@@ -36,6 +39,10 @@ class Customer{
 
     String getPhoneNumber() {
         return phoneNumber;
+    }
+
+    UUID getId() {
+        return id;
     }
 
     @Override

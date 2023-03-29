@@ -32,4 +32,9 @@ public class CustomerController {
         return customerService.createNewCustomer(createCustomerDTO);
     }
 
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping(path = "/{id}", produces = "application/json")
+    CustomerDTO getCustomerById(@PathVariable String id){
+        return customerService.getCustomerById(id);
+    }
 }

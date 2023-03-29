@@ -2,11 +2,15 @@ package com.switchfully.eurder.CustomerComponent;
 
 import com.switchfully.eurder.api.dto.customer.CreateCustomerDTO;
 import com.switchfully.eurder.api.dto.customer.CustomerDTO;
+import com.switchfully.eurder.zExceptions.InvalidIdException;
 import com.switchfully.eurder.zExceptions.MandatoryFieldException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.regex.Pattern;
 
 @Service
 class CustomerService implements ICustomerService {
@@ -39,6 +43,26 @@ class CustomerService implements ICustomerService {
         return customerMapper.mapToDTO(customerRepository.getCustomerByName(name).orElse(null));
     }
 
+    @Override
+    public CustomerDTO getCustomerById(String id){
+        boolean wildcard = id.contains("*");
+
+        if (wildcard){
+            String customerIdWithoutWildcard = id.replace("*","");
+            Optional<Customer> customerWithWildcard = customerRepository.getCustomers().stream()
+                    .filter(customer -> customer.getId().toString().contains(customerIdWithoutWildcard))
+                    .findFirst();
+            return customerMapper.mapToDTO(customerWithWildcard.orElse(null));
+        }
+
+        if (!isValidUUIDFormat(id)){
+            throw new InvalidIdException("Please provide a correct user ID");
+        }
+
+        UUID customerID = UUID.fromString(id);
+        return customerMapper.mapToDTO(customerRepository.getCustomerById(customerID).orElse(null));
+    }
+
 
     private void validateRequiredFields(CreateCustomerDTO createCustomerDTO) throws MandatoryFieldException {
         if (createCustomerDTO == null) {
@@ -61,5 +85,13 @@ class CustomerService implements ICustomerService {
         }
     }
 
+    private boolean isValidUUIDFormat(String id){
+        Pattern UUID_REGEX =
+                Pattern.compile("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$");
+        if (id == null){
+            return false;
+        }
+        return UUID_REGEX.matcher(id).matches();
+    }
 
 }

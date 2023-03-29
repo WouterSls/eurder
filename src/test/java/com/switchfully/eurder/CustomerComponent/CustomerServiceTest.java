@@ -3,12 +3,14 @@ package com.switchfully.eurder.CustomerComponent;
 import com.switchfully.eurder.api.dto.customer.CreateCustomerDTO;
 import com.switchfully.eurder.api.dto.customer.CustomerDTO;
 //import com.switchfully.eurder.exception.MandatoryFieldException;
+import com.switchfully.eurder.zExceptions.InvalidIdException;
 import com.switchfully.eurder.zExceptions.MandatoryFieldException;
 import org.junit.jupiter.api.*;
 import org.mockito.Mockito;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static java.util.Collections.emptyList;
 
@@ -16,7 +18,7 @@ import static java.util.Collections.emptyList;
 class CustomerServiceTest {
 
     @Nested
-    @DisplayName("unit tests with mocking")
+    @DisplayName("CustomerService unit test")
     class unitTestMocking {
 
         private CustomerService customerService;
@@ -55,7 +57,7 @@ class CustomerServiceTest {
         }
 
         @Test
-        void getCustomerByName_CustomersAbsent_returnsNull() {
+        void getCustomerByName_CustomersNotPresent_returnsNull() {
             CustomerDTO actualCustomer = customerService.getCustomerByName(TEST_CUSTOMER.getLastName());
 
             Assertions.assertNull(actualCustomer);
@@ -119,6 +121,7 @@ class CustomerServiceTest {
                 );
             });
         }
+
         @Test
         void createNewCustomer_CreateCustomerDTOLastNameNotPresent_returnsMandatoryFieldException() {
             Assertions.assertThrows(MandatoryFieldException.class, () -> {
@@ -131,6 +134,7 @@ class CustomerServiceTest {
                 );
             });
         }
+
         @Test
         void createNewCustomer_CreateCustomerDTOEmailAddressNotPresent_returnsMandatoryFieldException() {
             Assertions.assertThrows(MandatoryFieldException.class, () -> {
@@ -143,6 +147,7 @@ class CustomerServiceTest {
                 );
             });
         }
+
         @Test
         void createNewCustomer_CreateCustomerDTOAddressNotPresent_returnsMandatoryFieldException() {
             Assertions.assertThrows(MandatoryFieldException.class, () -> {
@@ -155,6 +160,7 @@ class CustomerServiceTest {
                 );
             });
         }
+
         @Test
         void createNewCustomer_CreateCustomerDTOPhoneNumberPresent_returnsMandatoryFieldException() {
             Assertions.assertThrows(MandatoryFieldException.class, () -> {
@@ -167,6 +173,37 @@ class CustomerServiceTest {
                 );
             });
         }
+
+        @Test
+        void getCustomerById_CustomerPresent_returnsCustomersDTO() {
+            Mockito.when(customerRepoMock.getCustomerById(TEST_CUSTOMER.getId()))
+                    .thenReturn(Optional.of(TEST_CUSTOMER));
+
+            CustomerDTO actualCustomer = customerService.getCustomerById(TEST_CUSTOMER.getId().toString());
+
+            Assertions.assertEquals(customerMapperMock.mapToDTO(TEST_CUSTOMER), actualCustomer);
+        }
+
+        @Test
+        void getCustomerById_CustomerNotPresent_returnsNull() {
+            Mockito.when(customerRepoMock.getCustomerById(TEST_CUSTOMER.getId()))
+                    .thenReturn(null);
+
+            Assertions.assertNull(customerService.getCustomerById(UUID.randomUUID().toString()));
+        }
+
+        @Test
+        void getCustomerById_CustomerPresentIncorrectId_returnsInvalidIdException() {
+
+            Assertions.assertThrows(InvalidIdException.class, () -> {
+                customerService.getCustomerById("foo");
+            });
+        }
     }
 
+    @Nested
+    @DisplayName("CustomerService Integration test")
+    class CustomerServiceIntegrationTest{
+        //TODO: Integration test
+    }
 }

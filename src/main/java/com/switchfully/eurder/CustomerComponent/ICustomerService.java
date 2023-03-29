@@ -13,4 +13,5 @@ public interface ICustomerService {
 
     CustomerDTO getCustomerByName(String name);
 
+    CustomerDTO getCustomerById(String id);
 }

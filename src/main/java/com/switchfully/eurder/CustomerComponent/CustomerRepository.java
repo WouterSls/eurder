@@ -5,6 +5,7 @@ import org.springframework.stereotype.Repository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
 class CustomerRepository{
@@ -31,8 +32,11 @@ class CustomerRepository{
         return customers.stream()
                 .filter(customer -> customer.getFirstName().equals(name) || customer.getLastName().equals(name))
                 .findFirst();
-
     }
 
-
+    Optional<Customer> getCustomerById(UUID id){
+        return customers.stream()
+                .filter(customer -> customer.getId().equals(id))
+                .findFirst();
+    }
 }

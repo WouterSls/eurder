@@ -1,19 +1,23 @@
 package com.switchfully.eurder.api.dto.customer;
 
 
+import java.util.UUID;
+
 public class CustomerDTO{
     private final String firstName;
     private final String lastName;
     private final String emailAddress;
     private final String address;
     private final String phoneNumber;
+    private final UUID id;
 
-    public CustomerDTO(String firstName, String lastName, String emailAddress, String address, String phoneNumber) {
+    public CustomerDTO(String firstName, String lastName, String emailAddress, String address, String phoneNumber, UUID id) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.emailAddress = emailAddress;
         this.address = address;
         this.phoneNumber = phoneNumber;
+        this.id = id;
     }
 
     public String getFirstName() {
@@ -34,5 +38,9 @@ public class CustomerDTO{
 
     public String getPhoneNumber() {
         return phoneNumber;
+    }
+
+    public UUID getId() {
+        return id;
     }
 }

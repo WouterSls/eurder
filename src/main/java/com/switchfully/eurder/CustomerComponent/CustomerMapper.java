@@ -20,7 +20,8 @@ class CustomerMapper {
                 customer.getLastName(),
                 customer.getEmailAddress(),
                 customer.getAddress(),
-                customer.getPhoneNumber());
+                customer.getPhoneNumber(),
+                customer.getId());
     }
 
     Customer mapToDomain(CreateCustomerDTO createCustomerDTO){

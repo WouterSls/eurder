@@ -9,4 +9,6 @@ public interface IItemService {
     ItemDTO createNewItem(CreateItemDTO createItemDTO);
 
     List<ItemDTO> getListItemsDTO();
+
+    ItemDTO getItemByName(String name);
 }

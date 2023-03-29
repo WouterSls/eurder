@@ -3,12 +3,14 @@ package com.switchfully.eurder.ItemComponent;
 import com.switchfully.eurder.api.dto.item.CreateItemDTO;
 import com.switchfully.eurder.api.dto.item.ItemDTO;
 import com.switchfully.eurder.zExceptions.IllegalAmountException;
+import com.switchfully.eurder.zExceptions.IllegalIdException;
 import com.switchfully.eurder.zExceptions.IllegalPriceException;
 import com.switchfully.eurder.zExceptions.MandatoryFieldException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 class ItemService implements IItemService{
@@ -33,6 +35,15 @@ class ItemService implements IItemService{
     @Override
     public List<ItemDTO> getListItemsDTO() {
         return itemMapper.mapToDTO(itemRepository.getItems());
+    }
+
+    @Override
+    public ItemDTO getItemByName(String name) {
+        Optional<Item> gottenItem = itemRepository.getItemByName(name);
+        if (gottenItem.isEmpty()){
+            throw new IllegalIdException("Please provide a correct Item id (name)");
+        }
+        return itemMapper.mapToDTO(gottenItem.get());
     }
 
     private void verifyItem(CreateItemDTO createItemDTO){
