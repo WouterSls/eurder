@@ -3,7 +3,7 @@ package com.switchfully.eurder.components.customerComponent;
 import com.switchfully.eurder.api.dto.customer.CreateCustomerDTO;
 import com.switchfully.eurder.api.dto.customer.CustomerDTO;
 //import com.switchfully.eurder.exception.MandatoryFieldException;
-import com.switchfully.eurder.exception.InvalidIdException;
+import com.switchfully.eurder.exception.InvalidIdFormatException;
 import com.switchfully.eurder.exception.MandatoryFieldException;
 import com.switchfully.eurder.exception.NoCustomersException;
 import org.junit.jupiter.api.*;
@@ -196,15 +196,9 @@ class CustomerServiceTest {
         @Test
         void getCustomerById_CustomerPresentIncorrectId_returnsInvalidIdException() {
 
-            Assertions.assertThrows(InvalidIdException.class, () -> {
+            Assertions.assertThrows(InvalidIdFormatException.class, () -> {
                 customerService.getCustomerById("foo");
             });
         }
-    }
-
-    @Nested
-    @DisplayName("CustomerService Integration test")
-    class CustomerServiceIntegrationTest{
-        //TODO: Integration test
     }
 }

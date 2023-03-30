@@ -5,10 +5,10 @@ import java.util.UUID;
 class Item{
 
     private final UUID id;
-    private final String name;
-    private final String description;
-    private final double price;
-    private final int amount;
+    private String name;
+    private String description;
+    private double price;
+    private int amount;
 
     public Item(String name, String description, double price, int amount) {
         this.id = UUID.randomUUID();
@@ -36,5 +36,21 @@ class Item{
 
     UUID getId(){
         return id;
+    }
+
+    void setName(String name) {
+        this.name = name;
+    }
+
+    void setDescription(String description) {
+        this.description = description;
+    }
+
+    void setPrice(double price) {
+        this.price = price;
+    }
+
+    void setAmount(int amount) {
+        this.amount = amount;
     }
 }

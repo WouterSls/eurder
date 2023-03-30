@@ -2,7 +2,7 @@ package com.switchfully.eurder.components.customerComponent;
 
 import com.switchfully.eurder.api.dto.customer.CreateCustomerDTO;
 import com.switchfully.eurder.api.dto.customer.CustomerDTO;
-import com.switchfully.eurder.exception.InvalidIdException;
+import com.switchfully.eurder.exception.InvalidIdFormatException;
 import com.switchfully.eurder.exception.MandatoryFieldException;
 import com.switchfully.eurder.exception.NoCustomersException;
 import com.switchfully.eurder.utils.Utils;
@@ -62,7 +62,7 @@ class CustomerService implements ICustomerService {
         }
 
         if (!utils.isValidUUIDFormat(id)){
-            throw new InvalidIdException("Please provide a correct user ID");
+            throw new InvalidIdFormatException("Please provide a correct user ID");
         }
 
         UUID customerID = UUID.fromString(id);

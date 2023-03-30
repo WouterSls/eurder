@@ -56,8 +56,6 @@ class IntegrationTest {
         Assertions.assertNotNull(createdItem);
 
         //test the itemService with item
-        final ItemDTO itemTest1Actual = itemService.getItemByName(createdItem.getName());
-        Assertions.assertEquals(createdItem,itemTest1Actual);
         final ItemDTO itemTest2Actual = itemService.getItemById(createdItem.getId().toString());
         Assertions.assertEquals(createdItem,itemTest2Actual);
         //TODO: add update functionality once it's done and customer save functionality

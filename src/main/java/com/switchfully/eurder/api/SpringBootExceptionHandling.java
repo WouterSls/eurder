@@ -9,11 +9,11 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ControllerAdvice
 public class SpringBootExceptionHandling {
-    @ExceptionHandler(InvalidIdException.class)
+    @ExceptionHandler(InvalidIdFormatException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ResponseBody
     String handleInvalidIdException(Exception exception) {
-        return "InvalidIdException: " + exception.getMessage();
+        return "InvalidIdFormatException: " + exception.getMessage();
     }
 
     @ExceptionHandler(MandatoryFieldException.class)

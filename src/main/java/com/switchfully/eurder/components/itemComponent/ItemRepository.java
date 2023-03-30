@@ -9,7 +9,7 @@ import java.util.UUID;
 
 @Repository
 class ItemRepository{
-    List<Item> items;
+    private List<Item> items;
 
     public ItemRepository() {
         this.items = new ArrayList<>();
@@ -21,12 +21,6 @@ class ItemRepository{
 
     List<Item> getItems() {
         return items;
-    }
-
-    Optional<Item> getItemByName(String name){
-        return items.stream()
-                .filter(item -> item.getName().equals(name))
-                .findFirst();
     }
 
     Optional<Item> getItemById(UUID id){
