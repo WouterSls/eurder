@@ -1,9 +1,6 @@
 package com.switchfully.eurder.api;
 
-import com.switchfully.eurder.exception.IllegalAmountException;
-import com.switchfully.eurder.exception.IllegalPriceException;
-import com.switchfully.eurder.exception.InvalidIdException;
-import com.switchfully.eurder.exception.MandatoryFieldException;
+import com.switchfully.eurder.exception.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -38,5 +35,12 @@ public class SpringBootExceptionHandling {
     @ResponseBody
     String handleIllegalAmountException (Exception exception){
         return "IllegalAmountException: " + exception.getMessage();
+    }
+
+    @ExceptionHandler(NoCustomersException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ResponseBody
+    String handleNoCustomersException(Exception exception){
+        return "NoCustomersException: " + exception.getMessage();
     }
 }

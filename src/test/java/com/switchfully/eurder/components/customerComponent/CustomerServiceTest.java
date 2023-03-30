@@ -5,6 +5,7 @@ import com.switchfully.eurder.api.dto.customer.CustomerDTO;
 //import com.switchfully.eurder.exception.MandatoryFieldException;
 import com.switchfully.eurder.exception.InvalidIdException;
 import com.switchfully.eurder.exception.MandatoryFieldException;
+import com.switchfully.eurder.exception.NoCustomersException;
 import org.junit.jupiter.api.*;
 import org.mockito.Mockito;
 
@@ -78,9 +79,9 @@ class CustomerServiceTest {
             Mockito.when(customerRepoMock.getCustomers())
                     .thenReturn(emptyList());
 
-            List<CustomerDTO> actualList = customerService.getListCustomerDTO();
-
-            Assertions.assertTrue(actualList.isEmpty());
+            Assertions.assertThrows(NoCustomersException.class, () -> {
+               customerService.getListCustomerDTO();
+            });
         }
 
         @Test
