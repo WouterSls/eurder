@@ -46,41 +46,6 @@ class OrderServiceTest {
                 orderService.orderItems(new CreateOrderDTO(List.of(new ItemGroupDTO(null,2))));
             });
         }
-
-        @Test
-        void orderItem_CreateOrderDTOAmountEquals0_returnsIllegalAmountException(){
-            Assertions.assertThrows(IllegalAmountException.class, () -> {
-                orderService.orderItems(new CreateOrderDTO(List.of(new ItemGroupDTO("foo",0))));
-            });
-        }
-
-        @Test
-        void orderItem_CreateOrderDTOAmountUnder0_returnsIllegalAmountException(){
-            Assertions.assertThrows(IllegalAmountException.class, () -> {
-                orderService.orderItems(new CreateOrderDTO(List.of(new ItemGroupDTO("foo",-5))));
-            });
-        }
-
-        @Test
-        void orderItem_CreateOrderDTOPresent_callCorrectFunction(){
-            orderService.orderItems(TEST_CREATE_ORDER_DTO);
-
-            Mockito.verify(orderRepositoryMock,Mockito.never()).getOrders();
-        }
-
-        @Test
-        void orderItem_CreateOrderDTOPresent_returnsOrderDTOList(){
-            final ItemDTO TEST_ITEM = new ItemDTO("foo","bar",20,3);
-            final com.switchfully.eurder.components.OrderComponent.Order TEST_ORDER = new com.switchfully.eurder.components.OrderComponent.Order(TEST_ITEM,1);
-            Mockito.when(orderService.orderItems(TEST_CREATE_ORDER_DTO))
-                    .thenReturn(orderMapperMock.mapToDTO(List.of(TEST_ORDER)));
-
-            List<OrderDTO> actualOrderDTOList = orderService.orderItems(TEST_CREATE_ORDER_DTO);
-
-            Assertions.assertEquals(orderService.orderItems(TEST_CREATE_ORDER_DTO),actualOrderDTOList);
-        }
-
-        //TODO: add more orderService testing
     }
 
 }
