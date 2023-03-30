@@ -1,10 +1,11 @@
-package com.switchfully.eurder.OrderComponent;
+package com.switchfully.eurder;
 
-import com.switchfully.eurder.components.CustomerComponent.ItemComponent.IItemService;
+import com.switchfully.eurder.components.ItemComponent.IItemService;
 import com.switchfully.eurder.api.dto.item.CreateItemDTO;
 import com.switchfully.eurder.api.dto.item.ItemDTO;
 import com.switchfully.eurder.api.dto.order.CreateOrderDTO;
 import com.switchfully.eurder.api.dto.order.ItemGroupDTO;
+import com.switchfully.eurder.components.OrderComponent.IOrderService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -20,18 +21,11 @@ public class IntegrationTest {
 
     @Autowired
     private IItemService itemService;
-    private OrderService orderService;
-    private OrderRepository orderRepository;
-    private OrderMapper orderMapper;
+    private IOrderService orderService;
     final CreateItemDTO createItemDTO = new CreateItemDTO("foo","bar",10,5);
 
 
-    @BeforeEach
-    void setup(){
-        orderRepository = new OrderRepository();
-        orderMapper = new OrderMapper();
-        orderService = new OrderService(orderRepository,orderMapper,itemService);
-    }
+
 
     @Test
     @DisplayName("Integration test for itemComponent in orderService")

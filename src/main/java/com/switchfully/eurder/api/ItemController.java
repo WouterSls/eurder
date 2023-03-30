@@ -1,7 +1,7 @@
 package com.switchfully.eurder.api;
 
 
-import com.switchfully.eurder.components.CustomerComponent.ItemComponent.IItemService;
+import com.switchfully.eurder.components.ItemComponent.IItemService;
 import com.switchfully.eurder.api.dto.item.CreateItemDTO;
 import com.switchfully.eurder.api.dto.item.ItemDTO;
 import org.springframework.beans.factory.annotation.Autowired;
