@@ -1,12 +1,8 @@
-package com.switchfully.eurder.components.CustomerComponent;
+package com.switchfully.eurder.components.customerComponent;
 
 import com.switchfully.eurder.api.dto.customer.CreateCustomerDTO;
 import com.switchfully.eurder.api.dto.customer.CustomerDTO;
 //import com.switchfully.eurder.exception.MandatoryFieldException;
-import com.switchfully.eurder.components.CustomerComponent.Customer;
-import com.switchfully.eurder.components.CustomerComponent.CustomerMapper;
-import com.switchfully.eurder.components.CustomerComponent.CustomerRepository;
-import com.switchfully.eurder.components.CustomerComponent.CustomerService;
 import com.switchfully.eurder.exception.InvalidIdException;
 import com.switchfully.eurder.exception.MandatoryFieldException;
 import org.junit.jupiter.api.*;

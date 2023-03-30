@@ -1,4 +1,4 @@
-package com.switchfully.eurder.components.OrderComponent;
+package com.switchfully.eurder.components.orderComponent;
 
 import com.switchfully.eurder.api.dto.item.ItemDTO;
 

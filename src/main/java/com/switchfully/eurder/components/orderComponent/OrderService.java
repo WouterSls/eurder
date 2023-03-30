@@ -1,7 +1,7 @@
-package com.switchfully.eurder.components.OrderComponent;
+package com.switchfully.eurder.components.orderComponent;
 
 
-import com.switchfully.eurder.components.ItemComponent.IItemService;
+import com.switchfully.eurder.components.itemComponent.IItemService;
 import com.switchfully.eurder.api.dto.item.ItemDTO;
 import com.switchfully.eurder.api.dto.order.CreateOrderDTO;
 import com.switchfully.eurder.api.dto.order.ItemGroupDTO;

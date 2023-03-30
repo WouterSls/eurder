@@ -1,4 +1,4 @@
-package com.switchfully.eurder.components.ItemComponent;
+package com.switchfully.eurder.components.itemComponent;
 
 import java.util.UUID;
 

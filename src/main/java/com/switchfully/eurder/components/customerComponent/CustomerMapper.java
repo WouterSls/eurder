@@ -1,4 +1,4 @@
-package com.switchfully.eurder.components.CustomerComponent;
+package com.switchfully.eurder.components.customerComponent;
 
 import com.switchfully.eurder.api.dto.customer.CreateCustomerDTO;
 import com.switchfully.eurder.api.dto.customer.CustomerDTO;

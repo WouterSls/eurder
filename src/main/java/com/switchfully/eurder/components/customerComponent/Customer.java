@@ -1,4 +1,4 @@
-package com.switchfully.eurder.components.CustomerComponent;
+package com.switchfully.eurder.components.customerComponent;
 
 
 import java.util.Objects;

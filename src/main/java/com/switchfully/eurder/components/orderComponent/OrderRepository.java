@@ -1,4 +1,4 @@
-package com.switchfully.eurder.components.OrderComponent;
+package com.switchfully.eurder.components.orderComponent;
 
 import org.springframework.stereotype.Repository;
 

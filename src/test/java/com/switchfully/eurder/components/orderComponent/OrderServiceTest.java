@@ -1,8 +1,8 @@
-package com.switchfully.eurder.components.OrderComponent;
+package com.switchfully.eurder.components.orderComponent;
 
 import com.switchfully.eurder.api.dto.order.CreateOrderDTO;
 import com.switchfully.eurder.api.dto.order.ItemGroupDTO;
-import com.switchfully.eurder.components.ItemComponent.IItemService;
+import com.switchfully.eurder.components.itemComponent.IItemService;
 import com.switchfully.eurder.exception.IllegalAmountException;
 import com.switchfully.eurder.exception.MandatoryFieldException;
 import org.junit.jupiter.api.*;

@@ -1,4 +1,4 @@
-package com.switchfully.eurder.components.ItemComponent;
+package com.switchfully.eurder.components.itemComponent;
 
 import com.switchfully.eurder.api.dto.item.CreateItemDTO;
 import com.switchfully.eurder.api.dto.item.ItemDTO;
@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.regex.Pattern;
 
 @Service
 class ItemService implements IItemService{
