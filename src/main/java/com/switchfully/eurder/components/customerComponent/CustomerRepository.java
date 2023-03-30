@@ -16,7 +16,7 @@ class CustomerRepository{
 
     CustomerRepository(){
         this.customers = new ArrayList<>();
-        customers.add(testCustomer);
+        //customers.add(testCustomer);
     }
 
 
