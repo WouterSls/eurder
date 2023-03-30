@@ -1,9 +1,9 @@
 package com.switchfully.eurder.components.ItemComponent;
 
 import com.switchfully.eurder.api.dto.item.CreateItemDTO;
-import com.switchfully.eurder.components.CustomerComponent.ItemComponent.ItemMapper;
-import com.switchfully.eurder.components.CustomerComponent.ItemComponent.ItemRepository;
-import com.switchfully.eurder.components.CustomerComponent.ItemComponent.ItemService;
+import com.switchfully.eurder.components.ItemComponent.ItemMapper;
+import com.switchfully.eurder.components.ItemComponent.ItemRepository;
+import com.switchfully.eurder.components.ItemComponent.ItemService;
 import com.switchfully.eurder.exception.IllegalAmountException;
 import com.switchfully.eurder.exception.IllegalPriceException;
 import com.switchfully.eurder.exception.MandatoryFieldException;
