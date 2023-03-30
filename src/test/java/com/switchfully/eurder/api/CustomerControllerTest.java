@@ -97,7 +97,19 @@ class CustomerControllerTest {
     @Test
     void userPresent_retrieveUserByWildCardId_returnsCustomerDTO(){
 
-        customerService.createNewCustomer(TEST_CREATE_CUSTOMER_DTO);
+
+        RestAssured.given()
+                .contentType(ContentType.JSON)
+                .body(TEST_CREATE_CUSTOMER_DTO)
+                .when()
+                .port(port)
+                .post("customers/create")
+                .then()
+                .log().all()
+                .assertThat()
+                .statusCode(HttpStatus.CREATED.value());
+
+
 
         CustomerDTO actualCustomerDTO = RestAssured
                 .given()
