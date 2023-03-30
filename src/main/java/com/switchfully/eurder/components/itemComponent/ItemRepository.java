@@ -15,7 +15,7 @@ class ItemRepository{
 
     public ItemRepository() {
         this.items = new ArrayList<>();
-        items.add(TEST_ITEM);
+        //items.add(TEST_ITEM);
     }
 
     void addItem(Item item){
