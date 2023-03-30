@@ -4,7 +4,6 @@ import com.switchfully.eurder.api.dto.customer.CreateCustomerDTO;
 import com.switchfully.eurder.api.dto.customer.CustomerDTO;
 import com.switchfully.eurder.exception.InvalidIdException;
 import com.switchfully.eurder.exception.MandatoryFieldException;
-import com.switchfully.eurder.exception.NoCustomersException;
 import com.switchfully.eurder.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,7 +29,7 @@ class CustomerService implements ICustomerService {
     @Override
     public List<CustomerDTO> getListCustomerDTO() {
         if (customerRepository.getCustomers().isEmpty()){
-            throw new NoCustomersException("Eurder currently holds 0 customers");
+            throw new MandatoryFieldException("Eurder currently holds 0 customers");
         }
         return customerMapper.mapToDTO(customerRepository.getCustomers());
     }
