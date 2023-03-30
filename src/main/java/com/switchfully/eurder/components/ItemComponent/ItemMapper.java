@@ -16,7 +16,8 @@ class ItemMapper{
     }
 
     ItemDTO mapToDTO(Item item){
-        return new ItemDTO(item.getName(),
+        return new ItemDTO(item.getId(),
+                item.getName(),
                 item.getDescription(),
                 item.getPrice(),
                 item.getAmount());

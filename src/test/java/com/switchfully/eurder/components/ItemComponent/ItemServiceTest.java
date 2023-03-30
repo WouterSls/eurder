@@ -116,11 +116,8 @@ class ItemServiceTest {
             });
         }
 
-
-        //TODO: itemService Unit tests
         @Test
         void getItemByName_NamePresent_ReturnsItemDTO(){
-
         }
         @Test
         void getItemByName_IncorrectName_returnsNull(){

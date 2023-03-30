@@ -1,32 +1,40 @@
 package com.switchfully.eurder.components.ItemComponent;
 
+import java.util.UUID;
+
 class Item{
 
+    private final UUID id;
     private final String name;
     private final String description;
     private final double price;
     private final int amount;
 
     public Item(String name, String description, double price, int amount) {
+        this.id = UUID.randomUUID();
         this.name = name;
         this.description = description;
         this.price = price;
         this.amount = amount;
     }
 
-    public String getName() {
+    String getName() {
         return name;
     }
 
-    public String getDescription() {
+    String getDescription() {
         return description;
     }
 
-    public double getPrice() {
+    double getPrice() {
         return price;
     }
 
-    public int getAmount() {
+    int getAmount() {
         return amount;
+    }
+
+    UUID getId(){
+        return id;
     }
 }

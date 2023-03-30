@@ -1,6 +1,7 @@
 package com.switchfully.eurder.api.dto.customer;
 
 
+import java.util.Objects;
 import java.util.UUID;
 
 public class CustomerDTO{
@@ -42,5 +43,18 @@ public class CustomerDTO{
 
     public UUID getId() {
         return id;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        CustomerDTO that = (CustomerDTO) o;
+        return Objects.equals(getId(), that.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId());
     }
 }

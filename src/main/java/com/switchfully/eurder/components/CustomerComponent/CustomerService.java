@@ -4,6 +4,7 @@ import com.switchfully.eurder.api.dto.customer.CreateCustomerDTO;
 import com.switchfully.eurder.api.dto.customer.CustomerDTO;
 import com.switchfully.eurder.exception.InvalidIdException;
 import com.switchfully.eurder.exception.MandatoryFieldException;
+import com.switchfully.eurder.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,11 +18,13 @@ class CustomerService implements ICustomerService {
 
     private final CustomerRepository customerRepository;
     private final CustomerMapper customerMapper;
+    private final Utils utils;
 
     @Autowired
     public CustomerService(CustomerRepository customerRepository, CustomerMapper customerMapper) {
         this.customerRepository = customerRepository;
         this.customerMapper = customerMapper;
+        this.utils = new Utils();
     }
 
     @Override
@@ -55,7 +58,7 @@ class CustomerService implements ICustomerService {
             return customerMapper.mapToDTO(customerWithWildcard.orElse(null));
         }
 
-        if (!isValidUUIDFormat(id)){
+        if (!utils.isValidUUIDFormat(id)){
             throw new InvalidIdException("Please provide a correct user ID");
         }
 
@@ -85,13 +88,5 @@ class CustomerService implements ICustomerService {
         }
     }
 
-    private boolean isValidUUIDFormat(String id){
-        Pattern UUID_REGEX =
-                Pattern.compile("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$");
-        if (id == null){
-            return false;
-        }
-        return UUID_REGEX.matcher(id).matches();
-    }
 
 }

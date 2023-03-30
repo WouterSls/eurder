@@ -11,4 +11,6 @@ public interface IItemService {
     List<ItemDTO> getListItemsDTO();
 
     ItemDTO getItemByName(String name);
+
+    ItemDTO getItemById(String id);
 }

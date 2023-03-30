@@ -36,29 +36,38 @@ class OrderService implements IOrderService {
         return orderMapper.mapToDTO(orders);
     }
 
-    private void verifyOrder(CreateOrderDTO createOrderDTO){
+    void verifyOrder(CreateOrderDTO createOrderDTO){
         if (createOrderDTO == null) {
             throw new MandatoryFieldException("Please provide an order");
+        }
+        if (createOrderDTO.getOrders() == null){
+            throw new MandatoryFieldException("Please provide at least one ItemGroup");
+        }
+
+        if (createOrderDTO.getOrders().isEmpty()){
+            throw new MandatoryFieldException("Please provide at least one ItemGroup");
         }
 
         for (ItemGroupDTO itemGroup :
                 createOrderDTO.getOrders()) {
             if (itemGroup.getId() == null) {
-                throw new MandatoryFieldException("Please provide an id for each order");
+                throw new MandatoryFieldException("Please provide an id for each order for all items");
+            }
+        }
+
+        for (ItemGroupDTO itemGroup :
+                createOrderDTO.getOrders()) {
+            if (itemGroup.getAmountOrdered() <= 0){
+                throw new IllegalAmountException("Please provide an amount bigger than 0 for all items");
             }
         }
 
         boolean amountOrderedBiggerThanAmountOfItems = createOrderDTO.getOrders().stream()
-                .anyMatch(itemGroupDTO -> itemGroupDTO.getAmountOrdered() > itemService.getItemByName(itemGroupDTO.getId()).getAmount());
+                .anyMatch(itemGroupDTO -> itemGroupDTO.getAmountOrdered() > itemService.getItemById(itemGroupDTO.getId()).getAmount());
         if (amountOrderedBiggerThanAmountOfItems){
             throw new IllegalAmountException("Not enough items in stock");
         }
 
-        boolean negativeAmount = createOrderDTO.getOrders().stream()
-                .anyMatch(itemGroupDTO -> itemGroupDTO.getAmountOrdered() <= 0);
-        if (negativeAmount){
-            throw new IllegalAmountException("Please provide an amount bigger than 0");
-        }
     }
 
     private List<Order> createOrders(CreateOrderDTO createOrderDTO){
@@ -66,7 +75,7 @@ class OrderService implements IOrderService {
 
         for (ItemGroupDTO itemGroupDTO :
                 createOrderDTO.getOrders()) {
-            ItemDTO itemFromOrder = itemService.getItemByName(itemGroupDTO.getId());
+            ItemDTO itemFromOrder = itemService.getItemById(itemGroupDTO.getId());
             result.add(new Order(itemFromOrder, itemGroupDTO.getAmountOrdered()));
         }
 
