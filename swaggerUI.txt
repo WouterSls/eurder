@@ -1,0 +1,2 @@
+http address to swagger dependency at localhost
+http://localhost:8080/swagger-ui/index.html#/
