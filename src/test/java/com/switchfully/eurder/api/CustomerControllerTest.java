@@ -51,7 +51,6 @@ class CustomerControllerTest {
                 .port(port)
                 .get("/customers")
                 .then()
-                .log().all()
                 .assertThat()
                 .statusCode(HttpStatus.NOT_FOUND.value());
     }
@@ -105,7 +104,7 @@ class CustomerControllerTest {
                 .contentType(ContentType.JSON)
                 .when()
                 .port(port)
-                .get("/customers/1*")
+                .get("/customers/*1*")
                 .then()
                 .log().all()
                 .assertThat()
