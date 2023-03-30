@@ -11,11 +11,8 @@ import java.util.UUID;
 class ItemRepository{
     List<Item> items;
 
-    private final Item TEST_ITEM = new Item("foo","bar",10,5);
-
     public ItemRepository() {
         this.items = new ArrayList<>();
-        //items.add(TEST_ITEM);
     }
 
     void addItem(Item item){

@@ -30,7 +30,7 @@ class CustomerControllerTest {
 
 
     @Test
-    void userNotPresent_retrieveUserById_returns404() {
+    void retrieveUserById_userNotPresent_returns404() {
         RestAssured
                 .given()
                 .contentType(ContentType.JSON)
@@ -44,7 +44,7 @@ class CustomerControllerTest {
 
 
     @Test
-    void usersNotPresent_getListCustomerDTO_returns404(){
+    void getListCustomerDTO_usersNotPresent_returns404(){
 
         RestAssured
                 .given()
@@ -58,7 +58,7 @@ class CustomerControllerTest {
 
 
     @Test
-    void userPresent_retrieveUserById_returnsUser() {
+    void retrieveUserById_userPresent_returnsUser() {
 
         expectedCustomerDTO = customerService.createNewCustomer(TEST_CREATE_CUSTOMER_DTO);
 
@@ -80,7 +80,7 @@ class CustomerControllerTest {
     }
 
     @Test
-    void userPresent_retrieveUserByIncorrectId_returns404() {
+    void retrieveUserById_userPresentIncorrectId_returns404() {
 
         expectedCustomerDTO = customerService.createNewCustomer(TEST_CREATE_CUSTOMER_DTO);
 
@@ -97,7 +97,7 @@ class CustomerControllerTest {
     }
 
     @Test
-    void userPresent_retrieveUserByWildCardId_returnsCustomerDTO(){
+    void retrieveUserById_UserPresentWildCardId_returnsCustomerDTO(){
 
 
         RestAssured.given()
@@ -130,7 +130,7 @@ class CustomerControllerTest {
     }
 
     @Test
-    void usersPresent_getListCustomerDTO_returnsCustomerDTOList(){
+    void getListCustomerDTO_userPresent_returnsCustomerDTOList(){
 
         customerService.createNewCustomer(TEST_CREATE_CUSTOMER_DTO);
 

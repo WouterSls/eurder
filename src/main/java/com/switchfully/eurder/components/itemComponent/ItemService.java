@@ -35,6 +35,9 @@ class ItemService implements IItemService{
 
     @Override
     public List<ItemDTO> getListItemsDTO() {
+        if (itemRepository.getItems().isEmpty()){
+            throw new NoItemsException("No items present");
+        }
         return itemMapper.mapToDTO(itemRepository.getItems());
     }
 

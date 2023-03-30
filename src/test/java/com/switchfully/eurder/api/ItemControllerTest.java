@@ -100,6 +100,19 @@ class ItemControllerTest {
     }
 
     @Test
+    void getListItemDTO_ItemsNotPresent_returns404(){
+
+        RestAssured
+                .given()
+                .when()
+                .port(port)
+                .get("/items")
+                .then()
+                .assertThat()
+                .statusCode(HttpStatus.NOT_FOUND.value());
+    }
+
+    @Test
     void createItem_CreateItemDTOPresent_returns200(){
 
         RestAssured.given()

@@ -12,11 +12,8 @@ class CustomerRepository{
 
     private List<Customer> customers;
 
-    private Customer testCustomer = new Customer("foo","bar","foobar@hotmail.com","fooStreetBar","fooNumberBar");
-
     CustomerRepository(){
         this.customers = new ArrayList<>();
-        //customers.add(testCustomer);
     }
 
 

@@ -43,4 +43,11 @@ public class SpringBootExceptionHandling {
     String handleNoCustomersException(Exception exception){
         return "NoCustomersException: " + exception.getMessage();
     }
+
+    @ExceptionHandler(NoItemsException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ResponseBody
+    String handleNoItemsException(Exception exception){
+        return "NoItemsException: " + exception.getMessage();
+    }
 }
