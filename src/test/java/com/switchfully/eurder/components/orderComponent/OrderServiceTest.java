@@ -1,5 +1,6 @@
 package com.switchfully.eurder.components.orderComponent;
 
+import com.switchfully.eurder.api.dto.customer.CustomerDTO;
 import com.switchfully.eurder.api.dto.order.CreateOrderDTO;
 import com.switchfully.eurder.api.dto.order.ItemGroupDTO;
 import com.switchfully.eurder.components.customerComponent.ICustomerService;
@@ -11,7 +12,9 @@ import com.switchfully.eurder.exception.MandatoryFieldException;
 import org.junit.jupiter.api.*;
 import org.mockito.Mockito;
 
+import java.util.Base64;
 import java.util.List;
+import java.util.UUID;
 
 import static java.util.Collections.emptyList;
 
@@ -30,6 +33,9 @@ class OrderServiceTest {
 
         private final CreateOrderDTO TEST_CREATE_ORDER_DTO = new CreateOrderDTO(List.of(new ItemGroupDTO("foo", 5)));
 
+        CustomerDTO customerDTO = new CustomerDTO("foo","bar","test","foo","bar", UUID.randomUUID());
+        String encodedAuth;
+
         @BeforeEach
         void setup() {
             orderRepositoryMock = Mockito.mock(OrderRepository.class);
@@ -37,6 +43,9 @@ class OrderServiceTest {
             itemServiceMock = Mockito.mock(IItemService.class);
             securityService = Mockito.mock(ISecurityService.class);
             customerService = Mockito.mock(ICustomerService.class);
+
+            String userId = customerDTO.getId().toString();
+            encodedAuth = "Basic " + Base64.getEncoder().encodeToString((userId + ":password").getBytes());
 
             orderService = new OrderService(orderRepositoryMock, orderMapperMock, itemServiceMock,securityService,customerService);
         }
@@ -86,13 +95,13 @@ class OrderServiceTest {
         @Test
         void orderItems_ItemGroupDTOPresentNoCustomerIdPresent_returnsMadatoryFieldException(){
             Assertions.assertThrows(MandatoryFieldException.class, () -> {
-               orderService.orderItems(TEST_CREATE_ORDER_DTO,null);
+               orderService.orderItems(TEST_CREATE_ORDER_DTO,encodedAuth);
             });
         }
 
         @Test
-        void orderItems_ItemGroupDTOPresentInvalidUUIDFormat_returnsInvalidUUIDFormatException(){
-            Assertions.assertThrows(InvalidIdFormatException.class, () -> {
+        void orderItems_ItemGroupDTOPresentInvalidUUIDFormat_returnsMandatoryFieldException(){
+            Assertions.assertThrows(MandatoryFieldException.class, () -> {
                orderService.orderItems(TEST_CREATE_ORDER_DTO, "12345");
             });
         }

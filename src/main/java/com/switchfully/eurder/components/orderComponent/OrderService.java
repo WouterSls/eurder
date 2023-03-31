@@ -45,7 +45,11 @@ class OrderService implements IOrderService {
     @Override
     public List<OrderDTO> orderItems(CreateOrderDTO createOrderDTO, String auth){
 
-        CustomerDTO customerWhoOrdered = customerService.getCustomerById(securityService.getCustomerUUIDFromAuth(auth).toString());
+        UUID customerIdFromAuth = securityService.getCustomerUUIDFromAuth(auth);
+        if (customerIdFromAuth == null){
+            throw new MandatoryFieldException("Please provide a valid customer ID");
+        }
+        CustomerDTO customerWhoOrdered = customerService.getCustomerById(customerIdFromAuth.toString());
 
         verifyAuth(customerWhoOrdered.getId().toString());
 

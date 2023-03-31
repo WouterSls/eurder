@@ -53,7 +53,7 @@ class SecurityService implements ISecurityService {
 	}
 
 	private UuidPassword getUuidPassword(String auth) {
-		String decodedUsernamePassword = new String(Base64.getDecoder().decode(auth.substring("Basic ".length())));
+		String decodedUsernamePassword = new String(Base64.getDecoder().decode(auth.substring("basic ".length())));
 		UUID uuid = UUID.fromString(decodedUsernamePassword.substring(0, decodedUsernamePassword.indexOf(":")));
 		String password = decodedUsernamePassword.substring(decodedUsernamePassword.indexOf(":") + 1);
 		return new UuidPassword(uuid, password);
