@@ -60,13 +60,27 @@ class OrderService implements IOrderService {
     }
 
     @Override
-    public String reportOrdersByCustomer(String id){
-        UUID customerId = UUID.fromString(id);
+    public String reportOrdersByCustomer(String auth){
 
-        return orderRepository.orders.stream()
-                .filter(order -> order.getCustomer().getId().equals(customerId))
-                .map(Object::toString)
-                .collect(Collectors.joining(","));
+        UUID customerId = securityService.getCustomerUUIDFromAuth(auth);
+
+        verifyAuth(customerId.toString());
+
+        String report ="";
+        double totalPriceForCustomer = 0;
+
+        for (Order order :
+                orderRepository.getOrders()) {
+            if (order.getCustomer().getId().equals(customerId)){
+                report += "The Id of the order: " + order.getId() +
+                        "\nThis order contains the following Item: " + order.getItem().getName() + "\nYou ordered this amount: " + order.getAmountOrdered()
+                        + "\nThe total price of this order contains: " + order.getTotalPrice() +"\n";
+                totalPriceForCustomer += order.getTotalPrice();
+            }
+        }
+
+
+        return report + "\nThe total amount of your orders is: " + totalPriceForCustomer;
     }
 
 

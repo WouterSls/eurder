@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "order")
+@RequestMapping(value = "orders")
 public class OrderController {
 
     private final IOrderService orderService;
@@ -20,8 +20,14 @@ public class OrderController {
     }
 
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping(produces = "application/json",consumes = "application/json")
+    @PostMapping(produces = "application/json",consumes = "application/json", path = "/order")
     List<OrderDTO> orderItem(@RequestBody CreateOrderDTO createOrderDTO,@RequestHeader String authorization){
         return orderService.orderItems(createOrderDTO,authorization);
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping(produces = "application/json", path = "/my-order")
+    String reportOrdersByCustomer(@RequestHeader String authorization){
+        return orderService.reportOrdersByCustomer(authorization);
     }
 }

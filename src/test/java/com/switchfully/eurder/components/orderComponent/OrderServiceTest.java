@@ -105,6 +105,20 @@ class OrderServiceTest {
                orderService.orderItems(TEST_CREATE_ORDER_DTO, "12345");
             });
         }
+
+        @Test
+        void reportOrdersByCustomer_InvalidAuthString_returnsInvalidIdFormatException(){
+            Assertions.assertThrows(InvalidIdFormatException.class, () -> {
+               orderService.reportOrdersByCustomer("Basic 12345:password");
+            });
+        }
+
+        @Test
+        void reportOrdersByCustomer_AuthStringNotPresent_returnsMandatoryFieldException(){
+            Assertions.assertThrows(MandatoryFieldException.class, () -> {
+               orderService.reportOrdersByCustomer(null);
+            });
+        }
     }
 
 }

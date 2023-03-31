@@ -6,7 +6,6 @@ import com.switchfully.eurder.api.dto.item.CreateItemDTO;
 import com.switchfully.eurder.api.dto.item.ItemDTO;
 import com.switchfully.eurder.api.dto.order.CreateOrderDTO;
 import com.switchfully.eurder.api.dto.order.ItemGroupDTO;
-import com.switchfully.eurder.api.dto.order.OrderDTO;
 import com.switchfully.eurder.components.itemComponent.IItemService;
 import com.switchfully.eurder.components.orderComponent.IOrderService;
 import io.restassured.RestAssured;
@@ -22,13 +21,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.annotation.DirtiesContext;
 
 import java.util.List;
-import java.util.UUID;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class OrderControllerTest {
 
-    CreateCustomerDTO customerDTO = new CreateCustomerDTO("foo","bar","foo","bar","foobar");
+    CreateCustomerDTO customerDTO = new CreateCustomerDTO("foo", "bar", "foo", "bar", "foobar");
     CustomerDTO customer;
     Header header;
 
@@ -41,7 +39,7 @@ class OrderControllerTest {
     IItemService itemService;
 
     @BeforeEach()
-    void addCustomerToService(){
+    void addCustomerToService() {
 
         customer = RestAssured.given()
                 .contentType(ContentType.JSON)
@@ -55,7 +53,7 @@ class OrderControllerTest {
                 .extract()
                 .as(CustomerDTO.class);
 
-        header = new Header("Authorization","Basic userId:password");
+        header = new Header("Authorization", "Basic userId:password");
     }
 
     @Test
@@ -69,11 +67,11 @@ class OrderControllerTest {
                 .contentType(ContentType.JSON)
                 .body(testOrder)
                 .header(header)
-                .auth().preemptive().basic(customer.getId().toString(),"password")
+                .auth().preemptive().basic(customer.getId().toString(), "password")
                 .log().all()
                 .when()
                 .port(port)
-                .post("/order")
+                .post("/orders/order")
                 .then()
                 .log().all()
                 .assertThat()
@@ -90,10 +88,10 @@ class OrderControllerTest {
                 .contentType(ContentType.JSON)
                 .body(testOrder)
                 .header(header)
-                .auth().preemptive().basic(customer.getId().toString(),"password")
+                .auth().preemptive().basic(customer.getId().toString(), "password")
                 .when()
                 .port(port)
-                .post("/order")
+                .post("/orders/order")
                 .then()
                 .assertThat()
                 .statusCode(HttpStatus.NOT_FOUND.value());
@@ -112,10 +110,10 @@ class OrderControllerTest {
                 .contentType(ContentType.JSON)
                 .body(testOrder)
                 .header(header)
-                .auth().preemptive().basic(customer.getId().toString(),"password")
+                .auth().preemptive().basic(customer.getId().toString(), "password")
                 .when()
                 .port(port)
-                .post("/order")
+                .post("/orders/order")
                 .then()
                 .assertThat()
                 .statusCode(HttpStatus.NOT_FOUND.value());
@@ -134,10 +132,10 @@ class OrderControllerTest {
                 .contentType(ContentType.JSON)
                 .body(testOrder)
                 .header(header)
-                .auth().preemptive().basic(customer.getId().toString(),"password")
+                .auth().preemptive().basic(customer.getId().toString(), "password")
                 .when()
                 .port(port)
-                .post("/order")
+                .post("/orders/order")
                 .then()
                 .assertThat()
                 .statusCode(HttpStatus.CREATED.value());
@@ -149,6 +147,7 @@ class OrderControllerTest {
 
 
         CreateItemDTO testItem = new CreateItemDTO("foo", "bar", 10, 5);
+
 
         ItemDTO gottenItem = RestAssured.given()
                 .contentType(ContentType.JSON)
@@ -171,10 +170,10 @@ class OrderControllerTest {
                 .contentType(ContentType.JSON)
                 .body(testOrder)
                 .header(header)
-                .auth().preemptive().basic(customer.getId().toString(),"password")
+                .auth().preemptive().basic(customer.getId().toString(), "password")
                 .when()
                 .port(port)
-                .post("/order")
+                .post("/orders/order")
                 .then()
                 .assertThat()
                 .statusCode(HttpStatus.CREATED.value());
@@ -193,5 +192,39 @@ class OrderControllerTest {
 
 
         Assertions.assertEquals((gottenItem.getAmount() - amountToOrder), afterOrderItemDTO.getAmount());
+    }
+
+    @Test
+    void reportOrdersByCustomer_OrderAndCustomerPresent_returnsReportString() {
+
+        CreateItemDTO testItem = new CreateItemDTO("foo", "bar", 10, 5);
+
+
+        RestAssured
+                .given()
+                .contentType(ContentType.JSON)
+                .header(header)
+                .auth().preemptive().basic(customer.getId().toString(), "password")
+                .body(testItem)
+                .log().all()
+                .when()
+                .port(port)
+                .post("items/create")
+                .then()
+                .assertThat()
+                .statusCode(HttpStatus.CREATED.value());
+
+        RestAssured.given()
+                .contentType(ContentType.JSON)
+                .header(header)
+                .auth().preemptive().basic(customer.getId().toString(), "password")
+                .log().all()
+                .when()
+                .port(port)
+                .get("/orders/my-order")
+                .then()
+                .log().all()
+                .assertThat()
+                .statusCode(HttpStatus.OK.value());
     }
 }
