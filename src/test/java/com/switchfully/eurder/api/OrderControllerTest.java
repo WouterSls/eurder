@@ -223,7 +223,7 @@ class OrderControllerTest {
                 .log().all()
                 .when()
                 .port(port)
-                .get("/orders/my-order")
+                .get("/orders/my-orders")
                 .then()
                 .log().all()
                 .assertThat()
