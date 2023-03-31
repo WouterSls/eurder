@@ -50,4 +50,19 @@ public class SpringBootExceptionHandling {
     String handleNoItemsException(Exception exception){
         return "NoItemsException: " + exception.getMessage();
     }
+
+    @ExceptionHandler(UnauthorizedException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ResponseBody
+    String handleUnauthorizedException(Exception exception){
+        return "UnauthorizedException: " + exception.getMessage();
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ResponseBody
+    String handleUserNotFoundException(Exception exception){
+        return "UserNotFoundException: " + exception.getMessage();
+    }
+
 }

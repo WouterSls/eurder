@@ -7,5 +7,7 @@ import java.util.List;
 
 public interface IOrderService {
 
-    List<OrderDTO> orderItems(CreateOrderDTO createOrderDTO);
+    List<OrderDTO> orderItems(CreateOrderDTO createOrderDTO, String auth);
+
+    String reportOrdersByCustomer(String id);
 }

@@ -1,6 +1,8 @@
 package com.switchfully.eurder.api.dto.customer;
 
 
+import com.switchfully.eurder.components.securityComponent.Role;
+
 import java.util.Objects;
 import java.util.UUID;
 
@@ -11,6 +13,7 @@ public class CustomerDTO{
     private final String address;
     private final String phoneNumber;
     private final UUID id;
+    private Role role;
 
     public CustomerDTO(String firstName, String lastName, String emailAddress, String address, String phoneNumber, UUID id) {
         this.firstName = firstName;

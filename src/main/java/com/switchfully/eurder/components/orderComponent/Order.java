@@ -1,5 +1,6 @@
 package com.switchfully.eurder.components.orderComponent;
 
+import com.switchfully.eurder.api.dto.customer.CustomerDTO;
 import com.switchfully.eurder.api.dto.item.ItemDTO;
 
 import java.time.LocalDate;
@@ -13,19 +14,16 @@ class Order {
     private final ItemDTO item;
     private final LocalDate shippingDate;
     private final double totalPrice;
+    private final CustomerDTO customer;
 
-    //TODO: Add a way to keep track of the customer
 
-    /*
-        This is most likely overhead, pass the customer via header in orderService and save it.
-     */
-
-    public Order(ItemDTO item, int amountOrdered) {
+    public Order(ItemDTO item, int amountOrdered, CustomerDTO customer) {
         this.id = UUID.randomUUID();
         this.item = item;
         this.amountOrdered = amountOrdered;
         this.shippingDate = calculateShippingDate();
         this.totalPrice = item.getPrice() * amountOrdered;
+        this.customer = customer;
     }
 
     private LocalDate calculateShippingDate(){
@@ -55,6 +53,10 @@ class Order {
 
     public double getTotalPrice() {
         return totalPrice;
+    }
+
+    public CustomerDTO getCustomer() {
+        return customer;
     }
 
     @Override

@@ -17,6 +17,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.Base64;
 import java.util.List;
 
 @SpringBootTest
@@ -69,7 +70,9 @@ class IntegrationTest {
         Assertions.assertNotNull(createdOrder);
 
         //test the orderService with the order
-        final List<OrderDTO> listOfOrders = orderService.orderItems(createdOrder);
+        String userId = createdCustomer.getId().toString();
+        String encodedAuth = "Basic " + Base64.getEncoder().encodeToString((userId + ":password").getBytes());
+        final List<OrderDTO> listOfOrders = orderService.orderItems(createdOrder,encodedAuth);
         Assertions.assertNotNull(listOfOrders);
     }
 }

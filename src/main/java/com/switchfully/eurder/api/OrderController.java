@@ -21,7 +21,7 @@ public class OrderController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(produces = "application/json",consumes = "application/json")
-    List<OrderDTO> orderItem(@RequestBody CreateOrderDTO createOrderDTO){
-        return orderService.orderItems(createOrderDTO);
+    List<OrderDTO> orderItem(@RequestBody CreateOrderDTO createOrderDTO,@RequestHeader String authorization){
+        return orderService.orderItems(createOrderDTO,authorization);
     }
 }
