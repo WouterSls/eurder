@@ -1,6 +1,7 @@
 package com.switchfully.eurder.components.orderComponent;
 
 
+import com.switchfully.eurder.api.dto.item.UpdateItemDTO;
 import com.switchfully.eurder.components.itemComponent.IItemService;
 import com.switchfully.eurder.api.dto.item.ItemDTO;
 import com.switchfully.eurder.api.dto.order.CreateOrderDTO;
@@ -75,11 +76,25 @@ class OrderService implements IOrderService {
 
         for (ItemGroupDTO itemGroupDTO :
                 createOrderDTO.getOrders()) {
-            ItemDTO itemFromOrder = itemService.getItemById(itemGroupDTO.getId());
-            result.add(new Order(itemFromOrder, itemGroupDTO.getAmountOrdered()));
+
+            Order createdOrder = createOrder(itemGroupDTO);
+            result.add(createdOrder);
+
+            updateItem(itemGroupDTO);
         }
 
         return result;
     }
 
+    private Order createOrder(ItemGroupDTO itemGroupDTO){
+        ItemDTO itemFromOrder = itemService.getItemById(itemGroupDTO.getId());
+        return new Order(itemFromOrder, itemGroupDTO.getAmountOrdered());
+    }
+
+    private void updateItem(ItemGroupDTO itemGroupDTO){
+        ItemDTO itemFromOrder = itemService.getItemById(itemGroupDTO.getId());
+        int newItemAmount = itemFromOrder.getAmount() - itemGroupDTO.getAmountOrdered();
+        UpdateItemDTO updatedItemDTO = new UpdateItemDTO(itemFromOrder.getName(),itemFromOrder.getDescription(),itemFromOrder.getPrice(),newItemAmount);
+        itemService.updateItemById(updatedItemDTO, itemGroupDTO.getId());
+    }
 }

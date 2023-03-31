@@ -100,7 +100,7 @@ class CustomerControllerTest {
     void retrieveUserById_UserPresentWildCardId_returnsCustomerDTO(){
 
 
-        RestAssured.given()
+    RestAssured.given()
                 .contentType(ContentType.JSON)
                 .body(TEST_CREATE_CUSTOMER_DTO)
                 .when()
@@ -118,7 +118,7 @@ class CustomerControllerTest {
                 .contentType(ContentType.JSON)
                 .when()
                 .port(port)
-                .get("/customers/*1*")
+                .get("/customers/*")
                 .then()
                 .log().all()
                 .assertThat()
