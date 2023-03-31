@@ -57,6 +57,8 @@ class ItemService implements IItemService{
         itemToUpdate.get().setPrice(updateItemDTO.getPrice());
         itemToUpdate.get().setDescription(updateItemDTO.getDescription());
 
+        itemRepository.updateItem(itemToUpdate.get());
+
         return itemMapper.mapToDTO(itemToUpdate.get());
     }
 
@@ -88,6 +90,9 @@ class ItemService implements IItemService{
 
     private void verifyId(String id){
         ItemDTO itemById = getItemById(id);
+        if (itemById == null){
+            throw new IllegalIdException("verifyId: no ItemDTO found");
+        }
         boolean idExists = itemRepository.getItems().stream().anyMatch(item -> item.getId().equals(itemById.getId()));
         if (!idExists){
             throw new IllegalIdException("Please provide a correct item Id");

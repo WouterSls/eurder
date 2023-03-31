@@ -19,6 +19,10 @@ class ItemRepository{
         items.add(item);
     }
 
+    void updateItem(Item item){
+        items.set(items.indexOf(item),item);
+    }
+
     List<Item> getItems() {
         return items;
     }

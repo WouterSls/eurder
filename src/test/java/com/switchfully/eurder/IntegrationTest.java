@@ -2,6 +2,7 @@ package com.switchfully.eurder;
 
 import com.switchfully.eurder.api.dto.customer.CreateCustomerDTO;
 import com.switchfully.eurder.api.dto.customer.CustomerDTO;
+import com.switchfully.eurder.api.dto.item.UpdateItemDTO;
 import com.switchfully.eurder.api.dto.order.OrderDTO;
 import com.switchfully.eurder.components.customerComponent.ICustomerService;
 import com.switchfully.eurder.components.itemComponent.IItemService;
@@ -58,7 +59,9 @@ class IntegrationTest {
         //test the itemService with item
         final ItemDTO itemTest2Actual = itemService.getItemById(createdItem.getId().toString());
         Assertions.assertEquals(createdItem,itemTest2Actual);
-        //TODO: add update functionality once it's done and customer save functionality
+        final UpdateItemDTO updateItemDTO = new UpdateItemDTO("foo","bar",20,10);
+        final ItemDTO itemTest3Actual = itemService.updateItemById(updateItemDTO,createdItem.getId().toString());
+        Assertions.assertNotNull(itemTest3Actual);
 
         //create an order with above item and customer
         final ItemGroupDTO itemOrder = new ItemGroupDTO(createdItem.getId().toString(),1);

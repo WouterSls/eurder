@@ -4,6 +4,7 @@ import com.switchfully.eurder.api.dto.item.CreateItemDTO;
 import com.switchfully.eurder.api.dto.item.ItemDTO;
 import com.switchfully.eurder.api.dto.item.UpdateItemDTO;
 import com.switchfully.eurder.exception.*;
+import org.junit.Before;
 import org.junit.jupiter.api.*;
 import org.mockito.Mockito;
 
@@ -154,11 +155,26 @@ class ItemServiceTest {
                 itemService.updateItemById(TEST_ITEM_UPDATE_DTO, "test");
             });
         }
-
-
         @Test
-        void updateItem_UpdateItemDTOPresentCorrectId_returnsNewItemDTO(){
-            //TODO: fix this test : can't get an item back cause repo is empty
+        void updateItem_UpdateItemDTOPresentCorrectId_updatesItemRepo(){
+    //TODO: test in integration test
+
+//            Item testItem = new Item("foo","bar",10,2);
+//            ItemRepository itemRepo = new ItemRepository();
+//            itemRepo.addItem(testItem);
+//            UUID itemId = testItem.getId();
+//            ItemMapper itemMapper = Mockito.mock(ItemMapper.class);
+//            ItemService iswd = new ItemService(itemRepo,itemMapper);
+//
+//
+//            UpdateItemDTO updateItemTest = new UpdateItemDTO("bar","foo",20,10);
+//
+//            iswd.updateItemById(updateItemTest,itemId.toString());
+//
+//            Mockito.verify(itemRepo).updateItem(testItem);
+//            Mockito.verify(itemRepositoryMock, Mockito.never()).addItem(testItem);
+//            Mockito.verify(itemRepositoryMock, Mockito.never()).getItems();
+//            Mockito.verify(itemRepositoryMock, Mockito.never()).getItemById(testItem.getId());
         }
         @Test
         void updateItem_UpdateItemDTOPresentNameNotPresent_returnsMandatoryFieldException(){

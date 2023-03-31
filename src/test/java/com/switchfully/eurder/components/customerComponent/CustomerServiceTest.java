@@ -176,7 +176,7 @@ class CustomerServiceTest {
         }
 
         @Test
-        void getCustomerById_CustomerPresent_returnsCustomersDTO() {
+        void getCustomerById_CustomerPresent_returnsCustomersDTO(){
             Mockito.when(customerRepoMock.getCustomerById(TEST_CUSTOMER.getId()))
                     .thenReturn(Optional.of(TEST_CUSTOMER));
 

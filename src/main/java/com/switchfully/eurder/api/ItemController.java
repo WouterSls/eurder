@@ -43,8 +43,7 @@ public class ItemController {
 
     @ResponseStatus(HttpStatus.OK)
     @PutMapping(path = "/{id}/update",consumes = "application/json", produces = "application/json")
-    ItemDTO updateItem(@PathVariable String id, @RequestBody UpdateItemDTO udpateItemDTO){
-        //TODO:
-        return null;
+    ItemDTO updateItem(@PathVariable String id, @RequestBody UpdateItemDTO updateItemDTO){
+       return itemService.updateItemById(updateItemDTO,id);
     }
 }
