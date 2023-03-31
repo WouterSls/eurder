@@ -62,7 +62,15 @@ class OrderService implements IOrderService {
     @Override
     public String reportOrdersByCustomer(String auth){
 
+        if (auth == null){
+            throw new MandatoryFieldException("Please provide a CustomerID");
+        }
+
         UUID customerId = securityService.getCustomerUUIDFromAuth(auth);
+
+        if (customerId == null){
+            throw new InvalidIdFormatException("Please provide a correct CustomerID");
+        }
 
         verifyAuth(customerId.toString());
 

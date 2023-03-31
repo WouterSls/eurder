@@ -1,10 +1,7 @@
 package com.switchfully.eurder.components.securityComponent;
 
 
-import com.switchfully.eurder.exception.InvalidIdFormatException;
-import com.switchfully.eurder.exception.MandatoryFieldException;
-import com.switchfully.eurder.exception.UnauthorizedException;
-import com.switchfully.eurder.exception.UserNotFoundException;
+import com.switchfully.eurder.exception.*;
 
 import com.switchfully.eurder.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +25,16 @@ class SecurityService implements ISecurityService {
 
 
 	public UUID getCustomerUUIDFromAuth(String auth){
-		UuidPassword uuidPassword = getUuidPassword(auth);
+		UuidPassword uuidPassword;
+		if (auth == null){
+			throw new MandatoryFieldException("Please provide a customerID");
+		}
+		try{
+			uuidPassword = getUuidPassword(auth);
+		}catch (IllegalArgumentException e){
+			throw new IllegalIdException("Please provide a valid customerID");
+		}
+
 		return uuidPassword.getUuid();
 	}
 
@@ -65,7 +71,7 @@ class SecurityService implements ISecurityService {
 		return new UuidPassword(uuid, password);
 	}
 
-	private void verifyAuth(String auth){
+	private void verifyUUID(String auth){
 		if (auth == null){
 			throw new MandatoryFieldException("Please provide a correct Customer UUID");
 		}
