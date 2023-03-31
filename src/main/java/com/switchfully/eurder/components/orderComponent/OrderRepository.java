@@ -7,7 +7,7 @@ import java.util.*;
 @Repository
 class OrderRepository {
 
-    List<Order> orders;
+    private List<Order> orders;
 
 
     OrderRepository() {

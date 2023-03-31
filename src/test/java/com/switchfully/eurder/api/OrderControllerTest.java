@@ -6,6 +6,7 @@ import com.switchfully.eurder.api.dto.item.CreateItemDTO;
 import com.switchfully.eurder.api.dto.item.ItemDTO;
 import com.switchfully.eurder.api.dto.order.CreateOrderDTO;
 import com.switchfully.eurder.api.dto.order.ItemGroupDTO;
+import com.switchfully.eurder.api.dto.order.OrderDTO;
 import com.switchfully.eurder.components.itemComponent.IItemService;
 import com.switchfully.eurder.components.orderComponent.IOrderService;
 import io.restassured.RestAssured;
@@ -13,6 +14,7 @@ import io.restassured.http.ContentType;
 import io.restassured.http.Header;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -226,5 +228,58 @@ class OrderControllerTest {
                 .log().all()
                 .assertThat()
                 .statusCode(HttpStatus.OK.value());
+    }
+
+    @Test
+    void reorderExistingOrder_orderIdPresentAuthPresent_returns200(){
+
+
+        CreateItemDTO testItem = new CreateItemDTO("foo", "bar", 10, 5);
+
+
+        ItemDTO gottenItem = RestAssured.given()
+                .contentType(ContentType.JSON)
+                .body(testItem)
+                .when()
+                .port(port)
+                .post("/items/create")
+                .then()
+                .assertThat()
+                .statusCode(HttpStatus.CREATED.value())
+                .extract()
+                .as(ItemDTO.class);
+
+
+        final ItemGroupDTO testItemGroup = new ItemGroupDTO(gottenItem.getId().toString(), 1);
+        final CreateOrderDTO testOrder = new CreateOrderDTO(List.of(testItemGroup));
+
+        List<OrderDTO> gottenOrderList = RestAssured.given()
+                .contentType(ContentType.JSON)
+                .body(testOrder)
+                .header(header)
+                .auth().preemptive().basic(customer.getId().toString(), "password")
+                .when()
+                .port(port)
+                .post("/orders/order")
+                .then()
+                .assertThat()
+                .statusCode(HttpStatus.CREATED.value())
+                .extract()
+                .jsonPath().getList(".",OrderDTO.class);
+
+        OrderDTO order = gottenOrderList.get(0);
+
+        RestAssured.given()
+                .contentType(ContentType.JSON)
+                .header(header)
+                .auth().preemptive().basic(customer.getId().toString(), "password")
+                .log().all()
+                .when()
+                .port(port)
+                .post("/orders/" + order.getId() + "/reorder")
+                .then()
+                .log().all()
+                .assertThat()
+                .statusCode(HttpStatus.CREATED.value());
     }
 }

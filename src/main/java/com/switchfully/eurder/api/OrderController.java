@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping(value = "orders")
@@ -26,8 +27,21 @@ public class OrderController {
     }
 
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping(produces = "application/json", path = "/my-order")
+    @GetMapping(produces = "application/json", path = "/my-orders")
     String reportOrdersByCustomer(@RequestHeader String authorization){
         return orderService.reportOrdersByCustomer(authorization);
     }
+
+    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping(produces = "application/json", path = "/{id}/reorder")
+    OrderDTO reorderOrder(@RequestHeader String authorization, @PathVariable UUID id){
+        return orderService.reorderExistingOrder(id,authorization);
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping(produces = "application/json", path = "/{id}")
+    OrderDTO getOrderById(@PathVariable UUID id){
+        return orderService.getOrderById(id);
+    }
+
 }

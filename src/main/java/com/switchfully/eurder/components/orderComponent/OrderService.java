@@ -10,17 +10,15 @@ import com.switchfully.eurder.api.dto.order.CreateOrderDTO;
 import com.switchfully.eurder.api.dto.order.ItemGroupDTO;
 import com.switchfully.eurder.api.dto.order.OrderDTO;
 import com.switchfully.eurder.components.securityComponent.ISecurityService;
-import com.switchfully.eurder.exception.IllegalAmountException;
-import com.switchfully.eurder.exception.InvalidIdFormatException;
-import com.switchfully.eurder.exception.MandatoryFieldException;
+import com.switchfully.eurder.exception.*;
 import com.switchfully.eurder.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 class OrderService implements IOrderService {
@@ -51,7 +49,7 @@ class OrderService implements IOrderService {
         }
         CustomerDTO customerWhoOrdered = customerService.getCustomerById(customerIdFromAuth.toString());
 
-        verifyAuth(customerWhoOrdered.getId().toString());
+        verifyUUID(customerWhoOrdered.getId());
 
         verifyOrder(createOrderDTO);
         List<Order> orders = createOrders(createOrderDTO,customerWhoOrdered);
@@ -72,7 +70,7 @@ class OrderService implements IOrderService {
             throw new InvalidIdFormatException("Please provide a correct CustomerID");
         }
 
-        verifyAuth(customerId.toString());
+        verifyUUID(customerId);
 
         String report ="";
         double totalPriceForCustomer = 0;
@@ -91,6 +89,36 @@ class OrderService implements IOrderService {
         return report + "\nThe total amount of your orders is: " + totalPriceForCustomer;
     }
 
+
+    @Override
+    public OrderDTO reorderExistingOrder(UUID orderId, String auth){
+        if (orderId == null){
+            throw new MandatoryFieldException("Please provide a orderID");
+        }
+        UUID customerId = securityService.getCustomerUUIDFromAuth(auth);
+        Order orderFromId = getOrderFromId(orderId).orElseThrow(() -> new IllegalIdException("Please provide a valid orderID"));
+
+        //TODO:
+
+//        if (orderFromId.getCustomer().getId() != customerId){
+//            throw new IllegalOrderException("This is not your order");
+//        }
+
+        Order updateOrder = new Order(itemService.getItemById(orderFromId.getItem().getId().toString()),
+                orderFromId.getAmountOrdered(),
+                customerService.getCustomerById(customerId.toString()));
+
+        orderRepository.addOrders(List.of(updateOrder));
+
+        return orderMapper.mapToDTO(updateOrder);
+    }
+
+    public OrderDTO getOrderById(UUID id){
+        return orderMapper.mapToDTO(orderRepository.getOrders().stream()
+                .filter(order -> order.getId().equals(id))
+                .findFirst()
+                .orElse(null));
+    }
 
 
     void verifyOrder(CreateOrderDTO createOrderDTO){
@@ -127,6 +155,12 @@ class OrderService implements IOrderService {
 
     }
 
+    private Optional<Order> getOrderFromId(UUID orderId){
+        return orderRepository.getOrders().stream()
+                .filter(order -> order.getId().equals(orderId))
+                .findFirst();
+    }
+
     private List<Order> createOrders(CreateOrderDTO createOrderDTO, CustomerDTO customer){
         List<Order> result = new ArrayList<>();
 
@@ -136,7 +170,7 @@ class OrderService implements IOrderService {
             Order createdOrder = createOrder(itemGroupDTO,customer);
             result.add(createdOrder);
 
-            updateItem(itemGroupDTO);
+            updateItemFromOrder(itemGroupDTO);
         }
 
         return result;
@@ -147,18 +181,18 @@ class OrderService implements IOrderService {
         return new Order(itemFromOrder, itemGroupDTO.getAmountOrdered(),customer);
     }
 
-    private void updateItem(ItemGroupDTO itemGroupDTO){
+    private void updateItemFromOrder(ItemGroupDTO itemGroupDTO){
         ItemDTO itemFromOrder = itemService.getItemById(itemGroupDTO.getId());
         int newItemAmount = itemFromOrder.getAmount() - itemGroupDTO.getAmountOrdered();
         UpdateItemDTO updatedItemDTO = new UpdateItemDTO(itemFromOrder.getName(),itemFromOrder.getDescription(),itemFromOrder.getPrice(),newItemAmount);
         itemService.updateItemById(updatedItemDTO, itemGroupDTO.getId());
     }
 
-    private void verifyAuth(String auth){
-        if (auth == null){
+    private void verifyUUID(UUID id){
+        if (id == null){
             throw new MandatoryFieldException("Please provide a correct Customer UUID");
         }
-        if (!utils.isValidUUIDFormat(auth)){
+        if (!utils.isValidUUIDFormat(id.toString())){
             throw new InvalidIdFormatException("Please provide a valid UUID format");
         }
     }

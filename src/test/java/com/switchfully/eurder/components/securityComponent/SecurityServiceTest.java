@@ -58,7 +58,7 @@ class SecurityServiceTest {
 
     @Test
     void getCustomerUUIDFromAuth_AuthStringNotPresent_returnsMandatoryFieldException(){
-        
+
         String encodedAuth = null;
 
         Assertions.assertThrows(MandatoryFieldException.class, () -> {

@@ -7,6 +7,7 @@ import com.switchfully.eurder.components.customerComponent.ICustomerService;
 import com.switchfully.eurder.components.itemComponent.IItemService;
 import com.switchfully.eurder.components.securityComponent.ISecurityService;
 import com.switchfully.eurder.exception.IllegalAmountException;
+import com.switchfully.eurder.exception.IllegalIdException;
 import com.switchfully.eurder.exception.InvalidIdFormatException;
 import com.switchfully.eurder.exception.MandatoryFieldException;
 import org.junit.jupiter.api.*;
@@ -117,6 +118,21 @@ class OrderServiceTest {
         void reportOrdersByCustomer_AuthStringNotPresent_returnsMandatoryFieldException(){
             Assertions.assertThrows(MandatoryFieldException.class, () -> {
                orderService.reportOrdersByCustomer(null);
+            });
+        }
+
+        @Test
+        void reorderExistingOrder_AuthStringPresentWrongOrderID_returnsIllegalIdException(){
+
+            Assertions.assertThrows(IllegalIdException.class, () -> {
+               orderService.reorderExistingOrder(UUID.randomUUID(),"Basic username:password");
+            });
+        }
+
+        @Test
+        void reorderExistingOrder_AuthStringPresentNoOrderID_returnsMandatoryFieldException(){
+            Assertions.assertThrows(MandatoryFieldException.class,() -> {
+               orderService.reorderExistingOrder(null,"Basic username:password");
             });
         }
     }
