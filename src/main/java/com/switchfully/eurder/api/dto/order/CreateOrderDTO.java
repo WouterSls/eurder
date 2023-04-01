@@ -6,9 +6,9 @@ public class CreateOrderDTO {
 
     List<ItemGroupDTO> orders;
 
-
     public CreateOrderDTO(){
     }
+
     public CreateOrderDTO(List<ItemGroupDTO> orders) {
         this.orders = orders;
     }

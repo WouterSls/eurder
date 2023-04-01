@@ -18,8 +18,12 @@ class OrderRepository {
         return orders;
     }
 
-    void addOrders(List<Order> orders){
+    void addOrder(List<Order> orders){
         this.orders.addAll(orders);
+    }
+
+    void addOrder(Order order){
+        this.orders.add(order);
     }
 
 }

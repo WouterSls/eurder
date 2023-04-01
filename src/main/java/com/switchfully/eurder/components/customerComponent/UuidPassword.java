@@ -1,4 +1,4 @@
-package com.switchfully.eurder.components.securityComponent;
+package com.switchfully.eurder.components.customerComponent;
 
 import java.util.UUID;
 

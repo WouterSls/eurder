@@ -5,7 +5,6 @@ import com.switchfully.eurder.api.dto.order.CreateOrderDTO;
 import com.switchfully.eurder.api.dto.order.ItemGroupDTO;
 import com.switchfully.eurder.components.customerComponent.ICustomerService;
 import com.switchfully.eurder.components.itemComponent.IItemService;
-import com.switchfully.eurder.components.securityComponent.ISecurityService;
 import com.switchfully.eurder.exception.IllegalAmountException;
 import com.switchfully.eurder.exception.IllegalIdException;
 import com.switchfully.eurder.exception.InvalidIdFormatException;
@@ -29,7 +28,6 @@ class OrderServiceTest {
         private OrderRepository orderRepositoryMock;
         private OrderMapper orderMapperMock;
         private IItemService itemServiceMock;
-        private ISecurityService securityService;
         private ICustomerService customerService;
 
         private final CreateOrderDTO TEST_CREATE_ORDER_DTO = new CreateOrderDTO(List.of(new ItemGroupDTO("foo", 5)));
@@ -42,13 +40,12 @@ class OrderServiceTest {
             orderRepositoryMock = Mockito.mock(OrderRepository.class);
             orderMapperMock = Mockito.mock(OrderMapper.class);
             itemServiceMock = Mockito.mock(IItemService.class);
-            securityService = Mockito.mock(ISecurityService.class);
             customerService = Mockito.mock(ICustomerService.class);
 
             String userId = customerDTO.getId().toString();
             encodedAuth = "Basic " + Base64.getEncoder().encodeToString((userId + ":password").getBytes());
 
-            orderService = new OrderService(orderRepositoryMock, orderMapperMock, itemServiceMock,securityService,customerService);
+            orderService = new OrderService(orderRepositoryMock, orderMapperMock, itemServiceMock,customerService);
         }
 
         @Test

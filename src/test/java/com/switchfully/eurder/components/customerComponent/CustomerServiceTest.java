@@ -2,8 +2,6 @@ package com.switchfully.eurder.components.customerComponent;
 
 import com.switchfully.eurder.api.dto.customer.CreateCustomerDTO;
 import com.switchfully.eurder.api.dto.customer.CustomerDTO;
-//import com.switchfully.eurder.exception.MandatoryFieldException;
-import com.switchfully.eurder.components.securityComponent.IUserService;
 import com.switchfully.eurder.exception.InvalidIdFormatException;
 import com.switchfully.eurder.exception.MandatoryFieldException;
 import com.switchfully.eurder.exception.NoCustomersException;
@@ -28,51 +26,49 @@ class CustomerServiceTest {
         private CustomerMapper customerMapperMock;
 
 
-        private final Customer TEST_CUSTOMER = new Customer("Foo", "Bar", "foobar@email.com", "fooStreetBar", "0032foo456bar");
-        private final CreateCustomerDTO TEST_CUSTOMER_CREATE = new CreateCustomerDTO("Create", "Customer", "createdCustomer@email.com", "createdStreetCustomer", "0031create456customer");
-        private IUserService userService;
+        private final Customer TEST_CUSTOMER = new Customer("Foo", "Bar", "foobar@email.com", "fooStreetBar", "0032foo456bar","test",Role.CUSTOMER);
+        private final CreateCustomerDTO TEST_CUSTOMER_CREATE = new CreateCustomerDTO("Create", "Customer", "createdCustomer@email.com", "createdStreetCustomer", "0031create456customer","test");
 
         @BeforeEach
         void setup() {
             customerRepoMock = Mockito.mock(CustomerRepository.class);
             customerMapperMock = Mockito.mock(CustomerMapper.class);
-            userService = Mockito.mock(IUserService.class);
-            customerService = new CustomerService(customerRepoMock, customerMapperMock,userService);
+            customerService = new CustomerService(customerRepoMock, customerMapperMock);
         }
 
         @Test
         void getCustomerByFirstName_CustomersPresent_returnsCustomers() {
-            Mockito.when(customerRepoMock.getCustomerByName(TEST_CUSTOMER.getFirstName()))
+            Mockito.when(customerRepoMock.getCustomerById(TEST_CUSTOMER.getId()))
                     .thenReturn(Optional.of(TEST_CUSTOMER));
 
-            CustomerDTO actualCustomer = customerService.getCustomerByName(TEST_CUSTOMER.getFirstName());
+            CustomerDTO actualCustomer = customerService.getCustomerById(TEST_CUSTOMER.getId().toString());
 
             Assertions.assertEquals(customerMapperMock.mapToDTO(TEST_CUSTOMER), actualCustomer);
         }
 
         @Test
         void getCustomerByLastName_CustomersPresent_returnsCustomers() {
-            Mockito.when(customerRepoMock.getCustomerByName(TEST_CUSTOMER.getLastName()))
+            Mockito.when(customerRepoMock.getCustomerById(TEST_CUSTOMER.getId()))
                     .thenReturn(Optional.of(TEST_CUSTOMER));
 
-            CustomerDTO actualCustomer = customerService.getCustomerByName(TEST_CUSTOMER.getLastName());
+            CustomerDTO actualCustomer = customerService.getCustomerById(TEST_CUSTOMER.getId().toString());
 
             Assertions.assertEquals(customerMapperMock.mapToDTO(TEST_CUSTOMER), actualCustomer);
         }
 
         @Test
         void getCustomerByName_CustomersNotPresent_returnsNull() {
-            CustomerDTO actualCustomer = customerService.getCustomerByName(TEST_CUSTOMER.getLastName());
+            CustomerDTO actualCustomer = customerService.getCustomerById(TEST_CUSTOMER.getId().toString());
 
             Assertions.assertNull(actualCustomer);
         }
 
         @Test
         void getCustomerByName_CustomerPresentIncorrectName_returnsNull() {
-            Mockito.when(customerRepoMock.getCustomerByName(TEST_CUSTOMER.getFirstName()))
+            Mockito.when(customerRepoMock.getCustomerById(TEST_CUSTOMER.getId()))
                     .thenReturn(Optional.of(TEST_CUSTOMER));
 
-            CustomerDTO actualCustomer = customerService.getCustomerByName("incorrectName");
+            CustomerDTO actualCustomer = customerService.getCustomerById("incorrectName");
 
             Assertions.assertNull(actualCustomer);
         }
@@ -102,7 +98,7 @@ class CustomerServiceTest {
             customerService.createNewCustomer(TEST_CUSTOMER_CREATE);
 
             Mockito.verify(customerRepoMock).addCustomer(customerMapperMock.mapToDomain(TEST_CUSTOMER_CREATE));
-            Mockito.verify(customerRepoMock, Mockito.never()).getCustomerByName("foo");
+            Mockito.verify(customerRepoMock, Mockito.never()).getCustomerById(TEST_CUSTOMER.getId());
             Mockito.verify(customerRepoMock, Mockito.never()).getCustomers();
         }
 
@@ -121,7 +117,8 @@ class CustomerServiceTest {
                         "lastName",
                         "emailAddress",
                         "address",
-                        "phoneNumber")
+                        "phoneNumber",
+                        "test")
                 );
             });
         }
@@ -134,7 +131,8 @@ class CustomerServiceTest {
                         null,
                         "emailAddress",
                         "address",
-                        "phoneNumber")
+                        "phoneNumber",
+                        "test")
                 );
             });
         }
@@ -147,7 +145,8 @@ class CustomerServiceTest {
                         "lastName",
                         null,
                         "address",
-                        "phoneNumber")
+                        "phoneNumber",
+                        "test")
                 );
             });
         }
@@ -160,7 +159,8 @@ class CustomerServiceTest {
                         "lastName",
                         "emailAddress",
                         null,
-                        "phoneNumber")
+                        "phoneNumber",
+                        "test")
                 );
             });
         }
@@ -173,7 +173,8 @@ class CustomerServiceTest {
                         "lastName",
                         "emailAddress",
                         "address",
-                        null)
+                        null,
+                        "test")
                 );
             });
         }
@@ -203,5 +204,6 @@ class CustomerServiceTest {
                 customerService.getCustomerById("foo");
             });
         }
+
     }
 }

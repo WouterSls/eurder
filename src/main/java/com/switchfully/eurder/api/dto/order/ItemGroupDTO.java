@@ -1,15 +1,17 @@
 package com.switchfully.eurder.api.dto.order;
 
+import java.util.UUID;
+
 public class ItemGroupDTO {
-    private final String id;
+    private final UUID id;
     private final int amountOrdered;
 
-    public ItemGroupDTO(String id, int amountOrdered) {
+    public ItemGroupDTO(UUID id, int amountOrdered) {
         this.id = id;
         this.amountOrdered = amountOrdered;
     }
 
-    public String getId() {
+    public UUID getId() {
         return id;
     }
 

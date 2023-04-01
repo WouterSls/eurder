@@ -1,14 +1,11 @@
 package com.switchfully.eurder.components.itemComponent;
 
 import com.switchfully.eurder.api.dto.item.CreateItemDTO;
-import com.switchfully.eurder.api.dto.item.ItemDTO;
 import com.switchfully.eurder.api.dto.item.UpdateItemDTO;
 import com.switchfully.eurder.exception.*;
-import org.junit.Before;
 import org.junit.jupiter.api.*;
 import org.mockito.Mockito;
 
-import java.util.List;
 import java.util.UUID;
 
 
@@ -146,14 +143,14 @@ class ItemServiceTest {
         @Test
         void updateItem_updateItemDTONotPresent_returnsMandatoryFieldException() {
             Assertions.assertThrows(MandatoryFieldException.class, () -> {
-                itemService.updateItemById(null, "test");
+                itemService.updateItemById(null, UUID.randomUUID());
             });
         }
 
         @Test
         void updateItem_UpdateItemDTOPresentIncorrectId_returnsIllegalIdException() {
             Assertions.assertThrows(InvalidIdFormatException.class, () -> {
-                itemService.updateItemById(TEST_ITEM_UPDATE_DTO, "test");
+                itemService.updateItemById(TEST_ITEM_UPDATE_DTO, UUID.randomUUID());
             });
         }
         @Test
@@ -182,7 +179,7 @@ class ItemServiceTest {
             UpdateItemDTO testUpdateItem =new UpdateItemDTO(null,"bar",10,4);
 
             Assertions.assertThrows(MandatoryFieldException.class, () -> {
-               itemService.updateItemById(testUpdateItem,"*");
+               itemService.updateItemById(testUpdateItem,UUID.randomUUID());
             });
         }
 
@@ -191,7 +188,7 @@ class ItemServiceTest {
             UpdateItemDTO testUpdateItem =new UpdateItemDTO("foo",null,10,4);
 
             Assertions.assertThrows(MandatoryFieldException.class, () -> {
-                itemService.updateItemById(testUpdateItem,"*");
+                itemService.updateItemById(testUpdateItem,UUID.randomUUID());
             });
         }
 
@@ -200,7 +197,7 @@ class ItemServiceTest {
             UpdateItemDTO testUpdateItem =new UpdateItemDTO("foo","bar",0,4);
 
             Assertions.assertThrows(IllegalPriceException.class, () -> {
-                itemService.updateItemById(testUpdateItem,"*");
+                itemService.updateItemById(testUpdateItem,UUID.randomUUID());
             });
         }
 
@@ -209,7 +206,7 @@ class ItemServiceTest {
             UpdateItemDTO testUpdateItem =new UpdateItemDTO("foo","bar",-10,4);
 
             Assertions.assertThrows(IllegalPriceException.class, () -> {
-                itemService.updateItemById(testUpdateItem,"*");
+                itemService.updateItemById(testUpdateItem,UUID.randomUUID());
             });
         }
 
@@ -218,7 +215,7 @@ class ItemServiceTest {
             UpdateItemDTO testUpdateItem =new UpdateItemDTO("foo","bar",10,-5);
 
             Assertions.assertThrows(IllegalAmountException.class, () -> {
-                itemService.updateItemById(testUpdateItem,"*");
+                itemService.updateItemById(testUpdateItem,UUID.randomUUID());
             });
         }
 
@@ -227,14 +224,14 @@ class ItemServiceTest {
             UpdateItemDTO testUpdateItem =new UpdateItemDTO("foo","bar",10,0);
 
             Assertions.assertThrows(IllegalAmountException.class, () -> {
-                itemService.updateItemById(testUpdateItem,"*");
+                itemService.updateItemById(testUpdateItem,UUID.randomUUID());
             });
         }
 
         @Test
         void getItemsStock_ItemsNotPresent_returnsNoItemsException(){
             Assertions.assertThrows(NoItemsException.class, () -> {
-               itemService.getItemsStock();
+               itemService.getItemsSortedByUrgency();
             });
         }
 

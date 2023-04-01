@@ -28,7 +28,7 @@ import java.util.List;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class OrderControllerTest {
 
-    CreateCustomerDTO customerDTO = new CreateCustomerDTO("foo", "bar", "foo", "bar", "foobar");
+    CreateCustomerDTO customerDTO = new CreateCustomerDTO("foo", "bar", "foo", "bar", "foobar","test");
     CustomerDTO customer;
     Header header;
 

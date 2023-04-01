@@ -5,17 +5,18 @@ import com.switchfully.eurder.api.dto.item.ItemDTO;
 import com.switchfully.eurder.api.dto.item.UpdateItemDTO;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface IItemService {
     ItemDTO createNewItem(CreateItemDTO createItemDTO);
 
-    List<ItemDTO> getListItemsDTO();
+    //List<ItemDTO> getListItemsDTO();
 
-    ItemDTO getItemById(String id);
+    ItemDTO getItemById(UUID uuid);
 
-    ItemDTO updateItemById(UpdateItemDTO updateItemDTO, String id);
+    ItemDTO updateItemById(UpdateItemDTO updateItemDTO, UUID id);
 
-    List<ItemDTO> getItemsStock();
+    List<ItemDTO> getItemsSortedByUrgency();
 
-    List<ItemDTO> getItemsStockByUrgency(String urgency);
+    List<ItemDTO> getItemsOnUrgency(String urgency);
 }

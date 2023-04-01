@@ -12,23 +12,17 @@ class CustomerRepository{
 
     private List<Customer> customers;
 
+
     CustomerRepository(){
         this.customers = new ArrayList<>();
-    }
-
-
-    List<Customer> getCustomers() {
-        return customers;
     }
 
     void addCustomer(Customer customer){
         customers.add(customer);
     }
 
-    Optional<Customer> getCustomerByName(String name){
-        return customers.stream()
-                .filter(customer -> customer.getFirstName().equals(name) || customer.getLastName().equals(name))
-                .findFirst();
+    List<Customer> getCustomers() {
+        return customers;
     }
 
     Optional<Customer> getCustomerById(UUID id){

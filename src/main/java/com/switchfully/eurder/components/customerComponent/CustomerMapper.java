@@ -25,6 +25,10 @@ class CustomerMapper {
     }
 
     Customer mapToDomain(CreateCustomerDTO createCustomerDTO){
-        return new Customer(createCustomerDTO.getFirstName(), createCustomerDTO.getLastName(), createCustomerDTO.getEmailAddress(), createCustomerDTO.getAddress(), createCustomerDTO.getPhoneNumber());
+        return new Customer(createCustomerDTO.getFirstName(), createCustomerDTO.getLastName(), createCustomerDTO.getEmailAddress(), createCustomerDTO.getAddress(), createCustomerDTO.getPhoneNumber(),createCustomerDTO.getPassword(), Role.CUSTOMER);
+    }
+
+    Customer mapToDomainAdmin(CreateCustomerDTO createCustomerDTO){
+        return new Customer(createCustomerDTO.getFirstName(), createCustomerDTO.getLastName(), createCustomerDTO.getEmailAddress(), createCustomerDTO.getAddress(), createCustomerDTO.getPhoneNumber(),createCustomerDTO.getPassword(), Role.ADMIN);
     }
 }

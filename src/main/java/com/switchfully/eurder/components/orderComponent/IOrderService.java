@@ -14,7 +14,5 @@ public interface IOrderService {
 
     OrderDTO reorderExistingOrder(UUID orderId, String auth);
 
-    OrderDTO getOrderById(UUID id);
-
     String getShippingList();
 }

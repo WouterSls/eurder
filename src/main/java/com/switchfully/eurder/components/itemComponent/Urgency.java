@@ -1,7 +1,8 @@
 package com.switchfully.eurder.components.itemComponent;
 
+
 enum Urgency {
-    STOCK_LOW("low"),STOCK_MEDIUM("medium"), STOCK_HIGH("high");
+    STOCK_LOW("high"),STOCK_MEDIUM("medium"), STOCK_HIGH("low");
 
     private final String label;
 

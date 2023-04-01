@@ -6,13 +6,15 @@ public class CreateCustomerDTO{
     private final String emailAddress;
     private final String address;
     private final String phoneNumber;
+    private final String password;
 
-    public CreateCustomerDTO(String firstName, String lastName, String emailAddress, String address, String phoneNumber) {
+    public CreateCustomerDTO(String firstName, String lastName, String emailAddress, String address, String phoneNumber, String password) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.emailAddress = emailAddress;
         this.address = address;
         this.phoneNumber = phoneNumber;
+        this.password = password;
     }
 
     public String getFirstName() {
@@ -33,5 +35,9 @@ public class CreateCustomerDTO{
 
     public String getPhoneNumber() {
         return phoneNumber;
+    }
+
+    public String getPassword() {
+        return password;
     }
 }

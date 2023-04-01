@@ -65,4 +65,10 @@ public class SpringBootExceptionHandling {
         return "UserNotFoundException: " + exception.getMessage();
     }
 
+    @ExceptionHandler(IllegalIdException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ResponseBody
+    String handleIllegalIdException(Exception exception){
+        return "IllegalIdException: " + exception.getMessage();
+    }
 }

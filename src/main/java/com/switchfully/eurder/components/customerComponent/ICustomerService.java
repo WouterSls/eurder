@@ -2,6 +2,7 @@ package com.switchfully.eurder.components.customerComponent;
 
 import com.switchfully.eurder.api.dto.customer.CreateCustomerDTO;
 import com.switchfully.eurder.api.dto.customer.CustomerDTO;
+import com.switchfully.eurder.utils.Feature;
 
 import java.util.List;
 
@@ -11,7 +12,12 @@ public interface ICustomerService {
 
     CustomerDTO createNewCustomer(CreateCustomerDTO createCustomerDTO);
 
-    CustomerDTO getCustomerByName(String name);
+    CustomerDTO createNewAdmin(CreateCustomerDTO createCustomerDTO);
 
     CustomerDTO getCustomerById(String id);
+
+
+    CustomerDTO getCustomerFromAuth(String auth);
+
+    void validateAuthorization(String auth, Feature feature);
 }

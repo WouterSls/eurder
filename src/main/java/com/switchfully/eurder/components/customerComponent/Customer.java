@@ -1,6 +1,8 @@
 package com.switchfully.eurder.components.customerComponent;
 
 
+import com.switchfully.eurder.utils.Feature;
+
 import java.util.Objects;
 import java.util.UUID;
 
@@ -11,14 +13,18 @@ class Customer{
     private String emailAddress;
     private String address;
     private String phoneNumber;
+    private Role role;
+    private final String password;
 
-    Customer(String firstName, String lastName, String emailAddress, String address, String phoneNumber) {
+    Customer(String firstName, String lastName, String emailAddress, String address, String phoneNumber, String password, Role role) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.emailAddress = emailAddress;
         this.address = address;
         this.phoneNumber = phoneNumber;
         this.id = UUID.randomUUID();
+        this.role = role;
+        this.password = password;
     }
 
     String getFirstName() {
@@ -56,5 +62,17 @@ class Customer{
     @Override
     public int hashCode() {
         return Objects.hash(getFirstName(), getLastName(), getEmailAddress(), getAddress(), getPhoneNumber());
+    }
+
+    boolean hasAccessTo(Feature feature) {
+        return role.hasFeature(feature);
+    }
+
+    String getPassword() {
+        return password;
+    }
+
+    boolean doesPasswordMatch(String password) {
+        return this.password.equals(password);
     }
 }

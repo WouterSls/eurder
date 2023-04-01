@@ -9,23 +9,18 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static com.switchfully.eurder.utils.Feature.VIEW_ALL_CUSTOMERS;
+import static com.switchfully.eurder.utils.Feature.VIEW_CUSTOMER_BY_ID;
+
 @RestController
 @RequestMapping(value = "customers")
 public class CustomerController {
 
     private final ICustomerService customerService;
 
-    //TODO: add feature security
-
     @Autowired
     public CustomerController(ICustomerService customerService){
         this.customerService = customerService;
-    }
-
-    @ResponseStatus(HttpStatus.OK)
-    @GetMapping(produces = "application/json")
-    public List<CustomerDTO> getAllCustomers(){
-        return customerService.getListCustomerDTO();
     }
 
     @ResponseStatus(HttpStatus.CREATED)
@@ -34,9 +29,24 @@ public class CustomerController {
         return customerService.createNewCustomer(createCustomerDTO);
     }
 
+    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping(path = "create/admin", produces = "application/json",consumes = "application/json")
+    CustomerDTO createNewAdmin(@RequestBody CreateCustomerDTO createCustomerDTO){
+        return customerService.createNewAdmin(createCustomerDTO);
+    }
+
+
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping(produces = "application/json")
+    public List<CustomerDTO> getAllCustomers(@RequestHeader String authorization){
+        customerService.validateAuthorization(authorization,VIEW_ALL_CUSTOMERS);
+        return customerService.getListCustomerDTO();
+    }
+
     @ResponseStatus(HttpStatus.OK)
     @GetMapping(path = "/{id}", produces = "application/json")
-    CustomerDTO getCustomerById(@PathVariable String id){
+    CustomerDTO getCustomerById(@PathVariable String id, @RequestHeader String authorization){
+        customerService.validateAuthorization(authorization,VIEW_CUSTOMER_BY_ID);
         return customerService.getCustomerById(id);
     }
 }

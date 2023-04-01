@@ -3,14 +3,10 @@ package com.switchfully.eurder.components.itemComponent;
 import com.switchfully.eurder.api.dto.item.CreateItemDTO;
 import com.switchfully.eurder.api.dto.item.ItemDTO;
 import com.switchfully.eurder.exception.NoItemsException;
-import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.stereotype.Repository;
 import org.springframework.test.annotation.DirtiesContext;
 
 import java.util.List;
@@ -32,7 +28,7 @@ public class ItemServiceIntegrationTest {
         CreateItemDTO testCreateItem = new CreateItemDTO(testItem.getName(), testItem.getDescription(), testItem.getPrice(), testItem.getAmount());
         ItemDTO expectedItem = itemService.createNewItem(testCreateItem);
         //when
-        List<ItemDTO> actualList = itemService.getItemsStock();
+        List<ItemDTO> actualList = itemService.getItemsSortedByUrgency();
         //then
         Assertions.assertEquals(List.of(expectedItem),actualList);
     }
@@ -46,7 +42,7 @@ public class ItemServiceIntegrationTest {
         ItemDTO expectedItem2 = itemService.createNewItem(testCreateItem2);
         ItemDTO expectedItem3 = itemService.createNewItem(testCreateItem3);
 
-        List<ItemDTO> actualList = itemService.getItemsStock();
+        List<ItemDTO> actualList = itemService.getItemsSortedByUrgency();
 
         Assertions.assertEquals(List.of(expectedItem2,expectedItem3,expectedItem1),actualList);
     }
@@ -54,7 +50,7 @@ public class ItemServiceIntegrationTest {
     @Test
     void getItemsStock_noItemsPresent_returnsNoItemsException(){
         Assertions.assertThrows(NoItemsException.class, () ->{
-           itemService.getItemsStock();
+           itemService.getItemsSortedByUrgency();
         });
     }
 
@@ -67,7 +63,7 @@ public class ItemServiceIntegrationTest {
         ItemDTO expectedItem2 = itemService.createNewItem(testCreateItem2);
         ItemDTO expectedItem3 = itemService.createNewItem(testCreateItem3);
 
-        List<ItemDTO> actualList = itemService.getItemsStockByUrgency("low");
+        List<ItemDTO> actualList = itemService.getItemsOnUrgency("low");
 
         Assertions.assertEquals(List.of(expectedItem2),actualList);
     }

@@ -2,16 +2,14 @@ package com.switchfully.eurder.components.customerComponent;
 
 import com.switchfully.eurder.api.dto.customer.CreateCustomerDTO;
 import com.switchfully.eurder.api.dto.customer.CustomerDTO;
-import com.switchfully.eurder.components.securityComponent.IUserService;
-import com.switchfully.eurder.exception.InvalidIdFormatException;
-import com.switchfully.eurder.exception.MandatoryFieldException;
-import com.switchfully.eurder.exception.NoCustomersException;
+import com.switchfully.eurder.exception.*;
+import com.switchfully.eurder.utils.Feature;
 import com.switchfully.eurder.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Base64;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -19,15 +17,13 @@ class CustomerService implements ICustomerService {
 
     private final CustomerRepository customerRepository;
     private final CustomerMapper customerMapper;
-    private final IUserService userService;
     private final Utils utils;
 
     @Autowired
-    public CustomerService(CustomerRepository customerRepository, CustomerMapper customerMapper, IUserService userService) {
+    public CustomerService(CustomerRepository customerRepository, CustomerMapper customerMapper) {
         this.customerRepository = customerRepository;
         this.customerMapper = customerMapper;
         this.utils = new Utils();
-        this.userService = userService;
     }
 
     @Override
@@ -41,37 +37,101 @@ class CustomerService implements ICustomerService {
     @Override
     public CustomerDTO createNewCustomer(CreateCustomerDTO createCustomerDTO) {
         validateRequiredFields(createCustomerDTO);
-        Customer customerToBeAdded = customerMapper.mapToDomain(createCustomerDTO);
-        customerRepository.addCustomer(customerToBeAdded);
-        userService.createUserFromCustomer(customerMapper.mapToDTO(customerToBeAdded));
-        return customerMapper.mapToDTO(customerToBeAdded);
+        Customer newCustomer = customerMapper.mapToDomain(createCustomerDTO);
+        customerRepository.addCustomer(newCustomer);
+        return customerMapper.mapToDTO(newCustomer);
 
     }
 
     @Override
-    public CustomerDTO getCustomerByName(String name) {
-        return customerMapper.mapToDTO(customerRepository.getCustomerByName(name).orElse(null));
+    public CustomerDTO createNewAdmin(CreateCustomerDTO createCustomerDTO){
+        validateRequiredFields(createCustomerDTO);
+        Customer newCustomer = customerMapper.mapToDomainAdmin(createCustomerDTO);
+        customerRepository.addCustomer(newCustomer);
+        return customerMapper.mapToDTO(newCustomer);
     }
+
 
     @Override
     public CustomerDTO getCustomerById(String id){
+
         boolean wildcard = id.contains("*");
 
         if (wildcard){
-            String customerIdWithoutWildcard = id.replace("*","");
-            Optional<Customer> customerWithWildcard = customerRepository.getCustomers().stream()
-                    .filter(customer -> customer.getId().toString().contains(customerIdWithoutWildcard))
-                    .findFirst();
-            return customerMapper.mapToDTO(customerWithWildcard.orElse(null));
+            return getCustomerWithWildcard(id);
         }
 
-        if (!utils.isValidUUIDFormat(id)){
-            throw new InvalidIdFormatException("Please provide a correct user ID");
+        return getCustomerWithoutWildcard(id);
+
+
+    }
+
+    @Override
+    public CustomerDTO getCustomerFromAuth(String auth){
+
+        UuidPassword uuidPassword;
+
+        try{
+            uuidPassword = getUuidPassword(auth);
+        }catch (IllegalArgumentException e){
+            throw new IllegalIdException("invalid authorization");
         }
+
+        Customer customerById = customerRepository.getCustomerById(uuidPassword.getUuid())
+                .orElseThrow(() -> new IllegalIdException("No customer found for provided authorization"));
+
+        return customerMapper.mapToDTO(customerById);
+    }
+
+    @Override
+    public void validateAuthorization(String auth, Feature feature){
+
+        if(auth == null){
+            throw new UnauthorizedException("No authorization provided.");
+        }
+
+        UuidPassword uuidPassword;
+
+        try {
+            uuidPassword = getUuidPassword(auth);
+        } catch(IllegalArgumentException exception){
+            throw new IllegalIdException("No valid login UUID was provided.");
+        }
+
+        Customer customer = customerRepository.getCustomerById(uuidPassword.getUuid())
+                .orElseThrow(() -> new UserNotFoundException("No user found with UUID: " + uuidPassword.getUuid()));
+
+        if (!customer.doesPasswordMatch(uuidPassword.getPassword())) {
+            throw new UnauthorizedException("Wrong password for user used.");
+        }
+        if (!customer.hasAccessTo(feature)) {
+            throw new UnauthorizedException("User has no access to this feature.");
+        }
+
+    }
+
+
+    private CustomerDTO getCustomerWithWildcard(String id){
+        String customerIdWithoutWildcard = id.replace("*","");
+
+        Customer customerWithWildcard = customerRepository.getCustomers().stream()
+                .filter(customer -> customer.getId().toString().contains(customerIdWithoutWildcard))
+                .findFirst()
+                .orElseThrow(() -> new IllegalIdException("No customer found for given ID"));
+
+        return customerMapper.mapToDTO(customerWithWildcard);
+    }
+
+    private CustomerDTO getCustomerWithoutWildcard(String id){
 
         UUID customerID = UUID.fromString(id);
-        return customerMapper.mapToDTO(customerRepository.getCustomerById(customerID).orElse(null));
+
+        Customer customerById = customerRepository.getCustomerById(customerID)
+                .orElseThrow(() -> new IllegalIdException("No customer found for given ID"));
+
+        return customerMapper.mapToDTO(customerById);
     }
+
 
 
     private void validateRequiredFields(CreateCustomerDTO createCustomerDTO) throws MandatoryFieldException {
@@ -94,7 +154,24 @@ class CustomerService implements ICustomerService {
         if (createCustomerDTO.getPhoneNumber() == null || createCustomerDTO.getPhoneNumber().equals("")) {
             throw new MandatoryFieldException("The phone number of the customer is required");
         }
+        if (createCustomerDTO.getPassword() == null || createCustomerDTO.getPassword().equals("")){
+            throw new MandatoryFieldException("please provide a password");
+        }
     }
 
+    private UuidPassword getUuidPassword(String auth) {
+        String decodedUsernamePassword = new String(Base64.getDecoder().decode(auth.substring("basic ".length())));
+        UUID uuid = UUID.fromString(decodedUsernamePassword.substring(0, decodedUsernamePassword.indexOf(":")));
+        String password = decodedUsernamePassword.substring(decodedUsernamePassword.indexOf(":") + 1);
+        return new UuidPassword(uuid, password);
+    }
 
+    private void verifyUUID(String auth){
+        if (auth == null){
+            throw new MandatoryFieldException("Please provide a correct Customer UUID");
+        }
+        if (!utils.isValidUUIDFormat(auth)){
+            throw new InvalidIdFormatException("Please provide a valid UUID format");
+        }
+    }
 }

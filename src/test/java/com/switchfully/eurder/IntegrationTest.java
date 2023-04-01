@@ -33,20 +33,16 @@ class IntegrationTest {
 
 
     @Test
-    @DisplayName("Integration test for itemComponent in orderService")
+    @DisplayName("System integration test")
     void systemIntegrationTest() {
         //create a customer
-        CreateCustomerDTO newCustomer = new CreateCustomerDTO("foo", "bar", "foo@email.com", "bar", "0412345678");
+        CreateCustomerDTO newCustomer = new CreateCustomerDTO("foo", "bar", "foo@email.com", "bar", "0412345678","test");
         CustomerDTO createdCustomer = customerService.createNewCustomer(newCustomer);
         Assertions.assertNotNull(createdCustomer);
 
         //test the customerService with the customer;
         final CustomerDTO customerTest1Actual = customerService.getCustomerById(createdCustomer.getId().toString());
         Assertions.assertEquals(createdCustomer, customerTest1Actual);
-        final CustomerDTO customerTest2Actual = customerService.getCustomerByName(createdCustomer.getFirstName());
-        Assertions.assertNotNull(customerTest2Actual);
-        final CustomerDTO customerTest3Actual = customerService.getCustomerByName(createdCustomer.getLastName());
-        Assertions.assertNotNull(customerTest3Actual);
         final List<CustomerDTO> customerTest4Actual = customerService.getListCustomerDTO();
         Assertions.assertNotNull(customerTest4Actual);
 
@@ -57,14 +53,14 @@ class IntegrationTest {
         Assertions.assertNotNull(createdItem);
 
         //test the itemService with item
-        final ItemDTO itemTest2Actual = itemService.getItemById(createdItem.getId().toString());
+        final ItemDTO itemTest2Actual = itemService.getItemById(createdItem.getId());
         Assertions.assertEquals(createdItem, itemTest2Actual);
         final UpdateItemDTO updateItemDTO = new UpdateItemDTO("foo", "bar", 20, 10);
-        final ItemDTO itemTest3Actual = itemService.updateItemById(updateItemDTO, createdItem.getId().toString());
+        final ItemDTO itemTest3Actual = itemService.updateItemById(updateItemDTO, createdItem.getId());
         Assertions.assertNotNull(itemTest3Actual);
 
         //create an order with above item and customer
-        final ItemGroupDTO itemOrder = new ItemGroupDTO(createdItem.getId().toString(), 1);
+        final ItemGroupDTO itemOrder = new ItemGroupDTO(createdItem.getId(), 1);
         final CreateOrderDTO createdOrder = new CreateOrderDTO(List.of(itemOrder));
         Assertions.assertNotNull(createdOrder);
 
