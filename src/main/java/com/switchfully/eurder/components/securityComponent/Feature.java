@@ -1,6 +1,6 @@
 package com.switchfully.eurder.components.securityComponent;
 
-public enum Feature {
+enum Feature {
 	VIEW_ALL_MEMBERS,
 	CREATE_BOOK,
 	CREATE_NEW_LIBRARIAN,

@@ -44,4 +44,10 @@ public class OrderController {
         return orderService.getOrderById(id);
     }
 
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping(produces = "application/json", path = "/shipping-list")
+    String getTodaysShippingList(){
+        return orderService.getShippingList();
+    }
+
 }

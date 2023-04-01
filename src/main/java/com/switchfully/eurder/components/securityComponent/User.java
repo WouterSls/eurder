@@ -4,7 +4,7 @@ import com.switchfully.eurder.api.dto.customer.CustomerDTO;
 
 import java.util.Objects;
 
-public class User {
+class User {
 	private final CustomerDTO customer;
 	private Role role;
 	private String password;

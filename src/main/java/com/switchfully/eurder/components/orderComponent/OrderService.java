@@ -12,13 +12,13 @@ import com.switchfully.eurder.api.dto.order.OrderDTO;
 import com.switchfully.eurder.components.securityComponent.ISecurityService;
 import com.switchfully.eurder.exception.*;
 import com.switchfully.eurder.utils.Utils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.util.*;
 
 @Service
 class OrderService implements IOrderService {
@@ -113,6 +113,22 @@ class OrderService implements IOrderService {
         return orderMapper.mapToDTO(updateOrder);
     }
 
+    public String getShippingList(){
+        String shippingList = "";
+
+        for (Order order :
+                orderRepository.getOrders()) {
+            if (isShippingDateToday(order.getShippingDate())){
+                shippingList += "\nItem to be shipped: \n" + order.getItem() + "\nShipped to: " + order.getCustomer().getAddress();
+            }
+        }
+
+        return shippingList;
+    }
+
+
+
+
     public OrderDTO getOrderById(UUID id){
         return orderMapper.mapToDTO(orderRepository.getOrders().stream()
                 .filter(order -> order.getId().equals(id))
@@ -120,6 +136,11 @@ class OrderService implements IOrderService {
                 .orElse(null));
     }
 
+    private static boolean isShippingDateToday(LocalDate shippingDate){
+        LocalDate today = LocalDate.now();
+
+        return today.isEqual(shippingDate);
+    }
 
     void verifyOrder(CreateOrderDTO createOrderDTO){
         if (createOrderDTO == null) {

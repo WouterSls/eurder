@@ -2,7 +2,7 @@ package com.switchfully.eurder.components.securityComponent;
 
 import java.util.UUID;
 
-public class UuidPassword {
+class UuidPassword {
 	private final UUID uuid;
 	private final String password;
 

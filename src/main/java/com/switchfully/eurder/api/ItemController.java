@@ -2,6 +2,7 @@ package com.switchfully.eurder.api;
 
 
 import com.switchfully.eurder.api.dto.item.UpdateItemDTO;
+import com.switchfully.eurder.api.dto.order.OrderDTO;
 import com.switchfully.eurder.components.itemComponent.IItemService;
 import com.switchfully.eurder.api.dto.item.CreateItemDTO;
 import com.switchfully.eurder.api.dto.item.ItemDTO;
@@ -46,4 +47,17 @@ public class ItemController {
     ItemDTO updateItem(@PathVariable String id, @RequestBody UpdateItemDTO updateItemDTO){
        return itemService.updateItemById(updateItemDTO,id);
     }
+
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping(produces =  "application/json",path = "/stock")
+    List<ItemDTO> getSortedItemStock(){
+        return itemService.getItemsStock();
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping(produces = "application/json",path = "/stock/{stockLevel}")
+    List<ItemDTO> getItemStockByStockLevel(@PathVariable String stockLevel){
+        return itemService.getItemsStockByUrgency(stockLevel);
+    }
+
 }

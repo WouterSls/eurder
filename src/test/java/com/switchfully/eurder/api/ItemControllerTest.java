@@ -445,4 +445,115 @@ class ItemControllerTest {
                 .assertThat()
                 .statusCode(HttpStatus.NOT_FOUND.value());
     }
+
+    @Test
+    void getSortedItemStock_ItemsNotPresent_returns404NoItemsException(){
+        RestAssured.given()
+                .when()
+                .port(port)
+                .get("/items/stock")
+                .then()
+                .assertThat()
+                .statusCode(HttpStatus.NOT_FOUND.value());
+    }
+
+    @Test
+    void getSortedItemStock_ItemsPresent_returnsSortedItemDTOList(){
+
+        CreateItemDTO testCreateItem = new CreateItemDTO("foo", "bar", 10, 11);
+        CreateItemDTO testCreateItem2 = new CreateItemDTO("fizz", "buzz", 20, 3);
+        CreateItemDTO testCreateItem3 = new CreateItemDTO("foobar","fizzbuzz",30, 7);
+        ItemDTO expectedItem1 = itemService.createNewItem(testCreateItem);
+        ItemDTO expectedItem2 = itemService.createNewItem(testCreateItem2);
+        ItemDTO expectedItem3 = itemService.createNewItem(testCreateItem3);
+
+        List<ItemDTO> actualList = RestAssured.given()
+                .when()
+                .port(port)
+                .get("items/stock")
+                .then()
+                .assertThat()
+                .statusCode(HttpStatus.OK.value())
+                .extract()
+                .jsonPath().getList(".",ItemDTO.class);
+
+        Assertions.assertEquals(List.of(expectedItem2,expectedItem3,expectedItem1),actualList);
+    }
+
+    @Test
+    void getItemsStockByUrgency_ItemsNotPresent_returns404NoItemsException(){
+        RestAssured.given()
+                .when()
+                .port(port)
+                .get("/items/stock/low")
+                .then()
+                .assertThat()
+                .statusCode(HttpStatus.NOT_FOUND.value());
+    }
+
+    @Test
+    void getItemsStockByStockLevel_ItemsPresentLowStock_returnsListOfLowStockItems(){
+        CreateItemDTO testCreateItem = new CreateItemDTO("foo", "bar", 10, 11);
+        CreateItemDTO testCreateItem2 = new CreateItemDTO("fizz", "buzz", 20, 3);
+        CreateItemDTO testCreateItem3 = new CreateItemDTO("foobar","fizzbuzz",30, 7);
+        ItemDTO expectedItem1 = itemService.createNewItem(testCreateItem);
+        ItemDTO expectedItem2 = itemService.createNewItem(testCreateItem2);
+        ItemDTO expectedItem3 = itemService.createNewItem(testCreateItem3);
+
+        List<ItemDTO> actualList = RestAssured.given()
+                .when()
+                .port(port)
+                .get("items/stock/low")
+                .then()
+                .assertThat()
+                .statusCode(HttpStatus.OK.value())
+                .extract()
+                .jsonPath().getList(".",ItemDTO.class);
+
+        Assertions.assertEquals(List.of(expectedItem2),actualList);
+    }
+
+    @Test
+    void getItemsStockByStockLevel_ItemsPresentMediumStock_returnsListOfMediumStockItems(){
+        CreateItemDTO testCreateItem = new CreateItemDTO("foo", "bar", 10, 11);
+        CreateItemDTO testCreateItem2 = new CreateItemDTO("fizz", "buzz", 20, 3);
+        CreateItemDTO testCreateItem3 = new CreateItemDTO("foobar","fizzbuzz",30, 7);
+        ItemDTO expectedItem1 = itemService.createNewItem(testCreateItem);
+        ItemDTO expectedItem2 = itemService.createNewItem(testCreateItem2);
+        ItemDTO expectedItem3 = itemService.createNewItem(testCreateItem3);
+
+        List<ItemDTO> actualList = RestAssured.given()
+                .when()
+                .port(port)
+                .get("items/stock/medium")
+                .then()
+                .assertThat()
+                .statusCode(HttpStatus.OK.value())
+                .extract()
+                .jsonPath().getList(".",ItemDTO.class);
+
+        Assertions.assertEquals(List.of(expectedItem3),actualList);
+    }
+
+    @Test
+    void getItemsStockByStockLevel_ItemsPresentHighStock_returnsListOfHighStockItems(){
+        CreateItemDTO testCreateItem = new CreateItemDTO("foo", "bar", 10, 11);
+        CreateItemDTO testCreateItem2 = new CreateItemDTO("fizz", "buzz", 20, 3);
+        CreateItemDTO testCreateItem3 = new CreateItemDTO("foobar","fizzbuzz",30, 7);
+        ItemDTO expectedItem1 = itemService.createNewItem(testCreateItem);
+        ItemDTO expectedItem2 = itemService.createNewItem(testCreateItem2);
+        ItemDTO expectedItem3 = itemService.createNewItem(testCreateItem3);
+
+        List<ItemDTO> actualList = RestAssured.given()
+                .when()
+                .port(port)
+                .get("items/stock/high")
+                .then()
+                .assertThat()
+                .statusCode(HttpStatus.OK.value())
+                .extract()
+                .jsonPath().getList(".",ItemDTO.class);
+
+        Assertions.assertEquals(List.of(expectedItem1),actualList);
+    }
 }

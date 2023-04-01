@@ -32,18 +32,17 @@ class IntegrationTest {
     private ICustomerService customerService;
 
 
-
     @Test
     @DisplayName("Integration test for itemComponent in orderService")
-    void systemIntegrationTest (){
+    void systemIntegrationTest() {
         //create a customer
-        CreateCustomerDTO newCustomer = new CreateCustomerDTO("foo","bar","foo@email.com","bar","0412345678");
+        CreateCustomerDTO newCustomer = new CreateCustomerDTO("foo", "bar", "foo@email.com", "bar", "0412345678");
         CustomerDTO createdCustomer = customerService.createNewCustomer(newCustomer);
         Assertions.assertNotNull(createdCustomer);
 
         //test the customerService with the customer;
         final CustomerDTO customerTest1Actual = customerService.getCustomerById(createdCustomer.getId().toString());
-        Assertions.assertEquals(createdCustomer,customerTest1Actual);
+        Assertions.assertEquals(createdCustomer, customerTest1Actual);
         final CustomerDTO customerTest2Actual = customerService.getCustomerByName(createdCustomer.getFirstName());
         Assertions.assertNotNull(customerTest2Actual);
         final CustomerDTO customerTest3Actual = customerService.getCustomerByName(createdCustomer.getLastName());
@@ -53,26 +52,27 @@ class IntegrationTest {
 
 
         //create an Item
-        final CreateItemDTO newItem = new CreateItemDTO("bar","foo",10,5);
+        final CreateItemDTO newItem = new CreateItemDTO("bar", "foo", 10, 5);
         ItemDTO createdItem = itemService.createNewItem(newItem);
         Assertions.assertNotNull(createdItem);
 
         //test the itemService with item
         final ItemDTO itemTest2Actual = itemService.getItemById(createdItem.getId().toString());
-        Assertions.assertEquals(createdItem,itemTest2Actual);
-        final UpdateItemDTO updateItemDTO = new UpdateItemDTO("foo","bar",20,10);
-        final ItemDTO itemTest3Actual = itemService.updateItemById(updateItemDTO,createdItem.getId().toString());
+        Assertions.assertEquals(createdItem, itemTest2Actual);
+        final UpdateItemDTO updateItemDTO = new UpdateItemDTO("foo", "bar", 20, 10);
+        final ItemDTO itemTest3Actual = itemService.updateItemById(updateItemDTO, createdItem.getId().toString());
         Assertions.assertNotNull(itemTest3Actual);
 
         //create an order with above item and customer
-        final ItemGroupDTO itemOrder = new ItemGroupDTO(createdItem.getId().toString(),1);
+        final ItemGroupDTO itemOrder = new ItemGroupDTO(createdItem.getId().toString(), 1);
         final CreateOrderDTO createdOrder = new CreateOrderDTO(List.of(itemOrder));
         Assertions.assertNotNull(createdOrder);
 
         //test the orderService with the order
         String userId = createdCustomer.getId().toString();
         String encodedAuth = "Basic " + Base64.getEncoder().encodeToString((userId + ":password").getBytes());
-        final List<OrderDTO> listOfOrders = orderService.orderItems(createdOrder,encodedAuth);
+        final List<OrderDTO> listOfOrders = orderService.orderItems(createdOrder, encodedAuth);
         Assertions.assertNotNull(listOfOrders);
     }
+
 }

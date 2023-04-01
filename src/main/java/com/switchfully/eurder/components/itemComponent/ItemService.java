@@ -8,9 +8,7 @@ import com.switchfully.eurder.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 class ItemService implements IItemService{
@@ -85,6 +83,34 @@ class ItemService implements IItemService{
             throw new IllegalIdException("No item exists for this ID");
         }
         return itemMapper.mapToDTO(item.get());
+    }
+
+    @Override
+    public List<ItemDTO> getItemsStock(){
+
+        if (itemRepository.getItems().isEmpty()){
+            throw new NoItemsException("There are currently no items in stock");
+        }
+
+        return itemRepository.getItems()
+                .stream()
+                .sorted(Comparator.comparing(Item::getUrgency))
+                .map(itemMapper::mapToDTO)
+                .toList();
+
+    }
+
+    @Override
+    public List<ItemDTO> getItemsStockByUrgency(String urgency){
+
+        if (itemRepository.getItems().isEmpty()){
+            throw new NoItemsException("There are currently no items in stock");
+        }
+
+        return itemRepository.getItems().stream()
+                .filter(item -> item.getUrgency().getLabel().equalsIgnoreCase(urgency))
+                .map(itemMapper::mapToDTO)
+                .toList();
     }
 
 

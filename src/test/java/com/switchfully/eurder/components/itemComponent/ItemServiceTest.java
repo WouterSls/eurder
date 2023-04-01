@@ -8,6 +8,7 @@ import org.junit.Before;
 import org.junit.jupiter.api.*;
 import org.mockito.Mockito;
 
+import java.util.List;
 import java.util.UUID;
 
 
@@ -229,5 +230,13 @@ class ItemServiceTest {
                 itemService.updateItemById(testUpdateItem,"*");
             });
         }
+
+        @Test
+        void getItemsStock_ItemsNotPresent_returnsNoItemsException(){
+            Assertions.assertThrows(NoItemsException.class, () -> {
+               itemService.getItemsStock();
+            });
+        }
+
     }
 }

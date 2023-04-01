@@ -14,4 +14,8 @@ public interface IItemService {
     ItemDTO getItemById(String id);
 
     ItemDTO updateItemById(UpdateItemDTO updateItemDTO, String id);
+
+    List<ItemDTO> getItemsStock();
+
+    List<ItemDTO> getItemsStockByUrgency(String urgency);
 }
