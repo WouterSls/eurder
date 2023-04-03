@@ -1,11 +1,18 @@
 package com.switchfully.eurder.components.itemComponent;
 
 import com.switchfully.eurder.api.dto.item.CreateItemDTO;
+import com.switchfully.eurder.api.dto.item.ItemDTO;
 import com.switchfully.eurder.api.dto.item.UpdateItemDTO;
-import com.switchfully.eurder.exception.*;
+import com.switchfully.eurder.exception.IllegalAmountException;
+import com.switchfully.eurder.exception.IllegalPriceException;
+import com.switchfully.eurder.exception.MandatoryFieldException;
+import com.switchfully.eurder.exception.NoItemsException;
 import org.junit.jupiter.api.*;
 import org.mockito.Mockito;
 
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 
@@ -20,7 +27,7 @@ class ItemServiceTest {
         private ItemMapper itemMapperMock;
 
         private final CreateItemDTO TEST_ITEM_CREATE_DTO = new CreateItemDTO("foo", "bar", 10, 2);
-        private final UpdateItemDTO TEST_ITEM_UPDATE_DTO = new UpdateItemDTO("bar","foo",20,6);
+        private final UpdateItemDTO TEST_ITEM_UPDATE_DTO = new UpdateItemDTO("bar", "foo", 20, 6);
 
         @BeforeEach
         void setup() {
@@ -115,29 +122,24 @@ class ItemServiceTest {
             });
         }
 
-        @Test
-        void getItemByName_NamePresent_ReturnsItemDTO() {
 
+        @Test
+        void getItemsSortedOnUrgency_ListNotPresent_returnsNoItemsException() {
+            Assertions.assertThrows(NoItemsException.class, () ->{
+               itemService.getItemsSortedByUrgency();
+            });
         }
 
         @Test
-        void getItemByName_IncorrectName_returnsNull() {
+        void getItemsSortedOnUrgency_ListPresentNoItemsPresent_returnListWithNullItem() {
+            Item testItem = new Item("foo", "bar", 10, 5);
 
-        }
+            Mockito.when(itemRepositoryMock.getItems())
+                    .thenReturn(List.of(testItem));
 
-        @Test
-        void getItemByName_NameNotPresent_returnsNull() {
+            List<ItemDTO> actualList = itemService.getItemsSortedByUrgency();
 
-        }
-
-        @Test
-        void getListItemDTO_ListNotPresent_returnsEmptyList() {
-
-        }
-
-        @Test
-        void getListItemDTO_ListPresent_returnListOfItemDTO() {
-
+            Assertions.assertFalse(actualList.isEmpty());
         }
 
         @Test
@@ -148,85 +150,78 @@ class ItemServiceTest {
         }
 
         @Test
-        void updateItem_UpdateItemDTOPresentCorrectId_updatesItemRepo(){
-    //TODO: test in integration test
+        void updateItem_UpdateItemDTOPresentCorrectId_updatesItemRepo() {
+            Item testItem = new Item("foo", "bar", 10, 5);
 
-//            Item testItem = new Item("foo","bar",10,2);
-//            ItemRepository itemRepo = new ItemRepository();
-//            itemRepo.addItem(testItem);
-//            UUID itemId = testItem.getId();
-//            ItemMapper itemMapper = Mockito.mock(ItemMapper.class);
-//            ItemService iswd = new ItemService(itemRepo,itemMapper);
-//
-//
-//            UpdateItemDTO updateItemTest = new UpdateItemDTO("bar","foo",20,10);
-//
-//            iswd.updateItemById(updateItemTest,itemId.toString());
-//
-//            Mockito.verify(itemRepo).updateItem(testItem);
-//            Mockito.verify(itemRepositoryMock, Mockito.never()).addItem(testItem);
-//            Mockito.verify(itemRepositoryMock, Mockito.never()).getItems();
-//            Mockito.verify(itemRepositoryMock, Mockito.never()).getItemById(testItem.getId());
+            Mockito.when(itemRepositoryMock.getItems())
+                    .thenReturn(List.of(testItem));
+
+            Mockito.when(itemRepositoryMock.getItemById(testItem.getId()))
+                    .thenReturn(Optional.of(testItem));
+
+            ItemDTO updateItem = itemService.updateItemById(new UpdateItemDTO("fizz", "buzz", 5, 20), testItem.getId());
+
+            Assertions.assertEquals(itemMapperMock.mapToDTO(testItem), updateItem);
         }
 
         @Test
-        void updateItem_UpdateItemDTOPresentNameNotPresent_returnsMandatoryFieldException(){
-            UpdateItemDTO testUpdateItem =new UpdateItemDTO(null,"bar",10,4);
+        void updateItem_UpdateItemDTOPresentNameNotPresent_returnsMandatoryFieldException() {
+            UpdateItemDTO testUpdateItem = new UpdateItemDTO(null, "bar", 10, 4);
 
             Assertions.assertThrows(MandatoryFieldException.class, () -> {
-               itemService.updateItemById(testUpdateItem,UUID.randomUUID());
+                itemService.updateItemById(testUpdateItem, UUID.randomUUID());
             });
         }
 
         @Test
-        void updateItem_UpdateItemDTOPresentDescriptionNotPresent_returnsMandatoryFieldException(){
-            UpdateItemDTO testUpdateItem =new UpdateItemDTO("foo",null,10,4);
+        void updateItem_UpdateItemDTOPresentDescriptionNotPresent_returnsMandatoryFieldException() {
+            UpdateItemDTO testUpdateItem = new UpdateItemDTO("foo", null, 10, 4);
 
             Assertions.assertThrows(MandatoryFieldException.class, () -> {
-                itemService.updateItemById(testUpdateItem,UUID.randomUUID());
+                itemService.updateItemById(testUpdateItem, UUID.randomUUID());
             });
         }
 
         @Test
-        void updateItem_UpdateItemDTOPresentPriceEquals0_returnsMandatoryFieldException(){
-            UpdateItemDTO testUpdateItem =new UpdateItemDTO("foo","bar",0,4);
+        void updateItem_UpdateItemDTOPresentPriceEquals0_returnsMandatoryFieldException() {
+            UpdateItemDTO testUpdateItem = new UpdateItemDTO("foo", "bar", 0, 4);
 
             Assertions.assertThrows(IllegalPriceException.class, () -> {
-                itemService.updateItemById(testUpdateItem,UUID.randomUUID());
+                itemService.updateItemById(testUpdateItem, UUID.randomUUID());
             });
         }
 
         @Test
-        void updateItem_UpdateItemDTOPresentPriceUnder0_returnsMandatoryFieldException(){
-            UpdateItemDTO testUpdateItem =new UpdateItemDTO("foo","bar",-10,4);
+        void updateItem_UpdateItemDTOPresentPriceUnder0_returnsMandatoryFieldException() {
+            UpdateItemDTO testUpdateItem = new UpdateItemDTO("foo", "bar", -10, 4);
 
             Assertions.assertThrows(IllegalPriceException.class, () -> {
-                itemService.updateItemById(testUpdateItem,UUID.randomUUID());
+                itemService.updateItemById(testUpdateItem, UUID.randomUUID());
             });
         }
 
         @Test
-        void updateItem_UpdateItemDTOPresentAmountUnder0_returnsMandatoryFieldException(){
-            UpdateItemDTO testUpdateItem =new UpdateItemDTO("foo","bar",10,-5);
+        void updateItem_UpdateItemDTOPresentAmountUnder0_returnsMandatoryFieldException() {
+            UpdateItemDTO testUpdateItem = new UpdateItemDTO("foo", "bar", 10, -5);
 
             Assertions.assertThrows(IllegalAmountException.class, () -> {
-                itemService.updateItemById(testUpdateItem,UUID.randomUUID());
+                itemService.updateItemById(testUpdateItem, UUID.randomUUID());
             });
         }
 
         @Test
-        void updateItem_UpdateItemDTOPresentAmountEquals0_returnsMandatoryFieldException(){
-            UpdateItemDTO testUpdateItem =new UpdateItemDTO("foo","bar",10,0);
+        void updateItem_UpdateItemDTOPresentAmountEquals0_returnsMandatoryFieldException() {
+            UpdateItemDTO testUpdateItem = new UpdateItemDTO("foo", "bar", 10, 0);
 
             Assertions.assertThrows(IllegalAmountException.class, () -> {
-                itemService.updateItemById(testUpdateItem,UUID.randomUUID());
+                itemService.updateItemById(testUpdateItem, UUID.randomUUID());
             });
         }
 
         @Test
-        void getItemsStock_ItemsNotPresent_returnsNoItemsException(){
+        void getItemsStock_ItemsNotPresent_returnsNoItemsException() {
             Assertions.assertThrows(NoItemsException.class, () -> {
-               itemService.getItemsSortedByUrgency();
+                itemService.getItemsSortedByUrgency();
             });
         }
 

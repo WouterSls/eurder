@@ -49,7 +49,8 @@ public class OrderController {
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping(produces = "application/json", path = "/shipping-list")
-    String getTodaysShippingList(){
+    String getTodaysShippingList(@RequestHeader String authorization){
+        customerService.validateAuthorization(authorization,Feature.GET_SHIPPING_LIST);
         return orderService.getShippingList();
     }
 

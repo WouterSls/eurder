@@ -22,6 +22,7 @@ enum Role {
 				add(Feature.UPDATE_ITEM);
 				add(Feature.GET_ITEMS);
 				add(Feature.GET_ITEMS_ON_URGENCY);
+				add(Feature.GET_SHIPPING_LIST);
 			}}
 	);
 
