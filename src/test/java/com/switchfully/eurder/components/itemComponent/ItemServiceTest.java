@@ -168,6 +168,7 @@ class ItemServiceTest {
 //            Mockito.verify(itemRepositoryMock, Mockito.never()).getItems();
 //            Mockito.verify(itemRepositoryMock, Mockito.never()).getItemById(testItem.getId());
         }
+
         @Test
         void updateItem_UpdateItemDTOPresentNameNotPresent_returnsMandatoryFieldException(){
             UpdateItemDTO testUpdateItem =new UpdateItemDTO(null,"bar",10,4);
