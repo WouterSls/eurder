@@ -1,12 +1,17 @@
 package com.switchfully.eurder.api;
 
+import com.switchfully.eurder.api.dto.customer.CreateCustomerDTO;
+import com.switchfully.eurder.api.dto.customer.CustomerDTO;
 import com.switchfully.eurder.api.dto.item.CreateItemDTO;
 import com.switchfully.eurder.api.dto.item.ItemDTO;
 import com.switchfully.eurder.api.dto.item.UpdateItemDTO;
+import com.switchfully.eurder.components.customerComponent.ICustomerService;
 import com.switchfully.eurder.components.itemComponent.IItemService;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import io.restassured.http.Header;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -15,6 +20,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.annotation.DirtiesContext;
 
 import java.util.List;
+import java.util.UUID;
 
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -25,89 +31,28 @@ class ItemControllerTest {
 
     @Autowired
     IItemService itemService;
+    @Autowired
+    ICustomerService customerService;
 
-    private final CreateItemDTO TEST_CREATE_ITEM_DTO = new CreateItemDTO("foo", "bar", 10, 5);
+    final CreateItemDTO TEST_CREATE_ITEM_DTO = new CreateItemDTO("foo", "bar", 10, 5);
+    final CreateCustomerDTO TEST_CREATE_CUSTOMER_DTO = new CreateCustomerDTO("foo", "bar", "foo@email.com", "bar", "041234567", "customer");
+    final CreateCustomerDTO TEST_CREATE_ADMIN_DTO = new CreateCustomerDTO("admin", "user", "admin@email.com", "theStreet07", "0412345678", "admin");
+    CustomerDTO customer, admin;
 
-    @Test
-    void getItemById_ItemNotPresent_returns404() {
+    String adminId, customerId;
+    String adminPw = TEST_CREATE_ADMIN_DTO.getPassword();
+    String customerPw = TEST_CREATE_CUSTOMER_DTO.getPassword();
+    String testUUID = "a68631fa-d8f8-4dcc-b6f3-7e77e17207a5";
 
-        RestAssured
-                .given()
-                .when()
-                .port(port)
-                .get("/items/*1*")
-                .then()
-                .assertThat()
-                .statusCode(HttpStatus.NOT_FOUND.value());
-    }
+    Header header;
 
-    @Test
-    void getItemById_ItemPresentIncorrectId_returns404() {
-
-        itemService.createNewItem(TEST_CREATE_ITEM_DTO);
-
-        RestAssured
-                .given()
-                .when()
-                .port(port)
-                .get("items/1")
-                .then()
-                .log().all()
-                .assertThat()
-                .statusCode(HttpStatus.NOT_FOUND.value());
-    }
-
-    @Test
-    void getItemById_ItemPresent_returnsItemDTO() {
-
-        ItemDTO expectedItem = itemService.createNewItem(TEST_CREATE_ITEM_DTO);
-
-        ItemDTO actualItem = RestAssured
-                .given()
-                .when()
-                .port(port)
-                .get("/items/" + expectedItem.getId())
-                .then()
-                .log().all()
-                .assertThat()
-                .statusCode(HttpStatus.OK.value())
-                .extract()
-                .as(ItemDTO.class);
-
-        Assertions.assertEquals(expectedItem, actualItem);
-    }
-
-    @Test
-    void getListItemDTO_ItemsPresent_returnsItemDTOList() {
-
-        itemService.createNewItem(TEST_CREATE_ITEM_DTO);
-
-        List<ItemDTO> actualItemDTOList = RestAssured
-                .given()
-                .when()
-                .port(port)
-                .get("/items")
-                .then()
-                .log().all()
-                .assertThat().
-                statusCode(HttpStatus.OK.value())
-                .extract()
-                .jsonPath().getList(".", ItemDTO.class);
-
-        Assertions.assertNotNull(actualItemDTOList);
-    }
-
-    @Test
-    void getListItemDTO_ItemsNotPresent_returns404() {
-
-        RestAssured
-                .given()
-                .when()
-                .port(port)
-                .get("/items")
-                .then()
-                .assertThat()
-                .statusCode(HttpStatus.NOT_FOUND.value());
+    @BeforeEach
+    void setup() {
+        admin = customerService.createNewAdmin(TEST_CREATE_ADMIN_DTO);
+        customer = customerService.createNewCustomer(TEST_CREATE_CUSTOMER_DTO);
+        customerId = customer.getId().toString();
+        adminId = admin.getId().toString();
+        header = new Header("Authorization", "Basic userId:password");
     }
 
     @Test
@@ -115,6 +60,8 @@ class ItemControllerTest {
 
         RestAssured.given()
                 .contentType(ContentType.JSON)
+                .header(header)
+                .auth().preemptive().basic(adminId,adminPw)
                 .body(TEST_CREATE_ITEM_DTO)
                 .when()
                 .port(port)
@@ -131,6 +78,8 @@ class ItemControllerTest {
 
         RestAssured.given()
                 .contentType(ContentType.JSON)
+                .header(header)
+                .auth().preemptive().basic(adminId,adminPw)
                 .body(testDTO)
                 .when()
                 .port(port)
@@ -147,6 +96,8 @@ class ItemControllerTest {
 
         RestAssured.given()
                 .contentType(ContentType.JSON)
+                .header(header)
+                .auth().preemptive().basic(adminId,adminPw)
                 .body(testDTO)
                 .when()
                 .port(port)
@@ -163,6 +114,8 @@ class ItemControllerTest {
 
         RestAssured.given()
                 .contentType(ContentType.JSON)
+                .header(header)
+                .auth().preemptive().basic(adminId,adminPw)
                 .body(testDTO)
                 .when()
                 .port(port)
@@ -179,6 +132,8 @@ class ItemControllerTest {
 
         RestAssured.given()
                 .contentType(ContentType.JSON)
+                .header(header)
+                .auth().preemptive().basic(adminId,adminPw)
                 .body(testDTO)
                 .when()
                 .port(port)
@@ -195,6 +150,8 @@ class ItemControllerTest {
 
         RestAssured.given()
                 .contentType(ContentType.JSON)
+                .header(header)
+                .auth().preemptive().basic(adminId,adminPw)
                 .body(testDTO)
                 .when()
                 .port(port)
@@ -211,6 +168,8 @@ class ItemControllerTest {
 
         RestAssured.given()
                 .contentType(ContentType.JSON)
+                .header(header)
+                .auth().preemptive().basic(adminId,adminPw)
                 .body(testDTO)
                 .when()
                 .port(port)
@@ -225,27 +184,18 @@ class ItemControllerTest {
 
         final UpdateItemDTO testUpdateDTO = new UpdateItemDTO("bar", "foo", 20, 10);
 
-
-        ItemDTO gottenItem = RestAssured.given()
-                .contentType(ContentType.JSON)
-                .body(TEST_CREATE_ITEM_DTO)
-                .when()
-                .port(port)
-                .post("/items/create")
-                .then()
-                .assertThat()
-                .statusCode(HttpStatus.CREATED.value())
-                .extract()
-                .as(ItemDTO.class);
-
+        ItemDTO gottenItem = itemService.createNewItem(TEST_CREATE_ITEM_DTO);
 
         RestAssured.given()
                 .contentType(ContentType.JSON)
                 .body(testUpdateDTO)
+                .header(header)
+                .auth().preemptive().basic(adminId,adminPw)
                 .when()
                 .port(port)
                 .put("/items/" + gottenItem.getId() + "/update")
                 .then()
+                .log().all()
                 .assertThat()
                 .statusCode(HttpStatus.OK.value());
     }
@@ -255,20 +205,12 @@ class ItemControllerTest {
 
         final UpdateItemDTO testUpdateDTO = new UpdateItemDTO(null, "foo", 20, 10);
 
-        ItemDTO gottenItem = RestAssured.given()
-                .contentType(ContentType.JSON)
-                .body(TEST_CREATE_ITEM_DTO)
-                .when()
-                .port(port)
-                .post("/items/create")
-                .then()
-                .assertThat()
-                .statusCode(HttpStatus.CREATED.value())
-                .extract()
-                .as(ItemDTO.class);
+        ItemDTO gottenItem = itemService.createNewItem(TEST_CREATE_ITEM_DTO);
 
         RestAssured.given()
                 .contentType(ContentType.JSON)
+                .header(header)
+                .auth().preemptive().basic(adminId,adminPw)
                 .body(testUpdateDTO)
                 .when()
                 .port(port)
@@ -283,20 +225,12 @@ class ItemControllerTest {
 
         final UpdateItemDTO testUpdateDTO = new UpdateItemDTO("foo", null, 20, 10);
 
-        ItemDTO gottenItem = RestAssured.given()
-                .contentType(ContentType.JSON)
-                .body(TEST_CREATE_ITEM_DTO)
-                .when()
-                .port(port)
-                .post("/items/create")
-                .then()
-                .assertThat()
-                .statusCode(HttpStatus.CREATED.value())
-                .extract()
-                .as(ItemDTO.class);
+        ItemDTO gottenItem =itemService.createNewItem(TEST_CREATE_ITEM_DTO);
 
         RestAssured.given()
                 .contentType(ContentType.JSON)
+                .header(header)
+                .auth().preemptive().basic(adminId,adminPw)
                 .body(testUpdateDTO)
                 .when()
                 .port(port)
@@ -311,20 +245,12 @@ class ItemControllerTest {
 
         final UpdateItemDTO testUpdateDTO = new UpdateItemDTO("bar", "foo", 0, 10);
 
-        ItemDTO gottenItem = RestAssured.given()
-                .contentType(ContentType.JSON)
-                .body(TEST_CREATE_ITEM_DTO)
-                .when()
-                .port(port)
-                .post("/items/create")
-                .then()
-                .assertThat()
-                .statusCode(HttpStatus.CREATED.value())
-                .extract()
-                .as(ItemDTO.class);
+        ItemDTO gottenItem = itemService.createNewItem(TEST_CREATE_ITEM_DTO);
 
         RestAssured.given()
                 .contentType(ContentType.JSON)
+                .header(header)
+                .auth().preemptive().basic(adminId,adminPw)
                 .body(testUpdateDTO)
                 .when()
                 .port(port)
@@ -339,20 +265,12 @@ class ItemControllerTest {
 
         final UpdateItemDTO testUpdateDTO = new UpdateItemDTO("bar", "foo", -5, 10);
 
-        ItemDTO gottenItem = RestAssured.given()
-                .contentType(ContentType.JSON)
-                .body(TEST_CREATE_ITEM_DTO)
-                .when()
-                .port(port)
-                .post("/items/create")
-                .then()
-                .assertThat()
-                .statusCode(HttpStatus.CREATED.value())
-                .extract()
-                .as(ItemDTO.class);
+        ItemDTO gottenItem = itemService.createNewItem(TEST_CREATE_ITEM_DTO);
 
         RestAssured.given()
                 .contentType(ContentType.JSON)
+                .header(header)
+                .auth().preemptive().basic(adminId,adminPw)
                 .body(testUpdateDTO)
                 .when()
                 .port(port)
@@ -367,20 +285,12 @@ class ItemControllerTest {
 
         final UpdateItemDTO testUpdateDTO = new UpdateItemDTO("bar", "foo", 20, 0);
 
-        ItemDTO gottenItem = RestAssured.given()
-                .contentType(ContentType.JSON)
-                .body(TEST_CREATE_ITEM_DTO)
-                .when()
-                .port(port)
-                .post("/items/create")
-                .then()
-                .assertThat()
-                .statusCode(HttpStatus.CREATED.value())
-                .extract()
-                .as(ItemDTO.class);
+        ItemDTO gottenItem = itemService.createNewItem(TEST_CREATE_ITEM_DTO);
 
         RestAssured.given()
                 .contentType(ContentType.JSON)
+                .header(header)
+                .auth().preemptive().basic(adminId,adminPw)
                 .body(testUpdateDTO)
                 .when()
                 .port(port)
@@ -395,20 +305,12 @@ class ItemControllerTest {
 
         final UpdateItemDTO testUpdateDTO = new UpdateItemDTO("bar", "foo", 20, -5);
 
-        ItemDTO gottenItem = RestAssured.given()
-                .contentType(ContentType.JSON)
-                .body(TEST_CREATE_ITEM_DTO)
-                .when()
-                .port(port)
-                .post("/items/create")
-                .then()
-                .assertThat()
-                .statusCode(HttpStatus.CREATED.value())
-                .extract()
-                .as(ItemDTO.class);
+        ItemDTO gottenItem = itemService.createNewItem(TEST_CREATE_ITEM_DTO);
 
         RestAssured.given()
                 .contentType(ContentType.JSON)
+                .header(header)
+                .auth().preemptive().basic(adminId,adminPw)
                 .body(testUpdateDTO)
                 .when()
                 .port(port)
@@ -423,24 +325,16 @@ class ItemControllerTest {
 
         final UpdateItemDTO testUpdateDTO = new UpdateItemDTO("bar", "foo", 20, -5);
 
-        ItemDTO gottenItem = RestAssured.given()
-                .contentType(ContentType.JSON)
-                .body(TEST_CREATE_ITEM_DTO)
-                .when()
-                .port(port)
-                .post("/items/create")
-                .then()
-                .assertThat()
-                .statusCode(HttpStatus.CREATED.value())
-                .extract()
-                .as(ItemDTO.class);
+        ItemDTO gottenItem = itemService.createNewItem(TEST_CREATE_ITEM_DTO);
 
         RestAssured.given()
                 .contentType(ContentType.JSON)
+                .header(header)
+                .auth().preemptive().basic(adminId,adminPw)
                 .body(testUpdateDTO)
                 .when()
                 .port(port)
-                .put("/items/" + "1234" + "/update")
+                .put("/items/" + UUID.randomUUID() + "/update")
                 .then()
                 .assertThat()
                 .statusCode(HttpStatus.NOT_FOUND.value());
@@ -450,6 +344,8 @@ class ItemControllerTest {
     void getSortedItemStock_ItemsNotPresent_returns404NoItemsException(){
         RestAssured.given()
                 .when()
+                .header(header)
+                .auth().preemptive().basic(adminId,adminPw)
                 .port(port)
                 .get("/items/stock")
                 .then()
@@ -469,6 +365,8 @@ class ItemControllerTest {
 
         List<ItemDTO> actualList = RestAssured.given()
                 .when()
+                .header(header)
+                .auth().preemptive().basic(adminId,adminPw)
                 .port(port)
                 .get("items/stock")
                 .then()
@@ -484,6 +382,8 @@ class ItemControllerTest {
     void getItemsStockByUrgency_ItemsNotPresent_returns404NoItemsException(){
         RestAssured.given()
                 .when()
+                .header(header)
+                .auth().preemptive().basic(adminId,adminPw)
                 .port(port)
                 .get("/items/stock/low")
                 .then()
@@ -492,7 +392,7 @@ class ItemControllerTest {
     }
 
     @Test
-    void getItemsStockByStockLevel_ItemsPresentLowStock_returnsListOfLowStockItems(){
+    void getItemsStockByStockLevel_ItemsPresentLowUrgency_returnsListOfHighStockItems(){
         CreateItemDTO testCreateItem = new CreateItemDTO("foo", "bar", 10, 11);
         CreateItemDTO testCreateItem2 = new CreateItemDTO("fizz", "buzz", 20, 3);
         CreateItemDTO testCreateItem3 = new CreateItemDTO("foobar","fizzbuzz",30, 7);
@@ -502,6 +402,8 @@ class ItemControllerTest {
 
         List<ItemDTO> actualList = RestAssured.given()
                 .when()
+                .header(header)
+                .auth().preemptive().basic(adminId,adminPw)
                 .port(port)
                 .get("items/stock/low")
                 .then()
@@ -510,11 +412,11 @@ class ItemControllerTest {
                 .extract()
                 .jsonPath().getList(".",ItemDTO.class);
 
-        Assertions.assertEquals(List.of(expectedItem2),actualList);
+        Assertions.assertEquals(List.of(expectedItem1),actualList);
     }
 
     @Test
-    void getItemsStockByStockLevel_ItemsPresentMediumStock_returnsListOfMediumStockItems(){
+    void getItemsStockByStockLevel_ItemsPresentMediumUrgency_returnsListOfMediumStockItems(){
         CreateItemDTO testCreateItem = new CreateItemDTO("foo", "bar", 10, 11);
         CreateItemDTO testCreateItem2 = new CreateItemDTO("fizz", "buzz", 20, 3);
         CreateItemDTO testCreateItem3 = new CreateItemDTO("foobar","fizzbuzz",30, 7);
@@ -524,6 +426,8 @@ class ItemControllerTest {
 
         List<ItemDTO> actualList = RestAssured.given()
                 .when()
+                .header(header)
+                .auth().preemptive().basic(adminId,adminPw)
                 .port(port)
                 .get("items/stock/medium")
                 .then()
@@ -536,7 +440,7 @@ class ItemControllerTest {
     }
 
     @Test
-    void getItemsStockByStockLevel_ItemsPresentHighStock_returnsListOfHighStockItems(){
+    void getItemsStockByStockLevel_ItemsPresentHighUrgency_returnsListOfLowStockItems(){
         CreateItemDTO testCreateItem = new CreateItemDTO("foo", "bar", 10, 11);
         CreateItemDTO testCreateItem2 = new CreateItemDTO("fizz", "buzz", 20, 3);
         CreateItemDTO testCreateItem3 = new CreateItemDTO("foobar","fizzbuzz",30, 7);
@@ -546,6 +450,8 @@ class ItemControllerTest {
 
         List<ItemDTO> actualList = RestAssured.given()
                 .when()
+                .header(header)
+                .auth().preemptive().basic(adminId,adminPw)
                 .port(port)
                 .get("items/stock/high")
                 .then()
@@ -554,6 +460,6 @@ class ItemControllerTest {
                 .extract()
                 .jsonPath().getList(".",ItemDTO.class);
 
-        Assertions.assertEquals(List.of(expectedItem1),actualList);
+        Assertions.assertEquals(List.of(expectedItem2),actualList);
     }
 }

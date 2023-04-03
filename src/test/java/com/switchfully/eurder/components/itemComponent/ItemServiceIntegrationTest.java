@@ -65,6 +65,6 @@ public class ItemServiceIntegrationTest {
 
         List<ItemDTO> actualList = itemService.getItemsOnUrgency("low");
 
-        Assertions.assertEquals(List.of(expectedItem2),actualList);
+        Assertions.assertEquals(List.of(expectedItem1),actualList);
     }
 }

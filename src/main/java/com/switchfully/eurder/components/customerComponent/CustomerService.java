@@ -4,26 +4,24 @@ import com.switchfully.eurder.api.dto.customer.CreateCustomerDTO;
 import com.switchfully.eurder.api.dto.customer.CustomerDTO;
 import com.switchfully.eurder.exception.*;
 import com.switchfully.eurder.utils.Feature;
-import com.switchfully.eurder.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Base64;
 import java.util.List;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 @Service
 class CustomerService implements ICustomerService {
 
     private final CustomerRepository customerRepository;
     private final CustomerMapper customerMapper;
-    private final Utils utils;
 
     @Autowired
     public CustomerService(CustomerRepository customerRepository, CustomerMapper customerMapper) {
         this.customerRepository = customerRepository;
         this.customerMapper = customerMapper;
-        this.utils = new Utils();
     }
 
     @Override
@@ -69,6 +67,10 @@ class CustomerService implements ICustomerService {
     @Override
     public CustomerDTO getCustomerFromAuth(String auth){
 
+        if (auth == null){
+            throw new MandatoryFieldException("provide auth");
+        }
+
         UuidPassword uuidPassword;
 
         try{
@@ -78,7 +80,7 @@ class CustomerService implements ICustomerService {
         }
 
         Customer customerById = customerRepository.getCustomerById(uuidPassword.getUuid())
-                .orElseThrow(() -> new IllegalIdException("No customer found for provided authorization"));
+                .orElseThrow(() ->  new UserNotFoundException("No user found with UUID: " + uuidPassword.getUuid()));
 
         return customerMapper.mapToDTO(customerById);
     }
@@ -123,6 +125,9 @@ class CustomerService implements ICustomerService {
     }
 
     private CustomerDTO getCustomerWithoutWildcard(String id){
+        if (!isValidUUIDFormat(id)){
+            throw new InvalidIdFormatException("provide valid uuid format");
+        }
 
         UUID customerID = UUID.fromString(id);
 
@@ -131,8 +136,6 @@ class CustomerService implements ICustomerService {
 
         return customerMapper.mapToDTO(customerById);
     }
-
-
 
     private void validateRequiredFields(CreateCustomerDTO createCustomerDTO) throws MandatoryFieldException {
 
@@ -166,12 +169,13 @@ class CustomerService implements ICustomerService {
         return new UuidPassword(uuid, password);
     }
 
-    private void verifyUUID(String auth){
-        if (auth == null){
-            throw new MandatoryFieldException("Please provide a correct Customer UUID");
+    private static boolean isValidUUIDFormat(String id){
+        Pattern UUID_REGEX =
+                Pattern.compile("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$");
+        if (id == null){
+            return false;
         }
-        if (!utils.isValidUUIDFormat(auth)){
-            throw new InvalidIdFormatException("Please provide a valid UUID format");
-        }
+        return UUID_REGEX.matcher(id).matches();
     }
+
 }

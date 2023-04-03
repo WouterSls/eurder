@@ -16,7 +16,6 @@ public interface ICustomerService {
 
     CustomerDTO getCustomerById(String id);
 
-
     CustomerDTO getCustomerFromAuth(String auth);
 
     void validateAuthorization(String auth, Feature feature);

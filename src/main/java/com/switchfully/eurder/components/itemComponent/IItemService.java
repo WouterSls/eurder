@@ -10,8 +10,6 @@ import java.util.UUID;
 public interface IItemService {
     ItemDTO createNewItem(CreateItemDTO createItemDTO);
 
-    //List<ItemDTO> getListItemsDTO();
-
     ItemDTO getItemById(UUID uuid);
 
     ItemDTO updateItemById(UpdateItemDTO updateItemDTO, UUID id);

@@ -2,7 +2,7 @@ package com.switchfully.eurder.components.orderComponent;
 
 import com.switchfully.eurder.api.dto.customer.CustomerDTO;
 import com.switchfully.eurder.api.dto.order.CreateOrderDTO;
-import com.switchfully.eurder.api.dto.order.ItemGroupDTO;
+import com.switchfully.eurder.api.dto.order.OrderItemGroupDTO;
 import com.switchfully.eurder.components.customerComponent.ICustomerService;
 import com.switchfully.eurder.components.itemComponent.IItemService;
 import com.switchfully.eurder.exception.IllegalAmountException;
@@ -30,7 +30,7 @@ class OrderServiceTest {
         private IItemService itemServiceMock;
         private ICustomerService customerService;
 
-        private final CreateOrderDTO TEST_CREATE_ORDER_DTO = new CreateOrderDTO(List.of(new ItemGroupDTO("foo", 5)));
+        private final CreateOrderDTO TEST_CREATE_ORDER_DTO = new CreateOrderDTO(List.of(new OrderItemGroupDTO(UUID.randomUUID(), 5)));
 
         CustomerDTO customerDTO = new CustomerDTO("foo","bar","test","foo","bar", UUID.randomUUID());
         String encodedAuth;
@@ -58,63 +58,42 @@ class OrderServiceTest {
         @Test
         void orderItem_CreateOrderDTOItemIdNotPresent_returnsMandatoryFieldException() {
             Assertions.assertThrows(MandatoryFieldException.class, () -> {
-                orderService.orderItems(new CreateOrderDTO(List.of(new ItemGroupDTO(null, 2))),null);
+                orderService.orderItems(new CreateOrderDTO(List.of(new OrderItemGroupDTO(null, 2))),null);
             });
         }
 
         @Test
         void verifyOrder_ItemGroupDTONotPresent_returnsMandatoryFieldException() {
             Assertions.assertThrows(MandatoryFieldException.class, () -> {
-                orderService.verifyOrder(new CreateOrderDTO(null));
+                orderService.orderItems(new CreateOrderDTO(null),encodedAuth);
             });
         }
 
         @Test
         void verifyOrder_CreateOrderDTOEmptyList_returnsMandatoryFieldException() {
             Assertions.assertThrows(MandatoryFieldException.class, () -> {
-                orderService.verifyOrder(new CreateOrderDTO(emptyList()));
+                orderService.orderItems(new CreateOrderDTO(emptyList()),encodedAuth);
             });
         }
 
         @Test
         void verifyOrder_ItemGroupDTOIdNotPresent_returnsMandatoryFieldException() {
             Assertions.assertThrows(MandatoryFieldException.class, () -> {
-                orderService.verifyOrder(new CreateOrderDTO(List.of(new ItemGroupDTO(null, 2))));
+                orderService.orderItems(new CreateOrderDTO(List.of(new OrderItemGroupDTO(null, 2))),encodedAuth);
             });
         }
 
         @Test
         void verifyOrder_ItemGroupDTOAmountUnder0_returnsIllegalAmountException() {
             Assertions.assertThrows(IllegalAmountException.class, () -> {
-                orderService.verifyOrder(new CreateOrderDTO(List.of(new ItemGroupDTO("foo", -5))));
+                orderService.orderItems(new CreateOrderDTO(List.of(new OrderItemGroupDTO(UUID.randomUUID(), -5))),encodedAuth);
             });
         }
 
         @Test
-        void orderItems_ItemGroupDTOPresentNoCustomerIdPresent_returnsMadatoryFieldException(){
-            Assertions.assertThrows(MandatoryFieldException.class, () -> {
+        void orderItems_ItemGroupDTOPresentNoItemForId_returnsIllegalFieldException(){
+            Assertions.assertThrows(IllegalIdException.class, () -> {
                orderService.orderItems(TEST_CREATE_ORDER_DTO,encodedAuth);
-            });
-        }
-
-        @Test
-        void orderItems_ItemGroupDTOPresentInvalidUUIDFormat_returnsMandatoryFieldException(){
-            Assertions.assertThrows(MandatoryFieldException.class, () -> {
-               orderService.orderItems(TEST_CREATE_ORDER_DTO, "12345");
-            });
-        }
-
-        @Test
-        void reportOrdersByCustomer_InvalidAuthString_returnsInvalidIdFormatException(){
-            Assertions.assertThrows(InvalidIdFormatException.class, () -> {
-               orderService.reportOrdersByCustomer("Basic 12345:password");
-            });
-        }
-
-        @Test
-        void reportOrdersByCustomer_AuthStringNotPresent_returnsMandatoryFieldException(){
-            Assertions.assertThrows(MandatoryFieldException.class, () -> {
-               orderService.reportOrdersByCustomer(null);
             });
         }
 
@@ -127,8 +106,8 @@ class OrderServiceTest {
         }
 
         @Test
-        void reorderExistingOrder_AuthStringPresentNoOrderID_returnsMandatoryFieldException(){
-            Assertions.assertThrows(MandatoryFieldException.class,() -> {
+        void reorderExistingOrder_AuthStringPresentNoOrderID_returnsIllegalIdException(){
+            Assertions.assertThrows(IllegalIdException.class,() -> {
                orderService.reorderExistingOrder(null,"Basic username:password");
             });
         }

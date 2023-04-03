@@ -20,9 +20,6 @@ public class CustomerServiceIntegrationTest {
     ICustomerService customerService;
 
 
-
-
-
     @Test
     void getCustomerUUIDFromAuth_AuthStringPresent_returnsCustomerUUID(){
 

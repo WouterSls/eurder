@@ -9,7 +9,7 @@ import com.switchfully.eurder.components.itemComponent.IItemService;
 import com.switchfully.eurder.api.dto.item.CreateItemDTO;
 import com.switchfully.eurder.api.dto.item.ItemDTO;
 import com.switchfully.eurder.api.dto.order.CreateOrderDTO;
-import com.switchfully.eurder.api.dto.order.ItemGroupDTO;
+import com.switchfully.eurder.api.dto.order.OrderItemGroupDTO;
 import com.switchfully.eurder.components.orderComponent.IOrderService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -60,7 +60,7 @@ class IntegrationTest {
         Assertions.assertNotNull(itemTest3Actual);
 
         //create an order with above item and customer
-        final ItemGroupDTO itemOrder = new ItemGroupDTO(createdItem.getId(), 1);
+        final OrderItemGroupDTO itemOrder = new OrderItemGroupDTO(createdItem.getId(), 1);
         final CreateOrderDTO createdOrder = new CreateOrderDTO(List.of(itemOrder));
         Assertions.assertNotNull(createdOrder);
 

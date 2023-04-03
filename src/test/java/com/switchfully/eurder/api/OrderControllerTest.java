@@ -5,8 +5,9 @@ import com.switchfully.eurder.api.dto.customer.CustomerDTO;
 import com.switchfully.eurder.api.dto.item.CreateItemDTO;
 import com.switchfully.eurder.api.dto.item.ItemDTO;
 import com.switchfully.eurder.api.dto.order.CreateOrderDTO;
-import com.switchfully.eurder.api.dto.order.ItemGroupDTO;
 import com.switchfully.eurder.api.dto.order.OrderDTO;
+import com.switchfully.eurder.api.dto.order.OrderItemGroupDTO;
+import com.switchfully.eurder.components.customerComponent.ICustomerService;
 import com.switchfully.eurder.components.itemComponent.IItemService;
 import com.switchfully.eurder.components.orderComponent.IOrderService;
 import io.restassured.RestAssured;
@@ -14,7 +15,6 @@ import io.restassured.http.ContentType;
 import io.restassured.http.Header;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,15 +22,13 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.annotation.DirtiesContext;
 
+import java.util.Base64;
 import java.util.List;
+import java.util.UUID;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class OrderControllerTest {
-
-    CreateCustomerDTO customerDTO = new CreateCustomerDTO("foo", "bar", "foo", "bar", "foobar","test");
-    CustomerDTO customer;
-    Header header;
 
     @LocalServerPort
     private int port;
@@ -39,29 +37,34 @@ class OrderControllerTest {
     IOrderService orderService;
     @Autowired
     IItemService itemService;
+    @Autowired
+    ICustomerService customerService;
 
-    @BeforeEach()
-    void addCustomerToService() {
+    final CreateCustomerDTO TEST_CREATE_CUSTOMER_DTO = new CreateCustomerDTO("foo", "bar", "foo@email.com", "bar", "041234567", "customer");
+    final CreateCustomerDTO TEST_CREATE_ADMIN_DTO = new CreateCustomerDTO("admin", "user", "admin@email.com", "theStreet07", "0412345678", "admin");
+    CustomerDTO customer, admin;
 
-        customer = RestAssured.given()
-                .contentType(ContentType.JSON)
-                .body(customerDTO)
-                .when()
-                .port(port)
-                .post("/customers/create")
-                .then()
-                .assertThat()
-                .statusCode(HttpStatus.CREATED.value())
-                .extract()
-                .as(CustomerDTO.class);
 
+    String adminId, customerId;
+    String adminPw = TEST_CREATE_ADMIN_DTO.getPassword();
+    String customerPw = TEST_CREATE_CUSTOMER_DTO.getPassword();
+    String testUUID = "a68631fa-d8f8-4dcc-b6f3-7e77e17207a5";
+
+    Header header;
+
+    @BeforeEach
+    void setup() {
+        admin = customerService.createNewAdmin(TEST_CREATE_ADMIN_DTO);
+        customer = customerService.createNewCustomer(TEST_CREATE_CUSTOMER_DTO);
+        customerId = customer.getId().toString();
+        adminId = admin.getId().toString();
         header = new Header("Authorization", "Basic userId:password");
     }
 
     @Test
     void orderItems_CreateOrderDTONoOrderIdPresent_returns404() {
 
-        final ItemGroupDTO testItemGroup = new ItemGroupDTO(null, 1);
+        final OrderItemGroupDTO testItemGroup = new OrderItemGroupDTO(null, 1);
         final CreateOrderDTO testOrder = new CreateOrderDTO(List.of(testItemGroup));
 
 
@@ -69,7 +72,7 @@ class OrderControllerTest {
                 .contentType(ContentType.JSON)
                 .body(testOrder)
                 .header(header)
-                .auth().preemptive().basic(customer.getId().toString(), "password")
+                .auth().preemptive().basic(customerId, customerPw)
                 .log().all()
                 .when()
                 .port(port)
@@ -83,14 +86,14 @@ class OrderControllerTest {
     @Test
     void orderItems_CreateOrderDTONoOrderAmount_returns404() {
 
-        final ItemGroupDTO testItemGroup = new ItemGroupDTO("*4*", 0);
+        final OrderItemGroupDTO testItemGroup = new OrderItemGroupDTO(UUID.randomUUID(), 0);
         final CreateOrderDTO testOrder = new CreateOrderDTO(List.of(testItemGroup));
 
         RestAssured.given()
                 .contentType(ContentType.JSON)
                 .body(testOrder)
                 .header(header)
-                .auth().preemptive().basic(customer.getId().toString(), "password")
+                .auth().preemptive().basic(customerId, customerPw)
                 .when()
                 .port(port)
                 .post("/orders/order")
@@ -103,16 +106,16 @@ class OrderControllerTest {
     void orderItems_CreateOrderDTOOrderPresentAmountBiggerThenStock_returns404() {
 
 
-        itemService.createNewItem(new CreateItemDTO("foo", "bar", 10, 5));
+        ItemDTO createdItem = itemService.createNewItem(new CreateItemDTO("foo", "bar", 10, 5));
 
-        final ItemGroupDTO testItemGroup = new ItemGroupDTO("*4*", 10);
+        final OrderItemGroupDTO testItemGroup = new OrderItemGroupDTO(createdItem.getId(), 10);
         final CreateOrderDTO testOrder = new CreateOrderDTO(List.of(testItemGroup));
 
         RestAssured.given()
                 .contentType(ContentType.JSON)
                 .body(testOrder)
                 .header(header)
-                .auth().preemptive().basic(customer.getId().toString(), "password")
+                .auth().preemptive().basic(customerId, customerPw)
                 .when()
                 .port(port)
                 .post("/orders/order")
@@ -127,14 +130,14 @@ class OrderControllerTest {
         ItemDTO createdItem = itemService.createNewItem(new CreateItemDTO("foo", "bar", 10, 5));
 
 
-        final ItemGroupDTO testItemGroup = new ItemGroupDTO(createdItem.getId().toString(), 1);
+        final OrderItemGroupDTO testItemGroup = new OrderItemGroupDTO(createdItem.getId(), 1);
         final CreateOrderDTO testOrder = new CreateOrderDTO(List.of(testItemGroup));
 
         RestAssured.given()
                 .contentType(ContentType.JSON)
                 .body(testOrder)
                 .header(header)
-                .auth().preemptive().basic(customer.getId().toString(), "password")
+                .auth().preemptive().basic(customerId, customerPw)
                 .when()
                 .port(port)
                 .post("/orders/order")
@@ -151,28 +154,18 @@ class OrderControllerTest {
         CreateItemDTO testItem = new CreateItemDTO("foo", "bar", 10, 5);
 
 
-        ItemDTO gottenItem = RestAssured.given()
-                .contentType(ContentType.JSON)
-                .body(testItem)
-                .when()
-                .port(port)
-                .post("/items/create")
-                .then()
-                .assertThat()
-                .statusCode(HttpStatus.CREATED.value())
-                .extract()
-                .as(ItemDTO.class);
+        ItemDTO gottenItem = itemService.createNewItem(testItem);
 
         final int amountToOrder = 1;
 
-        final ItemGroupDTO testItemGroup = new ItemGroupDTO(gottenItem.getId().toString(), 1);
+        final OrderItemGroupDTO testItemGroup = new OrderItemGroupDTO(gottenItem.getId(), 1);
         final CreateOrderDTO testOrder = new CreateOrderDTO(List.of(testItemGroup));
 
         RestAssured.given()
                 .contentType(ContentType.JSON)
                 .body(testOrder)
                 .header(header)
-                .auth().preemptive().basic(customer.getId().toString(), "password")
+                .auth().preemptive().basic(customerId, customerPw)
                 .when()
                 .port(port)
                 .post("/orders/order")
@@ -181,16 +174,7 @@ class OrderControllerTest {
                 .statusCode(HttpStatus.CREATED.value());
 
 
-        ItemDTO afterOrderItemDTO =
-                RestAssured.given()
-                        .when()
-                        .port(port)
-                        .get("/items/" + gottenItem.getId())
-                        .then()
-                        .assertThat()
-                        .statusCode(HttpStatus.OK.value())
-                        .extract()
-                        .as(ItemDTO.class);
+        ItemDTO afterOrderItemDTO = itemService.getItemById(gottenItem.getId());
 
 
         Assertions.assertEquals((gottenItem.getAmount() - amountToOrder), afterOrderItemDTO.getAmount());
@@ -201,25 +185,18 @@ class OrderControllerTest {
 
         CreateItemDTO testItem = new CreateItemDTO("foo", "bar", 10, 5);
 
+        ItemDTO gottenItem = itemService.createNewItem(testItem);
 
-        RestAssured
-                .given()
-                .contentType(ContentType.JSON)
-                .header(header)
-                .auth().preemptive().basic(customer.getId().toString(), "password")
-                .body(testItem)
-                .log().all()
-                .when()
-                .port(port)
-                .post("items/create")
-                .then()
-                .assertThat()
-                .statusCode(HttpStatus.CREATED.value());
+        CreateOrderDTO testOrder = new CreateOrderDTO(List.of(new OrderItemGroupDTO(gottenItem.getId(), 1)));
+
+        String auth = "basic " + Base64.getEncoder().encodeToString((customerId + ":" + customerPw).getBytes());
+
+        orderService.orderItems(testOrder, auth);
 
         RestAssured.given()
                 .contentType(ContentType.JSON)
                 .header(header)
-                .auth().preemptive().basic(customer.getId().toString(), "password")
+                .auth().preemptive().basic(customerId, customerPw)
                 .log().all()
                 .when()
                 .port(port)
@@ -231,48 +208,26 @@ class OrderControllerTest {
     }
 
     @Test
-    void reorderExistingOrder_orderIdPresentAuthPresent_returns200(){
+    void reorderExistingOrder_orderIdPresentAuthPresent_returns200() {
 
 
         CreateItemDTO testItem = new CreateItemDTO("foo", "bar", 10, 5);
 
+        String auth = "basic " + Base64.getEncoder().encodeToString((customerId + ":" + customerPw).getBytes());
 
-        ItemDTO gottenItem = RestAssured.given()
-                .contentType(ContentType.JSON)
-                .body(testItem)
-                .when()
-                .port(port)
-                .post("/items/create")
-                .then()
-                .assertThat()
-                .statusCode(HttpStatus.CREATED.value())
-                .extract()
-                .as(ItemDTO.class);
+        ItemDTO gottenItem = itemService.createNewItem(testItem);
 
-
-        final ItemGroupDTO testItemGroup = new ItemGroupDTO(gottenItem.getId().toString(), 1);
+        final OrderItemGroupDTO testItemGroup = new OrderItemGroupDTO(gottenItem.getId(), 1);
         final CreateOrderDTO testOrder = new CreateOrderDTO(List.of(testItemGroup));
 
-        List<OrderDTO> gottenOrderList = RestAssured.given()
-                .contentType(ContentType.JSON)
-                .body(testOrder)
-                .header(header)
-                .auth().preemptive().basic(customer.getId().toString(), "password")
-                .when()
-                .port(port)
-                .post("/orders/order")
-                .then()
-                .assertThat()
-                .statusCode(HttpStatus.CREATED.value())
-                .extract()
-                .jsonPath().getList(".",OrderDTO.class);
+        List<OrderDTO> gottenOrderList = orderService.orderItems(testOrder, auth);
 
         OrderDTO order = gottenOrderList.get(0);
 
         RestAssured.given()
                 .contentType(ContentType.JSON)
                 .header(header)
-                .auth().preemptive().basic(customer.getId().toString(), "password")
+                .auth().preemptive().basic(customerId, customerPw)
                 .log().all()
                 .when()
                 .port(port)
@@ -282,4 +237,71 @@ class OrderControllerTest {
                 .assertThat()
                 .statusCode(HttpStatus.CREATED.value());
     }
+
+    @Test
+    void reorderExistingOrder_OrderIdNotPresentAuthPresent_returns404() {
+
+
+        CreateItemDTO testItem = new CreateItemDTO("foo", "bar", 10, 5);
+
+        String auth = "basic " + Base64.getEncoder().encodeToString((customerId + ":" + customerPw).getBytes());
+
+        ItemDTO gottenItem = itemService.createNewItem(testItem);
+
+        final OrderItemGroupDTO testItemGroup = new OrderItemGroupDTO(gottenItem.getId(), 1);
+        final CreateOrderDTO testOrder = new CreateOrderDTO(List.of(testItemGroup));
+
+        List<OrderDTO> gottenOrderList = orderService.orderItems(testOrder, auth);
+
+        OrderDTO order = gottenOrderList.get(0);
+
+        RestAssured.given()
+                .contentType(ContentType.JSON)
+                .header(header)
+                .auth().preemptive().basic(customerId, customerPw)
+                .log().all()
+                .when()
+                .port(port)
+                .post("/orders/" + UUID.randomUUID() + "/reorder")
+                .then()
+                .log().all()
+                .assertThat()
+                .statusCode(HttpStatus.NOT_FOUND.value());
+    }
+
+    @Test
+    void reorderExistingOrder_OrderIdPresentAuthPresentNotYourOrder_returns404() {
+
+
+        CreateItemDTO testItem = new CreateItemDTO("foo", "bar", 10, 5);
+        CreateCustomerDTO testCustomer = new CreateCustomerDTO("test","customer","test","test","test","test");
+
+        CustomerDTO testCustomerDTO = customerService.createNewCustomer(testCustomer);
+        String testCustomerId = testCustomerDTO.getId().toString();
+        String testCustomerPassword = testCustomer.getPassword();
+        String auth = "basic " + Base64.getEncoder().encodeToString((customerId + ":" + customerPw).getBytes());
+
+        ItemDTO gottenItem = itemService.createNewItem(testItem);
+
+        final OrderItemGroupDTO testItemGroup = new OrderItemGroupDTO(gottenItem.getId(), 1);
+        final CreateOrderDTO testOrder = new CreateOrderDTO(List.of(testItemGroup));
+
+        List<OrderDTO> gottenOrderList = orderService.orderItems(testOrder, auth);
+
+        OrderDTO order = gottenOrderList.get(0);
+
+        RestAssured.given()
+                .contentType(ContentType.JSON)
+                .header(header)
+                .auth().preemptive().basic(testCustomerId, testCustomerPassword)
+                .log().all()
+                .when()
+                .port(port)
+                .post("/orders/" + order.getId() + "/reorder")
+                .then()
+                .log().all()
+                .assertThat()
+                .statusCode(HttpStatus.NOT_FOUND.value());
+    }
+
 }

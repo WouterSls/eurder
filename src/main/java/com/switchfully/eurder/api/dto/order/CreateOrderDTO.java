@@ -4,16 +4,16 @@ import java.util.List;
 
 public class CreateOrderDTO {
 
-    List<ItemGroupDTO> orders;
+    List<OrderItemGroupDTO> orders;
 
     public CreateOrderDTO(){
     }
 
-    public CreateOrderDTO(List<ItemGroupDTO> orders) {
+    public CreateOrderDTO(List<OrderItemGroupDTO> orders) {
         this.orders = orders;
     }
 
-    public List<ItemGroupDTO> getOrders() {
+    public List<OrderItemGroupDTO> getOrders() {
         return orders;
     }
 }

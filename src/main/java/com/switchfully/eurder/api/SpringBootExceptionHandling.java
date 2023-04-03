@@ -71,4 +71,11 @@ public class SpringBootExceptionHandling {
     String handleIllegalIdException(Exception exception){
         return "IllegalIdException: " + exception.getMessage();
     }
+
+    @ExceptionHandler(IllegalOrderException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ResponseBody
+    String handleIllegalOrderException(Exception exception){
+        return "IllegalOrderException: " + exception.getMessage();
+    }
 }

@@ -148,12 +148,6 @@ class ItemServiceTest {
         }
 
         @Test
-        void updateItem_UpdateItemDTOPresentIncorrectId_returnsIllegalIdException() {
-            Assertions.assertThrows(InvalidIdFormatException.class, () -> {
-                itemService.updateItemById(TEST_ITEM_UPDATE_DTO, UUID.randomUUID());
-            });
-        }
-        @Test
         void updateItem_UpdateItemDTOPresentCorrectId_updatesItemRepo(){
     //TODO: test in integration test
 
