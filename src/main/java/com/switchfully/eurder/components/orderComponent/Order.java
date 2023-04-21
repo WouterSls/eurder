@@ -2,28 +2,52 @@ package com.switchfully.eurder.components.orderComponent;
 
 import com.switchfully.eurder.api.dto.customer.CustomerDTO;
 import com.switchfully.eurder.api.dto.item.ItemDTO;
+import com.switchfully.eurder.components.customerComponent.Customer;
+import com.switchfully.eurder.components.itemComponent.Item;
+import jakarta.persistence.*;
+import org.hibernate.cache.spi.support.AbstractReadWriteAccess;
 
 import java.time.LocalDate;
 import java.util.Objects;
 import java.util.UUID;
 
+@Entity
+@Table(name = "orders")
 class Order {
 
-    private final UUID id;
-    private final int amountOrdered;
-    private final ItemDTO item;
-    private final LocalDate shippingDate;
-    private final double totalPrice;
-    private final CustomerDTO customer;
+    @Id
+    private UUID id;
+
+    @ManyToOne
+    @JoinColumn(name = "fk_customer_id")
+    private Customer customer;
+
+    @Column(name = "amount_ordered")
+    private int amountOrdered;
+
+    @ManyToOne
+    @JoinColumn(name = "fk_item_id")
+    private Item item;
+
+    @Column(name = "total_price")
+    private double totalPrice;
+
+    @Column(name = "shipping_date", columnDefinition = "date")
+    private LocalDate shippingDate;
 
 
-    public Order(ItemDTO item, int amountOrdered, CustomerDTO customer) {
+
+    public Order(Item item, int amountOrdered, Customer customer) {
         this.id = UUID.randomUUID();
         this.item = item;
         this.amountOrdered = amountOrdered;
         this.shippingDate = calculateShippingDate();
         this.totalPrice = item.getPrice() * amountOrdered;
         this.customer = customer;
+    }
+
+    public Order(){
+
     }
 
     private LocalDate calculateShippingDate(){
@@ -43,7 +67,7 @@ class Order {
         return amountOrdered;
     }
 
-    public ItemDTO getItem() {
+    public Item getItem() {
         return item;
     }
 
@@ -55,7 +79,7 @@ class Order {
         return totalPrice;
     }
 
-    public CustomerDTO getCustomer() {
+    public Customer getCustomer() {
         return customer;
     }
 

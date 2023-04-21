@@ -1,4 +1,4 @@
-package com.switchfully.eurder.api.dto.order;
+package com.switchfully.eurder.api.dto.order.itemGroup;
 
 import java.util.UUID;
 

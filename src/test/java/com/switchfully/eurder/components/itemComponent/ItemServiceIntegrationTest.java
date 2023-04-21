@@ -16,7 +16,7 @@ import java.util.List;
 public class ItemServiceIntegrationTest {
 
 
-    private ItemRepository itemRepository = new ItemRepository();
+    private IItemRepository itemRepository;
     private ItemMapper itemMapper = new ItemMapper();
     private Item testItem = new Item("foo","bar",10,5);
     @Autowired

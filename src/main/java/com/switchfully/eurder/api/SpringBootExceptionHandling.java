@@ -78,4 +78,11 @@ public class SpringBootExceptionHandling {
     String handleIllegalOrderException(Exception exception){
         return "IllegalOrderException: " + exception.getMessage();
     }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    String handleIllegalArgumentException(Exception ex){
+        return "IllegalArgumentException: " + ex.getMessage();
+    }
 }

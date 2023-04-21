@@ -2,16 +2,19 @@ package com.switchfully.eurder.components.orderComponent;
 
 import com.switchfully.eurder.api.dto.customer.CustomerDTO;
 import com.switchfully.eurder.api.dto.order.CreateOrderDTO;
-import com.switchfully.eurder.api.dto.order.OrderItemGroupDTO;
+import com.switchfully.eurder.api.dto.order.itemGroup.OrderItemGroupDTO;
+import com.switchfully.eurder.components.customerComponent.ICustomerRepository;
 import com.switchfully.eurder.components.customerComponent.ICustomerService;
+import com.switchfully.eurder.components.itemComponent.IItemRepository;
 import com.switchfully.eurder.components.itemComponent.IItemService;
 import com.switchfully.eurder.exception.IllegalAmountException;
 import com.switchfully.eurder.exception.IllegalIdException;
-import com.switchfully.eurder.exception.InvalidIdFormatException;
 import com.switchfully.eurder.exception.MandatoryFieldException;
 import org.junit.jupiter.api.*;
 import org.mockito.Mockito;
+import org.springframework.security.oauth2.jwt.Jwt;
 
+import java.time.Instant;
 import java.util.Base64;
 import java.util.List;
 import java.util.UUID;
@@ -25,27 +28,33 @@ class OrderServiceTest {
     class unitTestMocking {
 
         private OrderService orderService;
-        private OrderRepository orderRepositoryMock;
+        private IOrderRepository orderRepositoryMock;
         private OrderMapper orderMapperMock;
         private IItemService itemServiceMock;
+        private IItemRepository itemRepositoryMock;
         private ICustomerService customerService;
+        private ICustomerRepository customerRepoMock;
 
         private final CreateOrderDTO TEST_CREATE_ORDER_DTO = new CreateOrderDTO(List.of(new OrderItemGroupDTO(UUID.randomUUID(), 5)));
+
+        Jwt jwt = new Jwt("test", Instant.now(),Instant.now().plusSeconds(300),null,null);
 
         CustomerDTO customerDTO = new CustomerDTO("foo","bar","test","foo","bar", UUID.randomUUID());
         String encodedAuth;
 
         @BeforeEach
         void setup() {
-            orderRepositoryMock = Mockito.mock(OrderRepository.class);
+            orderRepositoryMock = Mockito.mock(IOrderRepository.class);
             orderMapperMock = Mockito.mock(OrderMapper.class);
             itemServiceMock = Mockito.mock(IItemService.class);
             customerService = Mockito.mock(ICustomerService.class);
+            itemRepositoryMock = Mockito.mock(IItemRepository.class);
+            customerRepoMock = Mockito.mock(ICustomerRepository.class);
 
             String userId = customerDTO.getId().toString();
             encodedAuth = "Basic " + Base64.getEncoder().encodeToString((userId + ":password").getBytes());
 
-            orderService = new OrderService(orderRepositoryMock, orderMapperMock, itemServiceMock,customerService);
+            orderService = new OrderService(orderRepositoryMock, orderMapperMock, itemServiceMock,customerService,customerRepoMock,itemRepositoryMock);
         }
 
         @Test
@@ -65,35 +74,35 @@ class OrderServiceTest {
         @Test
         void verifyOrder_ItemGroupDTONotPresent_returnsMandatoryFieldException() {
             Assertions.assertThrows(MandatoryFieldException.class, () -> {
-                orderService.orderItems(new CreateOrderDTO(null),encodedAuth);
+                orderService.orderItems(new CreateOrderDTO(null),jwt);
             });
         }
 
         @Test
         void verifyOrder_CreateOrderDTOEmptyList_returnsMandatoryFieldException() {
             Assertions.assertThrows(MandatoryFieldException.class, () -> {
-                orderService.orderItems(new CreateOrderDTO(emptyList()),encodedAuth);
+                orderService.orderItems(new CreateOrderDTO(emptyList()),jwt);
             });
         }
 
         @Test
         void verifyOrder_ItemGroupDTOIdNotPresent_returnsMandatoryFieldException() {
             Assertions.assertThrows(MandatoryFieldException.class, () -> {
-                orderService.orderItems(new CreateOrderDTO(List.of(new OrderItemGroupDTO(null, 2))),encodedAuth);
+                orderService.orderItems(new CreateOrderDTO(List.of(new OrderItemGroupDTO(null, 2))),jwt);
             });
         }
 
         @Test
         void verifyOrder_ItemGroupDTOAmountUnder0_returnsIllegalAmountException() {
             Assertions.assertThrows(IllegalAmountException.class, () -> {
-                orderService.orderItems(new CreateOrderDTO(List.of(new OrderItemGroupDTO(UUID.randomUUID(), -5))),encodedAuth);
+                orderService.orderItems(new CreateOrderDTO(List.of(new OrderItemGroupDTO(UUID.randomUUID(), -5))),jwt);
             });
         }
 
         @Test
         void orderItems_ItemGroupDTOPresentNoItemForId_returnsIllegalFieldException(){
             Assertions.assertThrows(IllegalIdException.class, () -> {
-               orderService.orderItems(TEST_CREATE_ORDER_DTO,encodedAuth);
+               orderService.orderItems(TEST_CREATE_ORDER_DTO,jwt);
             });
         }
 
@@ -101,14 +110,14 @@ class OrderServiceTest {
         void reorderExistingOrder_AuthStringPresentWrongOrderID_returnsIllegalIdException(){
 
             Assertions.assertThrows(IllegalIdException.class, () -> {
-               orderService.reorderExistingOrder(UUID.randomUUID(),"Basic username:password");
+               orderService.reorderExistingOrder(UUID.randomUUID(),jwt);
             });
         }
 
         @Test
         void reorderExistingOrder_AuthStringPresentNoOrderID_returnsIllegalIdException(){
             Assertions.assertThrows(IllegalIdException.class,() -> {
-               orderService.reorderExistingOrder(null,"Basic username:password");
+               orderService.reorderExistingOrder(null,jwt);
             });
         }
     }

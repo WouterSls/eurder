@@ -1,17 +1,29 @@
 package com.switchfully.eurder.components.itemComponent;
 
+import jakarta.persistence.*;
+
 import java.util.UUID;
 
-class Item{
+@Entity
+@Table(name = "items")
+public class Item{
 
-    private final UUID id;
+    @Id
+    private UUID id;
+    @Column(name = "name")
     private String name;
+    @Column(name = "description")
     private String description;
+    @Column(name = "price")
     private double price;
+    @Column(name="amount")
     private int amount;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "urgency")
     private Urgency urgency;
 
-    public Item(String name, String description, double price, int amount) {
+    Item(String name, String description, double price, int amount) {
         this.id = UUID.randomUUID();
         this.name = name;
         this.description = description;
@@ -20,7 +32,10 @@ class Item{
         this.urgency = calculateStockUrgency(amount);
     }
 
-    String getName() {
+    private Item(){
+
+    }
+    public String getName() {
         return name;
     }
 
@@ -28,15 +43,15 @@ class Item{
         return description;
     }
 
-    double getPrice() {
+    public double getPrice() {
         return price;
     }
 
-    int getAmount() {
+    public int getAmount() {
         return amount;
     }
 
-    UUID getId(){
+    public UUID getId(){
         return id;
     }
 
@@ -73,5 +88,21 @@ class Item{
     @Override
     public String toString() {
         return "Item: " + getName() + "\nDescription: " + getDescription() + "\nPrice: " + getPrice() + "\nAmount in stock: " + getAmount() + "\n\nItem ID: " + getId();
+    }
+
+    public enum Urgency {
+        STOCK_LOW("high"),STOCK_MEDIUM("medium"), STOCK_HIGH("low");
+
+        private final String label;
+
+        Urgency(String label) {
+            this.label = label;
+        }
+
+        public String getLabel() {
+            return label;
+        }
+
+
     }
 }

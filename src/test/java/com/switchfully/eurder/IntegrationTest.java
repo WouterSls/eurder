@@ -9,14 +9,16 @@ import com.switchfully.eurder.components.itemComponent.IItemService;
 import com.switchfully.eurder.api.dto.item.CreateItemDTO;
 import com.switchfully.eurder.api.dto.item.ItemDTO;
 import com.switchfully.eurder.api.dto.order.CreateOrderDTO;
-import com.switchfully.eurder.api.dto.order.OrderItemGroupDTO;
+import com.switchfully.eurder.api.dto.order.itemGroup.OrderItemGroupDTO;
 import com.switchfully.eurder.components.orderComponent.IOrderService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.oauth2.jwt.Jwt;
 
+import java.time.Instant;
 import java.util.Base64;
 import java.util.List;
 
@@ -31,19 +33,24 @@ class IntegrationTest {
     @Autowired
     private ICustomerService customerService;
 
+    Jwt jwt = new Jwt("test", Instant.now(),Instant.now().plusSeconds(300),null,null);
+
+
 
     @Test
     @DisplayName("System integration test")
     void systemIntegrationTest() {
         //create a customer
-        CreateCustomerDTO newCustomer = new CreateCustomerDTO("foo", "bar", "foo@email.com", "bar", "0412345678","test");
-        CustomerDTO createdCustomer = customerService.createNewCustomer(newCustomer);
+
+        final CreateCustomerDTO newCustomer = new CreateCustomerDTO("fooStreet", "0412345678");
+
+        CustomerDTO createdCustomer = customerService.createNewCustomer(jwt,newCustomer);
         Assertions.assertNotNull(createdCustomer);
 
         //test the customerService with the customer;
         final CustomerDTO customerTest1Actual = customerService.getCustomerById(createdCustomer.getId().toString());
         Assertions.assertEquals(createdCustomer, customerTest1Actual);
-        final List<CustomerDTO> customerTest4Actual = customerService.getListCustomerDTO();
+        final List<CustomerDTO> customerTest4Actual = customerService.getAllCustomers();
         Assertions.assertNotNull(customerTest4Actual);
 
 
@@ -67,7 +74,7 @@ class IntegrationTest {
         //test the orderService with the order
         String userId = createdCustomer.getId().toString();
         String encodedAuth = "Basic " + Base64.getEncoder().encodeToString((userId + ":password").getBytes());
-        final List<OrderDTO> listOfOrders = orderService.orderItems(createdOrder, encodedAuth);
+        final List<OrderDTO> listOfOrders = orderService.orderItems(createdOrder, jwt);
         Assertions.assertNotNull(listOfOrders);
     }
 

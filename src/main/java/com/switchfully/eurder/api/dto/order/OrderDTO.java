@@ -3,6 +3,8 @@ package com.switchfully.eurder.api.dto.order;
 
 import com.switchfully.eurder.api.dto.customer.CustomerDTO;
 import com.switchfully.eurder.api.dto.item.ItemDTO;
+import com.switchfully.eurder.components.customerComponent.Customer;
+import com.switchfully.eurder.components.itemComponent.Item;
 
 import java.time.LocalDate;
 import java.util.UUID;
@@ -11,12 +13,12 @@ public class OrderDTO {
 
     private final UUID id;
     private final int amountOrdered;
-    private final ItemDTO item;
+    private final Item item;
     private final LocalDate shippingDate;
     private final double totalPrice;
-    private final CustomerDTO customer;
+    private final Customer customer;
 
-    public OrderDTO(UUID id, int amountOrdered, ItemDTO item, LocalDate shippingDate, double totalPrice, CustomerDTO customer) {
+    public OrderDTO(UUID id, int amountOrdered, Item item, LocalDate shippingDate, double totalPrice, Customer customer) {
         this.id = id;
         this.amountOrdered = amountOrdered;
         this.item = item;
@@ -33,7 +35,7 @@ public class OrderDTO {
         return amountOrdered;
     }
 
-    public ItemDTO getItem() {
+    public Item getItem() {
         return item;
     }
 
@@ -45,7 +47,7 @@ public class OrderDTO {
         return totalPrice;
     }
 
-    public CustomerDTO getCustomer() {
+    public Customer getCustomer() {
         return customer;
     }
 }

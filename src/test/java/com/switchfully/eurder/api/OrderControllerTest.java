@@ -6,7 +6,7 @@ import com.switchfully.eurder.api.dto.item.CreateItemDTO;
 import com.switchfully.eurder.api.dto.item.ItemDTO;
 import com.switchfully.eurder.api.dto.order.CreateOrderDTO;
 import com.switchfully.eurder.api.dto.order.OrderDTO;
-import com.switchfully.eurder.api.dto.order.OrderItemGroupDTO;
+import com.switchfully.eurder.api.dto.order.itemGroup.OrderItemGroupDTO;
 import com.switchfully.eurder.components.customerComponent.ICustomerService;
 import com.switchfully.eurder.components.itemComponent.IItemService;
 import com.switchfully.eurder.components.orderComponent.IOrderService;
@@ -20,8 +20,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.test.annotation.DirtiesContext;
 
+import java.time.Instant;
 import java.util.Base64;
 import java.util.List;
 import java.util.UUID;
@@ -40,22 +42,23 @@ class OrderControllerTest {
     @Autowired
     ICustomerService customerService;
 
-    final CreateCustomerDTO TEST_CREATE_CUSTOMER_DTO = new CreateCustomerDTO("foo", "bar", "foo@email.com", "bar", "041234567", "customer");
-    final CreateCustomerDTO TEST_CREATE_ADMIN_DTO = new CreateCustomerDTO("admin", "user", "admin@email.com", "theStreet07", "0412345678", "admin");
     CustomerDTO customer, admin;
 
+    CreateCustomerDTO createCustomerDTO = new CreateCustomerDTO("bar", "foo");
+
+    Jwt jwt = new Jwt("test", Instant.now(),Instant.now().plusSeconds(300),null,null);
 
     String adminId, customerId;
-    String adminPw = TEST_CREATE_ADMIN_DTO.getPassword();
-    String customerPw = TEST_CREATE_CUSTOMER_DTO.getPassword();
+    String adminPw = null;
+    String customerPw = null;
     String testUUID = "a68631fa-d8f8-4dcc-b6f3-7e77e17207a5";
 
     Header header;
 
     @BeforeEach
     void setup() {
-        admin = customerService.createNewAdmin(TEST_CREATE_ADMIN_DTO);
-        customer = customerService.createNewCustomer(TEST_CREATE_CUSTOMER_DTO);
+
+        customer = customerService.createNewCustomer(jwt,createCustomerDTO);
         customerId = customer.getId().toString();
         adminId = admin.getId().toString();
         header = new Header("Authorization", "Basic userId:password");
@@ -191,7 +194,7 @@ class OrderControllerTest {
 
         String auth = "basic " + Base64.getEncoder().encodeToString((customerId + ":" + customerPw).getBytes());
 
-        orderService.orderItems(testOrder, auth);
+        orderService.orderItems(testOrder,jwt);
 
         RestAssured.given()
                 .contentType(ContentType.JSON)
@@ -220,7 +223,7 @@ class OrderControllerTest {
         final OrderItemGroupDTO testItemGroup = new OrderItemGroupDTO(gottenItem.getId(), 1);
         final CreateOrderDTO testOrder = new CreateOrderDTO(List.of(testItemGroup));
 
-        List<OrderDTO> gottenOrderList = orderService.orderItems(testOrder, auth);
+        List<OrderDTO> gottenOrderList = orderService.orderItems(testOrder,jwt);
 
         OrderDTO order = gottenOrderList.get(0);
 
@@ -251,7 +254,7 @@ class OrderControllerTest {
         final OrderItemGroupDTO testItemGroup = new OrderItemGroupDTO(gottenItem.getId(), 1);
         final CreateOrderDTO testOrder = new CreateOrderDTO(List.of(testItemGroup));
 
-        List<OrderDTO> gottenOrderList = orderService.orderItems(testOrder, auth);
+        List<OrderDTO> gottenOrderList = orderService.orderItems(testOrder, jwt);
 
         OrderDTO order = gottenOrderList.get(0);
 
@@ -274,11 +277,10 @@ class OrderControllerTest {
 
 
         CreateItemDTO testItem = new CreateItemDTO("foo", "bar", 10, 5);
-        CreateCustomerDTO testCustomer = new CreateCustomerDTO("test","customer","test","test","test","test");
 
-        CustomerDTO testCustomerDTO = customerService.createNewCustomer(testCustomer);
+        CustomerDTO testCustomerDTO = customerService.createNewCustomer(jwt,createCustomerDTO);
         String testCustomerId = testCustomerDTO.getId().toString();
-        String testCustomerPassword = testCustomer.getPassword();
+        String testCustomerPassword = null;
         String auth = "basic " + Base64.getEncoder().encodeToString((customerId + ":" + customerPw).getBytes());
 
         ItemDTO gottenItem = itemService.createNewItem(testItem);
@@ -286,7 +288,7 @@ class OrderControllerTest {
         final OrderItemGroupDTO testItemGroup = new OrderItemGroupDTO(gottenItem.getId(), 1);
         final CreateOrderDTO testOrder = new CreateOrderDTO(List.of(testItemGroup));
 
-        List<OrderDTO> gottenOrderList = orderService.orderItems(testOrder, auth);
+        List<OrderDTO> gottenOrderList = orderService.orderItems(testOrder, jwt);
 
         OrderDTO order = gottenOrderList.get(0);
 

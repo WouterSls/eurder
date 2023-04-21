@@ -1,30 +1,40 @@
 package com.switchfully.eurder.components.customerComponent;
 
 
-import com.switchfully.eurder.utils.Feature;
+import jakarta.persistence.*;
 
 import java.util.Objects;
 import java.util.UUID;
 
-class Customer{
-    private final UUID id;
-    private String firstName;
-    private String lastName;
-    private String emailAddress;
-    private String address;
-    private String phoneNumber;
-    private Role role;
-    private final String password;
+@Entity
+@Table(name = "customers")
+public class Customer{
 
-    Customer(String firstName, String lastName, String emailAddress, String address, String phoneNumber, String password, Role role) {
+    @Id
+    private UUID id;
+
+    @Column(name = "first_name")
+    private String firstName;
+    @Column(name = "last_name")
+    private String lastName;
+    @Column(name = "email_address")
+    private String emailAddress;
+    @Column(name = "address")
+    private String address;
+    @Column(name = "phone_number")
+    private String phoneNumber;
+
+    Customer(UUID id,String firstName, String lastName, String emailAddress, String address, String phoneNumber) {
+        this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.emailAddress = emailAddress;
         this.address = address;
         this.phoneNumber = phoneNumber;
-        this.id = UUID.randomUUID();
-        this.role = role;
-        this.password = password;
+    }
+
+    public Customer(){
+
     }
 
     String getFirstName() {
@@ -35,11 +45,11 @@ class Customer{
         return lastName;
     }
 
-    String getEmailAddress() {
+    public String getEmailAddress() {
         return emailAddress;
     }
 
-    String getAddress() {
+    public String getAddress() {
         return address;
     }
 
@@ -47,7 +57,7 @@ class Customer{
         return phoneNumber;
     }
 
-    UUID getId() {
+    public UUID getId() {
         return id;
     }
 
@@ -64,15 +74,4 @@ class Customer{
         return Objects.hash(getFirstName(), getLastName(), getEmailAddress(), getAddress(), getPhoneNumber());
     }
 
-    boolean hasAccessTo(Feature feature) {
-        return role.hasFeature(feature);
-    }
-
-    String getPassword() {
-        return password;
-    }
-
-    boolean doesPasswordMatch(String password) {
-        return this.password.equals(password);
-    }
 }

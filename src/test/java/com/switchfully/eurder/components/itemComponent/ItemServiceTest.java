@@ -10,7 +10,6 @@ import com.switchfully.eurder.exception.NoItemsException;
 import org.junit.jupiter.api.*;
 import org.mockito.Mockito;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -25,6 +24,7 @@ class ItemServiceTest {
         private ItemService itemService;
         private ItemRepository itemRepositoryMock;
         private ItemMapper itemMapperMock;
+        private IItemRepository itemRepository;
 
         private final CreateItemDTO TEST_ITEM_CREATE_DTO = new CreateItemDTO("foo", "bar", 10, 2);
         private final UpdateItemDTO TEST_ITEM_UPDATE_DTO = new UpdateItemDTO("bar", "foo", 20, 6);
@@ -33,7 +33,7 @@ class ItemServiceTest {
         void setup() {
             itemRepositoryMock = Mockito.mock(ItemRepository.class);
             itemMapperMock = Mockito.mock(ItemMapper.class);
-            itemService = new ItemService(itemRepositoryMock, itemMapperMock);
+            itemService = new ItemService(itemMapperMock,itemRepository);
         }
 
         @Test

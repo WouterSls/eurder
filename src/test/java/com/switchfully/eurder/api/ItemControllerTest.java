@@ -17,8 +17,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.test.annotation.DirtiesContext;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
@@ -35,21 +37,21 @@ class ItemControllerTest {
     ICustomerService customerService;
 
     final CreateItemDTO TEST_CREATE_ITEM_DTO = new CreateItemDTO("foo", "bar", 10, 5);
-    final CreateCustomerDTO TEST_CREATE_CUSTOMER_DTO = new CreateCustomerDTO("foo", "bar", "foo@email.com", "bar", "041234567", "customer");
-    final CreateCustomerDTO TEST_CREATE_ADMIN_DTO = new CreateCustomerDTO("admin", "user", "admin@email.com", "theStreet07", "0412345678", "admin");
+    CreateCustomerDTO createCustomerDTO = new CreateCustomerDTO("bar", "foo");
     CustomerDTO customer, admin;
 
+    Jwt jwt = new Jwt("test", Instant.now(),Instant.now().plusSeconds(300),null,null);
+
     String adminId, customerId;
-    String adminPw = TEST_CREATE_ADMIN_DTO.getPassword();
-    String customerPw = TEST_CREATE_CUSTOMER_DTO.getPassword();
+
     String testUUID = "a68631fa-d8f8-4dcc-b6f3-7e77e17207a5";
+    String adminPw = null;
 
     Header header;
 
     @BeforeEach
     void setup() {
-        admin = customerService.createNewAdmin(TEST_CREATE_ADMIN_DTO);
-        customer = customerService.createNewCustomer(TEST_CREATE_CUSTOMER_DTO);
+        customer = customerService.createNewCustomer(jwt,createCustomerDTO);
         customerId = customer.getId().toString();
         adminId = admin.getId().toString();
         header = new Header("Authorization", "Basic userId:password");
@@ -373,7 +375,7 @@ class ItemControllerTest {
                 .assertThat()
                 .statusCode(HttpStatus.OK.value())
                 .extract()
-                .jsonPath().getList(".",ItemDTO.class);
+                .jsonPath().getList(".", ItemDTO.class);
 
         Assertions.assertEquals(List.of(expectedItem2,expectedItem3,expectedItem1),actualList);
     }
@@ -410,7 +412,7 @@ class ItemControllerTest {
                 .assertThat()
                 .statusCode(HttpStatus.OK.value())
                 .extract()
-                .jsonPath().getList(".",ItemDTO.class);
+                .jsonPath().getList(".", ItemDTO.class);
 
         Assertions.assertEquals(List.of(expectedItem1),actualList);
     }
@@ -434,7 +436,7 @@ class ItemControllerTest {
                 .assertThat()
                 .statusCode(HttpStatus.OK.value())
                 .extract()
-                .jsonPath().getList(".",ItemDTO.class);
+                .jsonPath().getList(".", ItemDTO.class);
 
         Assertions.assertEquals(List.of(expectedItem3),actualList);
     }
@@ -458,7 +460,7 @@ class ItemControllerTest {
                 .assertThat()
                 .statusCode(HttpStatus.OK.value())
                 .extract()
-                .jsonPath().getList(".",ItemDTO.class);
+                .jsonPath().getList(".", ItemDTO.class);
 
         Assertions.assertEquals(List.of(expectedItem2),actualList);
     }

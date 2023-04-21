@@ -5,12 +5,12 @@ import com.switchfully.eurder.api.dto.customer.CustomerDTO;
 import com.switchfully.eurder.components.customerComponent.ICustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
-import static com.switchfully.eurder.utils.Feature.VIEW_ALL_CUSTOMERS;
-import static com.switchfully.eurder.utils.Feature.VIEW_CUSTOMER_BY_ID;
 
 @RestController
 @RequestMapping(value = "customers")
@@ -23,30 +23,24 @@ public class CustomerController {
         this.customerService = customerService;
     }
 
+    @PreAuthorize("hasAuthority('member')")
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping(path ="/create", produces="application/json",consumes = "application/json")
-    CustomerDTO createNewCustomer(@RequestBody CreateCustomerDTO createCustomerDTO){
-        return customerService.createNewCustomer(createCustomerDTO);
+    @PostMapping(path ="/register", produces="application/json",consumes = "application/json")
+    CustomerDTO createNewCustomer(@AuthenticationPrincipal Jwt jwt, @RequestBody CreateCustomerDTO createCustomerDTO){
+        return customerService.createNewCustomer(jwt,createCustomerDTO);
     }
 
-    @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping(path = "create/admin", produces = "application/json",consumes = "application/json")
-    CustomerDTO createNewAdmin(@RequestBody CreateCustomerDTO createCustomerDTO){
-        return customerService.createNewAdmin(createCustomerDTO);
-    }
-
-
+    @PreAuthorize("hasAuthority('manager')")
     @ResponseStatus(HttpStatus.OK)
     @GetMapping(produces = "application/json")
-    public List<CustomerDTO> getAllCustomers(@RequestHeader String authorization){
-        customerService.validateAuthorization(authorization,VIEW_ALL_CUSTOMERS);
-        return customerService.getListCustomerDTO();
+    public List<CustomerDTO> getAllCustomers(){
+        return customerService.getAllCustomers();
     }
 
+    @PreAuthorize("hasAuthority('manager')")
     @ResponseStatus(HttpStatus.OK)
     @GetMapping(path = "/{id}", produces = "application/json")
-    CustomerDTO getCustomerById(@PathVariable String id, @RequestHeader String authorization){
-        customerService.validateAuthorization(authorization,VIEW_CUSTOMER_BY_ID);
+    CustomerDTO getCustomerById(@PathVariable String id){
         return customerService.getCustomerById(id);
     }
 }

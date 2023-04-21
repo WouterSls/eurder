@@ -13,8 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.test.annotation.DirtiesContext;
 
+import java.time.Instant;
 import java.util.List;
 
 
@@ -27,22 +29,21 @@ class CustomerControllerTest {
     @Autowired
     ICustomerService customerService;
 
-    final CreateCustomerDTO TEST_CREATE_CUSTOMER_DTO = new CreateCustomerDTO("foo", "bar", "foo@email.com", "bar", "041234567", "customer");
-    final CreateCustomerDTO TEST_CREATE_ADMIN_DTO = new CreateCustomerDTO("admin", "user", "admin@email.com", "theStreet07", "0412345678", "admin");
+    final CreateCustomerDTO TEST_CREATE_CUSTOMER_DTO = new CreateCustomerDTO("fooStreet", "0412345678");
     CustomerDTO customer, admin;
 
+    Jwt jwt = new Jwt("test", Instant.now(),Instant.now().plusSeconds(300),null,null);
 
     String adminId, customerId;
-    String adminPw = TEST_CREATE_ADMIN_DTO.getPassword();
-    String customerPw = TEST_CREATE_CUSTOMER_DTO.getPassword();
+    String adminPw = null;
+    String customerPw = null;
     String testUUID = "a68631fa-d8f8-4dcc-b6f3-7e77e17207a5";
 
     Header header;
 
     @BeforeEach
     void setup() {
-        admin = customerService.createNewAdmin(TEST_CREATE_ADMIN_DTO);
-        customer = customerService.createNewCustomer(TEST_CREATE_CUSTOMER_DTO);
+        customer = customerService.createNewCustomer(jwt,TEST_CREATE_CUSTOMER_DTO);
         customerId = customer.getId().toString();
         adminId = admin.getId().toString();
         header = new Header("Authorization", "Basic userId:password");
@@ -215,7 +216,7 @@ class CustomerControllerTest {
     @Test
     void createNewCustomer_createCustomerDTOFirstNameNotPresent_returns404() {
 
-        CreateCustomerDTO createCustomerDTO = new CreateCustomerDTO(null, "foo", "bar", "foobar", "041234567", "test");
+        CreateCustomerDTO createCustomerDTO = new CreateCustomerDTO("fooStreet","04123789");
 
         RestAssured.given()
                 .contentType(ContentType.JSON)
@@ -231,7 +232,7 @@ class CustomerControllerTest {
     @Test
     void createNewCustomer_createCustomerDTOLastNameNotPresent_returns404() {
 
-        CreateCustomerDTO createCustomerDTO = new CreateCustomerDTO("foo", null, "bar", "foobar", "041234567", "test");
+        CreateCustomerDTO createCustomerDTO = new CreateCustomerDTO("fizz","011808080");
 
         RestAssured.given()
                 .contentType(ContentType.JSON)
@@ -247,7 +248,8 @@ class CustomerControllerTest {
     @Test
     void createNewCustomer_createCustomerDTOEmailAddressNotPresent_returns404() {
 
-        CreateCustomerDTO createCustomerDTO = new CreateCustomerDTO("bar", "foo", null, "foobar", "041234567", "test");
+        CreateCustomerDTO createCustomerDTO = new CreateCustomerDTO("fizz","011808080");
+
 
         RestAssured.given()
                 .contentType(ContentType.JSON)
@@ -263,7 +265,7 @@ class CustomerControllerTest {
     @Test
     void createNewCustomer_createCustomerDTOAddressNotPresent_returns404() {
 
-        CreateCustomerDTO createCustomerDTO = new CreateCustomerDTO("bar", "foo", "bar", null, "041234567", "test");
+        CreateCustomerDTO createCustomerDTO = new CreateCustomerDTO("fizz","011808080");
 
         RestAssured.given()
                 .contentType(ContentType.JSON)
@@ -279,7 +281,9 @@ class CustomerControllerTest {
     @Test
     void createNewCustomer_createCustomerDTOPhoneNumberNotPresent_returns404() {
 
-        CreateCustomerDTO createCustomerDTO = new CreateCustomerDTO("bar", "foo", "bar", "foobar", null, "test");
+
+
+        CreateCustomerDTO createCustomerDTO = new CreateCustomerDTO("bar", "foo");
 
         RestAssured.given()
                 .contentType(ContentType.JSON)
@@ -294,7 +298,8 @@ class CustomerControllerTest {
 
     @Test
     void createNewCustomer_createCustomerDTOPasswordNotPresent_returns404() {
-        CreateCustomerDTO createCustomerDTO = new CreateCustomerDTO("bar", "foo", "bar", "foobar", "041234567", null);
+
+        CreateCustomerDTO createCustomerDTO = new CreateCustomerDTO("bar", "foo");
 
         RestAssured.given()
                 .contentType(ContentType.JSON)
@@ -322,18 +327,4 @@ class CustomerControllerTest {
 
     }
 
-    @Test
-    void createNewAdmin_createCustomerDTOPresent_returns200CustomerDTO_Role_Admin(){
-
-        RestAssured.given()
-                .contentType(ContentType.JSON)
-                .body(TEST_CREATE_ADMIN_DTO)
-                .when()
-                .port(port)
-                .post("/customers/create/admin")
-                .then()
-                .assertThat()
-                .statusCode(HttpStatus.CREATED.value());
-
-    }
 }

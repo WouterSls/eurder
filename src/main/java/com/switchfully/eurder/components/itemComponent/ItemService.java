@@ -13,20 +13,20 @@ import java.util.*;
 @Service
 class ItemService implements IItemService{
 
-    private final ItemRepository itemRepository;
     private final ItemMapper itemMapper;
+    private final IItemRepository itemRepository;
 
     @Autowired
-    public ItemService(ItemRepository itemRepository, ItemMapper itemMapper) {
-        this.itemRepository = itemRepository;
+    public ItemService(ItemMapper itemMapper,IItemRepository itemRepository) {
         this.itemMapper = itemMapper;
+        this.itemRepository = itemRepository;
     }
 
     @Override
     public ItemDTO createNewItem(CreateItemDTO createItemDTO){
         verifyCreateItem(createItemDTO);
         Item itemToBeAdded = itemMapper.mapToDomain(createItemDTO);
-        itemRepository.addItem(itemToBeAdded);
+        itemRepository.save(itemToBeAdded);
         return itemMapper.mapToDTO(itemToBeAdded);
     }
 
@@ -37,7 +37,7 @@ class ItemService implements IItemService{
         verifyId(id);
         validateList();
 
-        Item itemToUpdate = itemRepository.getItemById(id)
+        Item itemToUpdate = itemRepository.findById(id)
                 .orElseThrow(() -> new IllegalIdException("provide a correct id"));
 
         itemToUpdate.setAmount(updateItemDTO.getAmount());
@@ -45,7 +45,7 @@ class ItemService implements IItemService{
         itemToUpdate.setPrice(updateItemDTO.getPrice());
         itemToUpdate.setDescription(updateItemDTO.getDescription());
 
-        itemRepository.updateItem(itemToUpdate);
+        itemRepository.save(itemToUpdate);
 
         return itemMapper.mapToDTO(itemToUpdate);
     }
@@ -55,7 +55,7 @@ class ItemService implements IItemService{
 
         validateList();
 
-        Item item = itemRepository.getItemById(id)
+        Item item = itemRepository.findById(id)
                 .orElseThrow(() -> new IllegalIdException("No item exists for this ID"));
 
         return itemMapper.mapToDTO(item);
@@ -66,7 +66,7 @@ class ItemService implements IItemService{
 
        validateList();
 
-        return itemRepository.getItems()
+        return itemRepository.findAll()
                 .stream()
                 .sorted(Comparator.comparing(Item::getUrgency))
                 .map(itemMapper::mapToDTO)
@@ -80,7 +80,7 @@ class ItemService implements IItemService{
 
         validateList();
 
-        return itemRepository.getItems().stream()
+        return itemRepository.findAll().stream()
                 .filter(item -> item.getUrgency().getLabel().equalsIgnoreCase(urgency))
                 .map(itemMapper::mapToDTO)
                 .toList();
@@ -128,7 +128,7 @@ class ItemService implements IItemService{
     }
     private void validateList(){
 
-        if (itemRepository.getItems().isEmpty()){
+        if (itemRepository.findAll().isEmpty()){
             throw new NoItemsException("There are currently no items in stock");
         }
 

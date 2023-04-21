@@ -11,7 +11,7 @@ public class ItemDTO {
     private final double price;
     private final int amount;
 
-    public ItemDTO(UUID id,String name, String description, double price, int amount) {
+    public ItemDTO(UUID id, String name, String description, double price, int amount) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -43,8 +43,8 @@ public class ItemDTO {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        ItemDTO itemDTO = (ItemDTO) o;
-        return Objects.equals(getId(), itemDTO.getId());
+        ItemDTO ItemDTO = (ItemDTO) o;
+        return Objects.equals(getId(), ItemDTO.getId());
     }
 
     @Override

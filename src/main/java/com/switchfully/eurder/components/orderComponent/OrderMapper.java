@@ -20,7 +20,7 @@ class OrderMapper {
     }
 
     Order mapToDomain(OrderDTO orderDTO){
-        return new Order(orderDTO.getItem(),orderDTO.getAmountOrdered(),orderDTO.getCustomer());
+        return new Order(orderDTO.getItem(),orderDTO.getAmountOrdered(), orderDTO.getCustomer());
     }
 
     List<Order> mapToDomain(List<OrderDTO> orderDTOList){
