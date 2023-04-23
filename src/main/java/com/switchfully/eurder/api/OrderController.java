@@ -4,7 +4,7 @@ package com.switchfully.eurder.api;
 
 import com.switchfully.eurder.components.customerComponent.ICustomerService;
 import com.switchfully.eurder.components.orderComponent.IOrderService;
-import com.switchfully.eurder.api.dto.order.CreateOrderDTO;
+import com.switchfully.eurder.api.dto.order.CreateOrdersDTO;
 import com.switchfully.eurder.api.dto.order.OrderDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -30,8 +30,8 @@ public class OrderController {
     @PreAuthorize("hasAuthority('member')")
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(produces = "application/json",consumes = "application/json")
-    List<OrderDTO> orderItem(@RequestBody CreateOrderDTO createOrderDTO,@AuthenticationPrincipal Jwt jwt){
-        return orderService.orderItems(createOrderDTO,jwt);
+    List<OrderDTO> orderItem(@RequestBody CreateOrdersDTO createOrdersDTO, @AuthenticationPrincipal Jwt jwt){
+        return orderService.orderItems(createOrdersDTO,jwt);
     }
 
     @PreAuthorize("hasAuthority('member')")

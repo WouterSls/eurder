@@ -14,6 +14,4 @@ public interface ICustomerService {
 
     CustomerDTO getCustomerById(String id);
 
-    CustomerDTO getCustomerFromAuth(Jwt jwt);
-
 }

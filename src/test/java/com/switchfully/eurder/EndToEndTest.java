@@ -8,8 +8,8 @@ import com.switchfully.eurder.components.customerComponent.ICustomerService;
 import com.switchfully.eurder.components.itemComponent.IItemService;
 import com.switchfully.eurder.api.dto.item.CreateItemDTO;
 import com.switchfully.eurder.api.dto.item.ItemDTO;
-import com.switchfully.eurder.api.dto.order.CreateOrderDTO;
-import com.switchfully.eurder.api.dto.order.itemGroup.OrderItemGroupDTO;
+import com.switchfully.eurder.api.dto.order.CreateOrdersDTO;
+import com.switchfully.eurder.api.dto.order.itemGroup.OneOrderDTO;
 import com.switchfully.eurder.components.orderComponent.IOrderService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -23,7 +23,7 @@ import java.util.Base64;
 import java.util.List;
 
 @SpringBootTest
-class IntegrationTest {
+class EndToEndTest {
 
 
     @Autowired
@@ -67,8 +67,8 @@ class IntegrationTest {
         Assertions.assertNotNull(itemTest3Actual);
 
         //create an order with above item and customer
-        final OrderItemGroupDTO itemOrder = new OrderItemGroupDTO(createdItem.getId(), 1);
-        final CreateOrderDTO createdOrder = new CreateOrderDTO(List.of(itemOrder));
+        final OneOrderDTO itemOrder = new OneOrderDTO(createdItem.getId(), 1);
+        final CreateOrdersDTO createdOrder = new CreateOrdersDTO(List.of(itemOrder));
         Assertions.assertNotNull(createdOrder);
 
         //test the orderService with the order

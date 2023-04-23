@@ -3,11 +3,11 @@ package com.switchfully.eurder.components.customerComponent;
 import com.switchfully.eurder.api.dto.customer.CreateCustomerDTO;
 import com.switchfully.eurder.api.dto.customer.CustomerDTO;
 import com.switchfully.eurder.exception.IllegalIdException;
+import com.switchfully.eurder.exception.InvalidIdFormatException;
 import com.switchfully.eurder.exception.MandatoryFieldException;
 import com.switchfully.eurder.exception.NoCustomersException;
 import org.junit.jupiter.api.*;
 import org.mockito.Mockito;
-import org.springframework.security.oauth2.jwt.Jwt;
 
 import java.time.Instant;
 import java.util.List;
@@ -17,10 +17,12 @@ import java.util.UUID;
 import static java.util.Collections.emptyList;
 
 
+
+//Test logic in the customer service
 class CustomerServiceTest {
 
     @Nested
-    @DisplayName("CustomerService unit test")
+    @DisplayName("CustomerService logic test")
     class unitTestMocking {
 
         private CustomerService customerService;
@@ -28,10 +30,8 @@ class CustomerServiceTest {
         private CustomerMapper customerMapperMock;
 
 
-        private final Customer TEST_CUSTOMER = new Customer(UUID.randomUUID(), "foo","bar", "foobar@email.com", "fooStreetBar", "0032foo456bar");
-        private final CreateCustomerDTO TEST_CUSTOMER_CREATE = new CreateCustomerDTO("begijnhof","04123456");
-
-        Jwt jwt = new Jwt("test",Instant.now(),Instant.now().plusSeconds(300),null,null);
+        private final Customer TEST_CUSTOMER = new Customer(UUID.randomUUID(), "foo", "bar", "foobar@email.com", "fooStreetBar", "0032foo456bar");
+        private final CreateCustomerDTO TEST_CUSTOMER_CREATE = new CreateCustomerDTO("begijnhof", "04123456");
 
         @BeforeEach
         void setup() {
@@ -42,12 +42,14 @@ class CustomerServiceTest {
 
         @Test
         void getCustomerById_CustomersPresent_returnsCustomer() {
-            Mockito.when(customerRepoMock.findById(TEST_CUSTOMER.getId()))
+            String testUUID = UUID.randomUUID().toString();
+            Mockito.when(customerRepoMock.findById(UUID.fromString(testUUID)))
                     .thenReturn(Optional.of(TEST_CUSTOMER));
 
-            CustomerDTO actualCustomer = customerService.getCustomerById(TEST_CUSTOMER.getId().toString());
+            customerService.getCustomerById(testUUID);
 
-            Assertions.assertEquals(customerMapperMock.mapToDTO(TEST_CUSTOMER), actualCustomer);
+            Mockito.verify(customerRepoMock).findById(UUID.fromString(testUUID));
+            Mockito.verify(customerMapperMock).mapToDTO(TEST_CUSTOMER);
         }
 
         @Test
@@ -96,79 +98,46 @@ class CustomerServiceTest {
             Assertions.assertEquals(customerMapperMock.mapToDTO(List.of(TEST_CUSTOMER)), actualList);
         }
 
+        //
         @Test
-        void createNewCustomer_CreateCustomerDTOPresent_returnsCustomer() {
+        void createNewCustomer_CreateCustomerDTOPresent_savesCustomer() {
 
-            customerService.createNewCustomer(jwt,TEST_CUSTOMER_CREATE);
+            customerService.createNewCustomer(null, TEST_CUSTOMER_CREATE);
 
-            Mockito.verify(customerRepoMock).save(customerMapperMock.mapToDomain(jwt,TEST_CUSTOMER_CREATE));
+            Mockito.verify(customerRepoMock).save(customerMapperMock.mapToDomain(null, TEST_CUSTOMER_CREATE));
         }
-
 
         @Test
         void createNewCustomer_CreateCustomerDTONotPresent_returnsMandatoryFieldException() {
             Assertions.assertThrows(MandatoryFieldException.class, () -> {
-                customerService.createNewCustomer(jwt,null);
-            });
-        }
-
-        @Test
-        void createNewCustomer_CreateCustomerDTOFirstNameNotPresent_returnsMandatoryFieldException() {
-            Assertions.assertThrows(MandatoryFieldException.class, () -> {
-                customerService.createNewCustomer(jwt,new CreateCustomerDTO(
-                        null,
-                        "041234567")
-                );
-            });
-        }
-
-        @Test
-        void createNewCustomer_CreateCustomerDTOLastNameNotPresent_returnsMandatoryFieldException() {
-            Assertions.assertThrows(MandatoryFieldException.class, () -> {
-                customerService.createNewCustomer(jwt,new CreateCustomerDTO(
-                        "firstName",
-                        null)
-                );
-            });
-        }
-
-        @Test
-        void createNewCustomer_CreateCustomerDTOEmailAddressNotPresent_returnsMandatoryFieldException() {
-            Assertions.assertThrows(MandatoryFieldException.class, () -> {
-                customerService.createNewCustomer(jwt,new CreateCustomerDTO(
-                        "firstName",
-                        "lastName")
-                );
+                customerService.createNewCustomer(null, null);
             });
         }
 
         @Test
         void createNewCustomer_CreateCustomerDTOAddressNotPresent_returnsMandatoryFieldException() {
             Assertions.assertThrows(MandatoryFieldException.class, () -> {
-                customerService.createNewCustomer(jwt,new CreateCustomerDTO(
-                        "firstName",
-                        "lastName")
+                customerService.createNewCustomer(null, new CreateCustomerDTO(
+                        null,
+                        "testNumber")
                 );
             });
         }
 
         @Test
-        void createNewCustomer_CreateCustomerDTOPhoneNumberPresent_returnsMandatoryFieldException() {
+        void createNewCustomer_CreateCustomerDTOPhoneNumberNotPresent_returnsMandatoryFieldException() {
             Assertions.assertThrows(MandatoryFieldException.class, () -> {
-                customerService.createNewCustomer(jwt,new CreateCustomerDTO(
-                        "firstName",
-                        "lastName")
+                customerService.createNewCustomer(null, new CreateCustomerDTO(
+                        "testAddress",
+                        null)
                 );
             });
         }
 
         @Test
-        void createNewCustomer_CreateCustomerDTOPasswordNotPresent_returnsMandatoryFieldException(){
-            Assertions.assertThrows(MandatoryFieldException.class, () -> {
-                customerService.createNewCustomer(jwt,new CreateCustomerDTO(
-                        "firstName",
-                        "lastName")
-                );
+        void getCustomerById_invalidIdFormat_returnsInvalidIdFormatException(){
+            Assertions.assertThrows(InvalidIdFormatException.class, () -> {
+                customerService.getCustomerById("invalidFormat");
             });
         }
     }

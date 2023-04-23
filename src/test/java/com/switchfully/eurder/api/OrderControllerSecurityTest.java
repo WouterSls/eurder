@@ -4,9 +4,9 @@ import com.switchfully.eurder.api.dto.customer.CreateCustomerDTO;
 import com.switchfully.eurder.api.dto.customer.CustomerDTO;
 import com.switchfully.eurder.api.dto.item.CreateItemDTO;
 import com.switchfully.eurder.api.dto.item.ItemDTO;
-import com.switchfully.eurder.api.dto.order.CreateOrderDTO;
+import com.switchfully.eurder.api.dto.order.CreateOrdersDTO;
 import com.switchfully.eurder.api.dto.order.OrderDTO;
-import com.switchfully.eurder.api.dto.order.itemGroup.OrderItemGroupDTO;
+import com.switchfully.eurder.api.dto.order.itemGroup.OneOrderDTO;
 import com.switchfully.eurder.components.customerComponent.ICustomerService;
 import com.switchfully.eurder.components.itemComponent.IItemService;
 import com.switchfully.eurder.components.orderComponent.IOrderService;
@@ -30,7 +30,7 @@ import java.util.UUID;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-class OrderControllerTest {
+class OrderControllerSecurityTest {
 
     @LocalServerPort
     private int port;
@@ -67,8 +67,8 @@ class OrderControllerTest {
     @Test
     void orderItems_CreateOrderDTONoOrderIdPresent_returns404() {
 
-        final OrderItemGroupDTO testItemGroup = new OrderItemGroupDTO(null, 1);
-        final CreateOrderDTO testOrder = new CreateOrderDTO(List.of(testItemGroup));
+        final OneOrderDTO testItemGroup = new OneOrderDTO(null, 1);
+        final CreateOrdersDTO testOrder = new CreateOrdersDTO(List.of(testItemGroup));
 
 
         RestAssured.given()
@@ -89,8 +89,8 @@ class OrderControllerTest {
     @Test
     void orderItems_CreateOrderDTONoOrderAmount_returns404() {
 
-        final OrderItemGroupDTO testItemGroup = new OrderItemGroupDTO(UUID.randomUUID(), 0);
-        final CreateOrderDTO testOrder = new CreateOrderDTO(List.of(testItemGroup));
+        final OneOrderDTO testItemGroup = new OneOrderDTO(UUID.randomUUID(), 0);
+        final CreateOrdersDTO testOrder = new CreateOrdersDTO(List.of(testItemGroup));
 
         RestAssured.given()
                 .contentType(ContentType.JSON)
@@ -111,8 +111,8 @@ class OrderControllerTest {
 
         ItemDTO createdItem = itemService.createNewItem(new CreateItemDTO("foo", "bar", 10, 5));
 
-        final OrderItemGroupDTO testItemGroup = new OrderItemGroupDTO(createdItem.getId(), 10);
-        final CreateOrderDTO testOrder = new CreateOrderDTO(List.of(testItemGroup));
+        final OneOrderDTO testItemGroup = new OneOrderDTO(createdItem.getId(), 10);
+        final CreateOrdersDTO testOrder = new CreateOrdersDTO(List.of(testItemGroup));
 
         RestAssured.given()
                 .contentType(ContentType.JSON)
@@ -133,8 +133,8 @@ class OrderControllerTest {
         ItemDTO createdItem = itemService.createNewItem(new CreateItemDTO("foo", "bar", 10, 5));
 
 
-        final OrderItemGroupDTO testItemGroup = new OrderItemGroupDTO(createdItem.getId(), 1);
-        final CreateOrderDTO testOrder = new CreateOrderDTO(List.of(testItemGroup));
+        final OneOrderDTO testItemGroup = new OneOrderDTO(createdItem.getId(), 1);
+        final CreateOrdersDTO testOrder = new CreateOrdersDTO(List.of(testItemGroup));
 
         RestAssured.given()
                 .contentType(ContentType.JSON)
@@ -161,8 +161,8 @@ class OrderControllerTest {
 
         final int amountToOrder = 1;
 
-        final OrderItemGroupDTO testItemGroup = new OrderItemGroupDTO(gottenItem.getId(), 1);
-        final CreateOrderDTO testOrder = new CreateOrderDTO(List.of(testItemGroup));
+        final OneOrderDTO testItemGroup = new OneOrderDTO(gottenItem.getId(), 1);
+        final CreateOrdersDTO testOrder = new CreateOrdersDTO(List.of(testItemGroup));
 
         RestAssured.given()
                 .contentType(ContentType.JSON)
@@ -190,7 +190,7 @@ class OrderControllerTest {
 
         ItemDTO gottenItem = itemService.createNewItem(testItem);
 
-        CreateOrderDTO testOrder = new CreateOrderDTO(List.of(new OrderItemGroupDTO(gottenItem.getId(), 1)));
+        CreateOrdersDTO testOrder = new CreateOrdersDTO(List.of(new OneOrderDTO(gottenItem.getId(), 1)));
 
         String auth = "basic " + Base64.getEncoder().encodeToString((customerId + ":" + customerPw).getBytes());
 
@@ -220,8 +220,8 @@ class OrderControllerTest {
 
         ItemDTO gottenItem = itemService.createNewItem(testItem);
 
-        final OrderItemGroupDTO testItemGroup = new OrderItemGroupDTO(gottenItem.getId(), 1);
-        final CreateOrderDTO testOrder = new CreateOrderDTO(List.of(testItemGroup));
+        final OneOrderDTO testItemGroup = new OneOrderDTO(gottenItem.getId(), 1);
+        final CreateOrdersDTO testOrder = new CreateOrdersDTO(List.of(testItemGroup));
 
         List<OrderDTO> gottenOrderList = orderService.orderItems(testOrder,jwt);
 
@@ -251,8 +251,8 @@ class OrderControllerTest {
 
         ItemDTO gottenItem = itemService.createNewItem(testItem);
 
-        final OrderItemGroupDTO testItemGroup = new OrderItemGroupDTO(gottenItem.getId(), 1);
-        final CreateOrderDTO testOrder = new CreateOrderDTO(List.of(testItemGroup));
+        final OneOrderDTO testItemGroup = new OneOrderDTO(gottenItem.getId(), 1);
+        final CreateOrdersDTO testOrder = new CreateOrdersDTO(List.of(testItemGroup));
 
         List<OrderDTO> gottenOrderList = orderService.orderItems(testOrder, jwt);
 
@@ -285,8 +285,8 @@ class OrderControllerTest {
 
         ItemDTO gottenItem = itemService.createNewItem(testItem);
 
-        final OrderItemGroupDTO testItemGroup = new OrderItemGroupDTO(gottenItem.getId(), 1);
-        final CreateOrderDTO testOrder = new CreateOrderDTO(List.of(testItemGroup));
+        final OneOrderDTO testItemGroup = new OneOrderDTO(gottenItem.getId(), 1);
+        final CreateOrdersDTO testOrder = new CreateOrdersDTO(List.of(testItemGroup));
 
         List<OrderDTO> gottenOrderList = orderService.orderItems(testOrder, jwt);
 

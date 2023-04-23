@@ -1,8 +1,8 @@
 package com.switchfully.eurder.components.orderComponent;
 
 import com.switchfully.eurder.api.dto.customer.CustomerDTO;
-import com.switchfully.eurder.api.dto.order.CreateOrderDTO;
-import com.switchfully.eurder.api.dto.order.itemGroup.OrderItemGroupDTO;
+import com.switchfully.eurder.api.dto.order.CreateOrdersDTO;
+import com.switchfully.eurder.api.dto.order.itemGroup.OneOrderDTO;
 import com.switchfully.eurder.components.customerComponent.ICustomerRepository;
 import com.switchfully.eurder.components.customerComponent.ICustomerService;
 import com.switchfully.eurder.components.itemComponent.IItemRepository;
@@ -35,7 +35,7 @@ class OrderServiceTest {
         private ICustomerService customerService;
         private ICustomerRepository customerRepoMock;
 
-        private final CreateOrderDTO TEST_CREATE_ORDER_DTO = new CreateOrderDTO(List.of(new OrderItemGroupDTO(UUID.randomUUID(), 5)));
+        private final CreateOrdersDTO TEST_CREATE_ORDER_DTO = new CreateOrdersDTO(List.of(new OneOrderDTO(UUID.randomUUID(), 5)));
 
         Jwt jwt = new Jwt("test", Instant.now(),Instant.now().plusSeconds(300),null,null);
 
@@ -67,35 +67,35 @@ class OrderServiceTest {
         @Test
         void orderItem_CreateOrderDTOItemIdNotPresent_returnsMandatoryFieldException() {
             Assertions.assertThrows(MandatoryFieldException.class, () -> {
-                orderService.orderItems(new CreateOrderDTO(List.of(new OrderItemGroupDTO(null, 2))),null);
+                orderService.orderItems(new CreateOrdersDTO(List.of(new OneOrderDTO(null, 2))),null);
             });
         }
 
         @Test
         void verifyOrder_ItemGroupDTONotPresent_returnsMandatoryFieldException() {
             Assertions.assertThrows(MandatoryFieldException.class, () -> {
-                orderService.orderItems(new CreateOrderDTO(null),jwt);
+                orderService.orderItems(new CreateOrdersDTO(null),jwt);
             });
         }
 
         @Test
         void verifyOrder_CreateOrderDTOEmptyList_returnsMandatoryFieldException() {
             Assertions.assertThrows(MandatoryFieldException.class, () -> {
-                orderService.orderItems(new CreateOrderDTO(emptyList()),jwt);
+                orderService.orderItems(new CreateOrdersDTO(emptyList()),jwt);
             });
         }
 
         @Test
         void verifyOrder_ItemGroupDTOIdNotPresent_returnsMandatoryFieldException() {
             Assertions.assertThrows(MandatoryFieldException.class, () -> {
-                orderService.orderItems(new CreateOrderDTO(List.of(new OrderItemGroupDTO(null, 2))),jwt);
+                orderService.orderItems(new CreateOrdersDTO(List.of(new OneOrderDTO(null, 2))),jwt);
             });
         }
 
         @Test
         void verifyOrder_ItemGroupDTOAmountUnder0_returnsIllegalAmountException() {
             Assertions.assertThrows(IllegalAmountException.class, () -> {
-                orderService.orderItems(new CreateOrderDTO(List.of(new OrderItemGroupDTO(UUID.randomUUID(), -5))),jwt);
+                orderService.orderItems(new CreateOrdersDTO(List.of(new OneOrderDTO(UUID.randomUUID(), -5))),jwt);
             });
         }
 

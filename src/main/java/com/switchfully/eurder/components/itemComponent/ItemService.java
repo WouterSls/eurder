@@ -26,8 +26,8 @@ class ItemService implements IItemService{
     public ItemDTO createNewItem(CreateItemDTO createItemDTO){
         verifyCreateItem(createItemDTO);
         Item itemToBeAdded = itemMapper.mapToDomain(createItemDTO);
-        itemRepository.save(itemToBeAdded);
-        return itemMapper.mapToDTO(itemToBeAdded);
+        Item savedItem = itemRepository.save(itemToBeAdded);
+        return itemMapper.mapToDTO(savedItem);
     }
 
     @Override

@@ -1,6 +1,6 @@
 package com.switchfully.eurder.components.orderComponent;
 
-import com.switchfully.eurder.api.dto.order.CreateOrderDTO;
+import com.switchfully.eurder.api.dto.order.CreateOrdersDTO;
 import com.switchfully.eurder.api.dto.order.OrderDTO;
 import org.springframework.security.oauth2.jwt.Jwt;
 
@@ -9,7 +9,7 @@ import java.util.UUID;
 
 public interface IOrderService {
 
-    List<OrderDTO> orderItems(CreateOrderDTO createOrderDTO, Jwt jwt);
+    List<OrderDTO> orderItems(CreateOrdersDTO createOrdersDTO, Jwt jwt);
 
     String reportOrdersByCustomer(Jwt jwt);
 

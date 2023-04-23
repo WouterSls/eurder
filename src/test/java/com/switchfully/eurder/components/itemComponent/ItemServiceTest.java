@@ -22,7 +22,7 @@ class ItemServiceTest {
     class unitTest {
 
         private ItemService itemService;
-        private ItemRepository itemRepositoryMock;
+        private IItemRepository itemRepositoryMock;
         private ItemMapper itemMapperMock;
         private IItemRepository itemRepository;
 
@@ -31,7 +31,7 @@ class ItemServiceTest {
 
         @BeforeEach
         void setup() {
-            itemRepositoryMock = Mockito.mock(ItemRepository.class);
+            itemRepositoryMock = Mockito.mock(IItemRepository.class);
             itemMapperMock = Mockito.mock(ItemMapper.class);
             itemService = new ItemService(itemMapperMock,itemRepository);
         }
@@ -40,7 +40,7 @@ class ItemServiceTest {
         void createNewItem_CreateItemDTOPresent_returnsItemDTO() {
             itemService.createNewItem(TEST_ITEM_CREATE_DTO);
 
-            Mockito.verify(itemRepositoryMock).addItem(itemMapperMock.mapToDomain(TEST_ITEM_CREATE_DTO));
+            Mockito.verify(itemRepositoryMock).save(itemMapperMock.mapToDomain(TEST_ITEM_CREATE_DTO));
         }
 
         @Test
@@ -134,7 +134,7 @@ class ItemServiceTest {
         void getItemsSortedOnUrgency_ListPresentNoItemsPresent_returnListWithNullItem() {
             Item testItem = new Item("foo", "bar", 10, 5);
 
-            Mockito.when(itemRepositoryMock.getItems())
+            Mockito.when(itemRepositoryMock.findAll())
                     .thenReturn(List.of(testItem));
 
             List<ItemDTO> actualList = itemService.getItemsSortedByUrgency();
@@ -153,10 +153,10 @@ class ItemServiceTest {
         void updateItem_UpdateItemDTOPresentCorrectId_updatesItemRepo() {
             Item testItem = new Item("foo", "bar", 10, 5);
 
-            Mockito.when(itemRepositoryMock.getItems())
+            Mockito.when(itemRepositoryMock.findAll())
                     .thenReturn(List.of(testItem));
 
-            Mockito.when(itemRepositoryMock.getItemById(testItem.getId()))
+            Mockito.when(itemRepositoryMock.findById(testItem.getId()))
                     .thenReturn(Optional.of(testItem));
 
             ItemDTO updateItem = itemService.updateItemById(new UpdateItemDTO("fizz", "buzz", 5, 20), testItem.getId());

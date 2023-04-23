@@ -27,7 +27,7 @@ import java.util.UUID;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-class ItemControllerTest {
+class ItemControllerSecurityTest {
     @LocalServerPort
     private int port;
 

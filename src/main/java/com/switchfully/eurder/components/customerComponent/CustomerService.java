@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 
-import java.util.Base64;
 import java.util.List;
 import java.util.UUID;
 import java.util.regex.Pattern;
@@ -41,8 +40,8 @@ class CustomerService implements ICustomerService {
         validateAuth(jwt);
 
         Customer newCustomer = customerMapper.mapToDomain(jwt,createCustomerDTO);
-        customerRepository.save(newCustomer);
-        return customerMapper.mapToDTO(newCustomer);
+        Customer savedCustomer = customerRepository.save(newCustomer);
+        return customerMapper.mapToDTO(savedCustomer);
 
     }
 
@@ -111,16 +110,6 @@ class CustomerService implements ICustomerService {
             return false;
         }
         return UUID_REGEX.matcher(id).matches();
-    }
-
-    public CustomerDTO getCustomerFromAuth(Jwt jwt){
-
-        Customer customerFromAuth = customerRepository.findAll().stream()
-                .filter(customer -> customer.getEmailAddress().equals(jwt.getClaim("email")))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("No customer from auth, please register"));
-
-        return customerMapper.mapToDTO(customerFromAuth);
     }
 
 }

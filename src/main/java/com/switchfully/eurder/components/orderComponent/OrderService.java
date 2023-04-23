@@ -3,9 +3,9 @@ package com.switchfully.eurder.components.orderComponent;
 
 import com.switchfully.eurder.api.dto.item.ItemDTO;
 import com.switchfully.eurder.api.dto.item.UpdateItemDTO;
-import com.switchfully.eurder.api.dto.order.CreateOrderDTO;
+import com.switchfully.eurder.api.dto.order.CreateOrdersDTO;
 import com.switchfully.eurder.api.dto.order.OrderDTO;
-import com.switchfully.eurder.api.dto.order.itemGroup.OrderItemGroupDTO;
+import com.switchfully.eurder.api.dto.order.itemGroup.OneOrderDTO;
 import com.switchfully.eurder.components.customerComponent.Customer;
 import com.switchfully.eurder.components.customerComponent.ICustomerRepository;
 import com.switchfully.eurder.components.customerComponent.ICustomerService;
@@ -47,16 +47,18 @@ class OrderService implements IOrderService {
     }
 
     @Override
-    public List<OrderDTO> orderItems(CreateOrderDTO createOrderDTO, Jwt jwt) {
+    public List<OrderDTO> orderItems(CreateOrdersDTO createOrdersDTO, Jwt jwt) {
 
-        verifyOrder(createOrderDTO);
+        verifyOrder(createOrdersDTO);
+
+
 
         Customer customerWhoOrdered = customerRepository.findAll().stream()
                 .filter(customer -> customer.getEmailAddress().equals(jwt.getClaim("email")))
                 .findAny()
                 .orElseThrow(() -> new IllegalArgumentException("no customer for this auth"));
 
-        List<Order> orders = createOrders(createOrderDTO, customerWhoOrdered);
+        List<Order> orders = createOrders(createOrdersDTO, customerWhoOrdered);
 
         orderRepository.saveAll(orders);
 
@@ -77,7 +79,9 @@ class OrderService implements IOrderService {
     @Override
     public OrderDTO reorderExistingOrder(UUID orderId, Jwt jwt) {
 
-        Customer customerFromAuth = customerRepository.findById(UUID.fromString(jwt.getId()))
+        Customer customerFromAuth = customerRepository.findAll().stream()
+                .filter(customer -> customer.getEmailAddress().equals(jwt.getClaim("email")))
+                .findAny()
                 .orElseThrow(() -> new IllegalArgumentException("No customer in database linked to authentication"));
 
         Order existingOrder = getOrderFromId(orderId);
@@ -98,7 +102,7 @@ class OrderService implements IOrderService {
 
         return orderRepository.findAll().stream()
                 .filter(order -> isShippingDateToday(order.getShippingDate()))
-                .map(order -> "\n Item to be shipped: " + order.getItem() + "\nShipped to: " + order.getCustomer().getAddress())
+                .map(order -> "Item to be shipped: " + order.getItem() + "\n\tShipped to: " + order.getCustomer().getAddress())
                 .collect(Collectors.joining("\n"));
     }
 
@@ -128,36 +132,36 @@ class OrderService implements IOrderService {
         return today.isEqual(shippingDate);
     }
 
-    private void verifyOrder(CreateOrderDTO createOrderDTO) {
-        if (createOrderDTO == null) {
+    private void verifyOrder(CreateOrdersDTO createOrdersDTO) {
+        if (createOrdersDTO == null) {
             throw new MandatoryFieldException("No order provided");
         }
-        if (createOrderDTO.getOrders() == null || createOrderDTO.getOrders().isEmpty()) {
+        if (createOrdersDTO.getOrders() == null || createOrdersDTO.getOrders().isEmpty()) {
             throw new MandatoryFieldException("Please provide at least one ItemGroup");
         }
 
-        for (OrderItemGroupDTO itemGroup :
-                createOrderDTO.getOrders()) {
+        for (OneOrderDTO itemGroup :
+                createOrdersDTO.getOrders()) {
             if (itemGroup.getId() == null) {
                 throw new MandatoryFieldException("Provide an id for each order for all items");
             }
         }
 
-        for (OrderItemGroupDTO itemGroup :
-                createOrderDTO.getOrders()) {
+        for (OneOrderDTO itemGroup :
+                createOrdersDTO.getOrders()) {
             if (itemGroup.getAmountOrdered() <= 0) {
                 throw new IllegalAmountException("Provide an amount bigger than 0 for all items");
             }
         }
 
-        for (OrderItemGroupDTO itemGroup :
-                createOrderDTO.getOrders()) {
+        for (OneOrderDTO itemGroup :
+                createOrdersDTO.getOrders()) {
             if (itemService.getItemById(itemGroup.getId()) == null) {
                 throw new IllegalIdException("No item found for provided ID");
             }
         }
 
-        boolean amountOrderedBiggerThanAmountOfItems = createOrderDTO.getOrders().stream()
+        boolean amountOrderedBiggerThanAmountOfItems = createOrdersDTO.getOrders().stream()
                 .anyMatch(itemGroupDTO -> itemGroupDTO.getAmountOrdered() > itemService.getItemById(itemGroupDTO.getId()).getAmount());
         if (amountOrderedBiggerThanAmountOfItems) {
             throw new IllegalAmountException("Not enough items in stock");
@@ -165,26 +169,40 @@ class OrderService implements IOrderService {
 
     }
 
-    private List<Order> createOrders(CreateOrderDTO createOrderDTO, Customer customer) {
+    private List<Order> createOrders(CreateOrdersDTO createOrdersDTO, Jwt jwt) {
         List<Order> result = new ArrayList<>();
 
-        for (OrderItemGroupDTO orderItemGroupDTO :
-                createOrderDTO.getOrders()) {
+        Customer customerWhoOrdered = customerRepository.findAll().stream()
+                .filter(customer -> customer.getEmailAddress().equals(jwt.getClaim("email")))
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException("No customer linked to JWT token"));
 
-            Order createdOrder = createOrder(orderItemGroupDTO, customer);
+        List<OneOrderDTO> orders = createOrdersDTO.getOrders();
+
+        List<Order> createdOrders = orders.stream()
+                .map(oneOrderDTO -> itemRepository.findById(oneOrderDTO.getId()))
+
+        for (OneOrderDTO oneOrderDTO :
+                createOrdersDTO.getOrders()) {
+
+            Item item = itemRepository.findById(oneOrderDTO.getId())
+                    .orElseThrow(() -> new IllegalArgumentException("No item found for provided item ID"));
+
+            Order createdOrder = orderMapper.mapToDomain(item, oneOrderDTO.getAmountOrdered(), customerWhoOrdered);
+
             result.add(createdOrder);
 
-            updateItemFromOrder(orderItemGroupDTO);
+            updateItemFromOrder(oneOrderDTO);
         }
 
         return result;
     }
 
-    private Order createOrder(OrderItemGroupDTO orderItemGroupDTO, Customer customer) {
-        Item itemFromOrder = itemRepository.findById(orderItemGroupDTO.getId())
+    private Order createOrder(OneOrderDTO oneOrderDTO, Customer customer) {
+        Item itemFromOrder = itemRepository.findById(oneOrderDTO.getId())
                 .orElseThrow(() -> new IllegalArgumentException("provide an existing item"));
 
-        return new Order(itemFromOrder, orderItemGroupDTO.getAmountOrdered(), customer);
+        return new Order(itemFromOrder, oneOrderDTO.getAmountOrdered(), customer);
     }
 
     private Order getOrderFromId(UUID orderId) {
@@ -194,11 +212,11 @@ class OrderService implements IOrderService {
                 .orElseThrow(() -> new IllegalIdException("Please provide a valid order ID"));
     }
 
-    private void updateItemFromOrder(OrderItemGroupDTO orderItemGroupDTO) {
-        ItemDTO itemFromOrder = itemService.getItemById(orderItemGroupDTO.getId());
-        int newItemAmount = itemFromOrder.getAmount() - orderItemGroupDTO.getAmountOrdered();
+    private void updateItemFromOrder(OneOrderDTO oneOrderDTO) {
+        ItemDTO itemFromOrder = itemService.getItemById(oneOrderDTO.getId());
+        int newItemAmount = itemFromOrder.getAmount() - oneOrderDTO.getAmountOrdered();
         UpdateItemDTO updatedItemDTO = new UpdateItemDTO(itemFromOrder.getName(), itemFromOrder.getDescription(), itemFromOrder.getPrice(), newItemAmount);
-        itemService.updateItemById(updatedItemDTO, orderItemGroupDTO.getId());
+        itemService.updateItemById(updatedItemDTO, oneOrderDTO.getId());
     }
 
 }

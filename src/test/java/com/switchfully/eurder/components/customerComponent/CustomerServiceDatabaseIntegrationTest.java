@@ -2,6 +2,7 @@ package com.switchfully.eurder.components.customerComponent;
 
 import com.switchfully.eurder.api.dto.customer.CreateCustomerDTO;
 import com.switchfully.eurder.api.dto.customer.CustomerDTO;
+import com.switchfully.eurder.exception.IllegalAuthException;
 import com.switchfully.eurder.exception.IllegalIdException;
 import com.switchfully.eurder.exception.MandatoryFieldException;
 import org.junit.jupiter.api.Assertions;
@@ -12,10 +13,11 @@ import org.springframework.security.oauth2.jwt.Jwt;
 
 import java.time.Instant;
 import java.util.Base64;
-import java.util.UUID;
 
+//Test service interaction with the database
+//call services functions should mutate the database correctly
 @SpringBootTest
-public class CustomerServiceIntegrationTest {
+public class CustomerServiceDatabaseIntegrationTest {
 
 
     @Autowired
@@ -40,13 +42,12 @@ public class CustomerServiceIntegrationTest {
         //TODO: fix test
     }
 
+
+    //TODO: this test should be move to security test;
     @Test
-    void getCustomerUUIDFromAuth_AuthStringInvalid_returnsIllegalArgumentIdFormat(){
-
-        String encodedAuth = "Basic " + Base64.getEncoder().encodeToString(("user:password").getBytes());
-
-        Assertions.assertThrows(IllegalIdException.class, () -> {
-            customerService.getCustomerFromAuth(jwt);
+    void getCustomerEmailFromAuth_NoJWTPresent_returnsIllegalAuthException(){
+        Assertions.assertThrows(IllegalAuthException.class, () -> {
+            customerService.getCustomerById("1");
         });
     }
 
