@@ -8,10 +8,12 @@ import java.util.List;
 
 public interface ICustomerService {
 
-    List<CustomerDTO> getAllCustomers();
+    List<Customer> getAllCustomers();
 
-    CustomerDTO createNewCustomer(Jwt jwt, CreateCustomerDTO createCustomerDTO);
+    Customer createNewCustomer(Customer customer);
 
-    CustomerDTO getCustomerById(String id);
+    Customer getCustomerById(String id);
+
+    Customer getCustomerFromAuth(Jwt jwt);
 
 }

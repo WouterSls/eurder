@@ -1,6 +1,6 @@
-![Order Logo](order.png)
+![Order Logo](orderSingle.png)
 
-Örder is an innovative (not really) order management application. The front-end 
+Örder is an innovative (not really) orderSingle management application. The front-end 
 will be a beautiful designed javascript-based application that will communicate with an even more 
 beautiful engineered back-end application.
 
@@ -85,16 +85,16 @@ As an admin user I want to add an item so I can expand the list of available ite
     - Amount (stock)
 
 ### Story 3: Order items
-As a customer I want to order one or more items.
+As a customer I want to orderSingle one or more items.
 - An `Order` contains one or more **item groups**
 - An `item group` contains a selected item (id), an amount, and a shipping date. 
     - The shipping date should be calculated automatically:
-        - When we have the item in stock, the shipping date is set to the next day (of the order)
-        - Otherwise the shipping date should be set to next week (day of order + 7 days)
+        - When we have the item in stock, the shipping date is set to the next day (of the orderSingle)
+        - Otherwise the shipping date should be set to next week (day of orderSingle + 7 days)
 - The total price should be calculated and shown to the customer when ordering.
-- Question: should an order keep a reference to an item or should it make some sort of copy?
+- Question: should an orderSingle keep a reference to an item or should it make some sort of copy?
     - Tip: The the price of the item can change over time... What implications might this have?
-- Obviously, we also need to keep track of who made the order (it has to be a known customer)
+- Obviously, we also need to keep track of who made the orderSingle (it has to be a known customer)
 
 ### Story 4: Update an item
 As an admin user I want to update an item so I can keep my list of available items up to date.
@@ -104,22 +104,22 @@ As an admin user I want to update an item so I can keep my list of available ite
     - Price
     - Amount (stock)
 
-### Story 5: View report of orders
-As a customer I want to see a report of all my orders so I can get an overview of what I ordered and how much it cost.
-- The report should contain per order:
-    - The id(entifier) of the order
-    - Per item group of the order
+### Story 5: View report of orderSingles
+As a customer I want to see a report of all my orderSingles so I can get an overview of what I ordered and how much it cost.
+- The report should contain per orderSingle:
+    - The id(entifier) of the orderSingle
+    - Per item group of the orderSingle
         - The name of the item
         - The ordered amount 
         - The total price of the item group
-    - The total price of the order
-- The total price of all orders
+    - The total price of the orderSingle
+- The total price of all orderSingles
 
-### Story 6: Reorder an existing order 
-As a customer I want to be able to reorder an existing order so I can quickly place a recurring order.
-- Make sure this can be done by providing an order id(entifier).
-- A customer can only reorder one of his own orders.
-- The actual price of the item should be used, not the price the item had in the existing order.
+### Story 6: Reorder an existing orderSingle 
+As a customer I want to be able to reorder an existing orderSingle so I can quickly place a recurring orderSingle.
+- Make sure this can be done by providing an orderSingle id(entifier).
+- A customer can only reorder one of his own orderSingles.
+- The actual price of the item should be used, not the price the item had in the existing orderSingle.
 
 ### Story 7: View all customers
 As an admin user I want to view all customers.
@@ -130,10 +130,10 @@ As an admin user I want to view the details of a single customers.
 - Based on the customer identifier
 
 ### Story 9: Items Shipping today
-As an admin user I want to view all orders that contain items that should be shipped today.
+As an admin user I want to view all orderSingles that contain items that should be shipped today.
 - List the item groups that should be shipped today.
 - Give the address where they should be shipped to. 
-- Note: item groups of the same order can have a different shipping date, 
+- Note: item groups of the same orderSingle can have a different shipping date, 
 but all items are shipped to the same address.
 
 ### Story 10: Item overview

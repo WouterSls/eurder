@@ -14,43 +14,49 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
+
+@CrossOrigin(origins = "http://localhost:4200")
 @RestController
 @RequestMapping(value = "items")
 public class ItemController {
 
     private final IItemService itemService;
+    private final ItemMapper itemMapper;
 
     @Autowired
-    public ItemController(IItemService itemService, ICustomerService customerService) {
+    public ItemController(IItemService itemService, ItemMapper itemMapper) {
         this.itemService = itemService;
+        this.itemMapper = itemMapper;
     }
 
-    @PreAuthorize("hasAuthority('manager')")
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(produces = "application/json", consumes = "application/json")
-    ItemDTO createNewItem(@RequestBody CreateItemDTO createItemDTO, @RequestHeader String authorization) {
-        return itemService.createNewItem(createItemDTO);
+    ItemDTO createNewItem(@RequestBody CreateItemDTO createItemDTO) {
+        return itemMapper.mapToDTO(itemService.createNewItem(createItemDTO));
     }
 
-    @PreAuthorize("hasAuthority('manager')")
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping(produces =  "application/json")
+    List<ItemDTO> findAllItems(){
+        return itemMapper.mapToDTO(itemService.findAllItems());
+    }
+
     @ResponseStatus(HttpStatus.OK)
     @PutMapping(path = "/{id}", consumes = "application/json", produces = "application/json")
     ItemDTO updateItem(@PathVariable UUID id, @RequestBody UpdateItemDTO updateItemDTO) {
-        return itemService.updateItemById(updateItemDTO, id);
+        return itemMapper.mapToDTO(itemService.updateItemById(updateItemDTO, id));
     }
 
-    @PreAuthorize("hasAuthority('manager')")
     @ResponseStatus(HttpStatus.OK)
     @GetMapping(produces = "application/json", path = "/stock")
     List<ItemDTO> getItemsSortedByUrgency() {
-        return itemService.getItemsSortedByUrgency();
+        return itemMapper.mapToDTO(itemService.getItemsSortedByUrgency());
     }
 
-    @PreAuthorize("hasAuthority('manager')")
     @ResponseStatus(HttpStatus.OK)
     @GetMapping(produces = "application/json", path = "/stock/{urgency}")
     List<ItemDTO> getItemOnUrgency(@PathVariable String urgency) {
-        return itemService.getItemsOnUrgency(urgency);
+        return itemMapper.mapToDTO(itemService.getItemsOnUrgency(urgency));
     }
 
 }

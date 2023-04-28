@@ -1,7 +1,7 @@
 package com.switchfully.eurder.components.itemComponent;
 
+import com.switchfully.eurder.api.ItemMapper;
 import com.switchfully.eurder.api.dto.item.CreateItemDTO;
-import com.switchfully.eurder.api.dto.item.ItemDTO;
 import com.switchfully.eurder.api.dto.item.UpdateItemDTO;
 import com.switchfully.eurder.exception.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,22 +23,22 @@ class ItemService implements IItemService{
     }
 
     @Override
-    public ItemDTO createNewItem(CreateItemDTO createItemDTO){
+    public Item createNewItem(CreateItemDTO createItemDTO){
         verifyCreateItem(createItemDTO);
         Item itemToBeAdded = itemMapper.mapToDomain(createItemDTO);
         Item savedItem = itemRepository.save(itemToBeAdded);
-        return itemMapper.mapToDTO(savedItem);
+        return savedItem;
     }
 
     @Override
-    public ItemDTO updateItemById(UpdateItemDTO updateItemDTO, UUID id){
+    public Item updateItemById(UpdateItemDTO updateItemDTO, UUID id){
 
         verifyUpdateItem(updateItemDTO);
         verifyId(id);
         validateList();
 
         Item itemToUpdate = itemRepository.findById(id)
-                .orElseThrow(() -> new IllegalIdException("provide a correct id"));
+                .orElseThrow(() -> new IllegalIdException("no item exists for provided it"));
 
         itemToUpdate.setAmount(updateItemDTO.getAmount());
         itemToUpdate.setName(updateItemDTO.getName());
@@ -47,49 +47,56 @@ class ItemService implements IItemService{
 
         itemRepository.save(itemToUpdate);
 
-        return itemMapper.mapToDTO(itemToUpdate);
+        return itemToUpdate;
     }
 
     @Override
-    public ItemDTO getItemById(UUID id){
+    public Item findById(UUID id){
 
         validateList();
 
         Item item = itemRepository.findById(id)
                 .orElseThrow(() -> new IllegalIdException("No item exists for this ID"));
 
-        return itemMapper.mapToDTO(item);
+        return item;
     }
 
     @Override
-    public List<ItemDTO> getItemsSortedByUrgency(){
+    public List<Item> getItemsSortedByUrgency(){
 
        validateList();
 
         return itemRepository.findAll()
                 .stream()
                 .sorted(Comparator.comparing(Item::getUrgency))
-                .map(itemMapper::mapToDTO)
                 .toList();
 
     }
 
     @Override
-    public List<ItemDTO> getItemsOnUrgency(String urgency){
+    public List<Item> getItemsOnUrgency(String urgency){
 
 
         validateList();
 
         return itemRepository.findAll().stream()
                 .filter(item -> item.getUrgency().getLabel().equalsIgnoreCase(urgency))
-                .map(itemMapper::mapToDTO)
                 .toList();
     }
 
+    @Override
+    public List<Item> findAllItems(){
+        return itemRepository.findAll();
+    }
 
     private void verifyId(UUID id){
         if (id == null){
             throw new IllegalIdException("Please provide an ID");
+        }
+
+        boolean itemExist = itemRepository.findAll().stream().anyMatch(item -> item.getId().equals(id));
+        if (!itemExist){
+            throw new IllegalIdException("no items exists for provided id");
         }
     }
     private void verifyUpdateItem(UpdateItemDTO updateItemDTO){

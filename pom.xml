@@ -120,7 +120,6 @@
                     <user>student</user>
                     <password>spidermanismyhero</password>
                     <schemas>eurder</schemas>
-                    <cleanOnValidationError>true</cleanOnValidationError>
                 </configuration>
                 <dependencies>
                     <dependency>

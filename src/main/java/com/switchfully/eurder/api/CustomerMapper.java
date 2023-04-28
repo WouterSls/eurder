@@ -1,7 +1,8 @@
-package com.switchfully.eurder.components.customerComponent;
+package com.switchfully.eurder.api;
 
 import com.switchfully.eurder.api.dto.customer.CreateCustomerDTO;
 import com.switchfully.eurder.api.dto.customer.CustomerDTO;
+import com.switchfully.eurder.components.customerComponent.Customer;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Component;
 
@@ -27,7 +28,7 @@ class CustomerMapper {
     }
 
     Customer mapToDomain(Jwt jwt, CreateCustomerDTO createCustomerDTO){
-        return new Customer(UUID.randomUUID(),
+        return new Customer(
                 jwt.getClaim("given_name"),
                 jwt.getClaim("family_name"),
                 jwt.getClaim("email"),

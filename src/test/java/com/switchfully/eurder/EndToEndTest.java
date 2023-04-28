@@ -4,12 +4,12 @@ import com.switchfully.eurder.api.dto.customer.CreateCustomerDTO;
 import com.switchfully.eurder.api.dto.customer.CustomerDTO;
 import com.switchfully.eurder.api.dto.item.UpdateItemDTO;
 import com.switchfully.eurder.api.dto.order.OrderDTO;
+import com.switchfully.eurder.api.dto.order.itemGroup.CreateItemGroupDTO;
 import com.switchfully.eurder.components.customerComponent.ICustomerService;
 import com.switchfully.eurder.components.itemComponent.IItemService;
 import com.switchfully.eurder.api.dto.item.CreateItemDTO;
 import com.switchfully.eurder.api.dto.item.ItemDTO;
-import com.switchfully.eurder.api.dto.order.CreateOrdersDTO;
-import com.switchfully.eurder.api.dto.order.itemGroup.OneOrderDTO;
+import com.switchfully.eurder.api.dto.order.CreateOrderDTO;
 import com.switchfully.eurder.components.orderComponent.IOrderService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -60,15 +60,15 @@ class EndToEndTest {
         Assertions.assertNotNull(createdItem);
 
         //test the itemService with item
-        final ItemDTO itemTest2Actual = itemService.getItemById(createdItem.getId());
+        final ItemDTO itemTest2Actual = itemService.findById(createdItem.getId());
         Assertions.assertEquals(createdItem, itemTest2Actual);
         final UpdateItemDTO updateItemDTO = new UpdateItemDTO("foo", "bar", 20, 10);
         final ItemDTO itemTest3Actual = itemService.updateItemById(updateItemDTO, createdItem.getId());
         Assertions.assertNotNull(itemTest3Actual);
 
         //create an order with above item and customer
-        final OneOrderDTO itemOrder = new OneOrderDTO(createdItem.getId(), 1);
-        final CreateOrdersDTO createdOrder = new CreateOrdersDTO(List.of(itemOrder));
+        final CreateItemGroupDTO itemOrder = new CreateItemGroupDTO(createdItem.getId(), 1);
+        final CreateOrderDTO createdOrder = new CreateOrderDTO(List.of(itemOrder));
         Assertions.assertNotNull(createdOrder);
 
         //test the orderService with the order

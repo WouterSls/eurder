@@ -1,7 +1,6 @@
 package com.switchfully.eurder.components.customerComponent;
 
 import com.switchfully.eurder.api.dto.customer.CreateCustomerDTO;
-import com.switchfully.eurder.api.dto.customer.CustomerDTO;
 import com.switchfully.eurder.exception.*;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,37 +15,31 @@ import java.util.regex.Pattern;
 @Transactional
 class CustomerService implements ICustomerService {
 
-    private final CustomerMapper customerMapper;
     private final ICustomerRepository customerRepository;
 
     @Autowired
-    public CustomerService(CustomerMapper customerMapper, ICustomerRepository customerRepository) {
-        this.customerMapper = customerMapper;
+    public CustomerService( ICustomerRepository customerRepository) {
         this.customerRepository = customerRepository;
     }
 
     @Override
-    public List<CustomerDTO> getAllCustomers() {
+    public List<Customer> getAllCustomers() {
         if (customerRepository.findAll().isEmpty()) {
             throw new NoCustomersException("Eurder currently holds 0 customers");
         }
-        return customerMapper.mapToDTO(customerRepository.findAll());
+        return customerRepository.findAll();
     }
 
     @Override
-    public CustomerDTO createNewCustomer(Jwt jwt, CreateCustomerDTO createCustomerDTO) {
+    public Customer createNewCustomer(Customer customer) {
 
-        validateRequiredFields(createCustomerDTO);
-        validateAuth(jwt);
-
-        Customer newCustomer = customerMapper.mapToDomain(jwt,createCustomerDTO);
-        Customer savedCustomer = customerRepository.save(newCustomer);
-        return customerMapper.mapToDTO(savedCustomer);
+        Customer savedCustomer = customerRepository.save(customer);
+        return savedCustomer;
 
     }
 
     @Override
-    public CustomerDTO getCustomerById(String id) {
+    public Customer getCustomerById(String id) {
 
         boolean wildcard = id.contains("*");
 
@@ -55,11 +48,17 @@ class CustomerService implements ICustomerService {
         }
 
         return getCustomerWithoutWildcard(id);
-
-
     }
 
-    private CustomerDTO getCustomerWithWildcard(String id) {
+    @Override
+    public Customer getCustomerFromAuth(Jwt jwt){
+        return customerRepository.findAll().stream()
+                .filter(customer -> customer.getEmailAddress().equals(jwt.getClaim("email")))
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException("no customer registered for this login"));
+    }
+
+    private Customer getCustomerWithWildcard(String id) {
         String customerIdWithoutWildcard = id.replace("*", "");
 
         Customer customerWithWildcard = customerRepository.findAll().stream()
@@ -67,10 +66,10 @@ class CustomerService implements ICustomerService {
                 .findFirst()
                 .orElseThrow(() -> new IllegalIdException("No customer found for given ID"));
 
-        return customerMapper.mapToDTO(customerWithWildcard);
+        return customerWithWildcard;
     }
 
-    private CustomerDTO getCustomerWithoutWildcard(String id) {
+    private Customer getCustomerWithoutWildcard(String id) {
         if (!isValidUUIDFormat(id)) {
             throw new InvalidIdFormatException("provide valid uuid format");
         }
@@ -80,7 +79,7 @@ class CustomerService implements ICustomerService {
         Customer customerById = customerRepository.findById(customerID)
                 .orElseThrow(() -> new IllegalIdException("No customer found for given ID"));
 
-        return customerMapper.mapToDTO(customerById);
+        return customerById;
     }
 
     private void validateRequiredFields(CreateCustomerDTO createCustomerDTO) throws MandatoryFieldException {

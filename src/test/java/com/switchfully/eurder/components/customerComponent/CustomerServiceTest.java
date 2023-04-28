@@ -1,5 +1,6 @@
 package com.switchfully.eurder.components.customerComponent;
 
+import com.switchfully.eurder.api.CustomerMapper;
 import com.switchfully.eurder.api.dto.customer.CreateCustomerDTO;
 import com.switchfully.eurder.api.dto.customer.CustomerDTO;
 import com.switchfully.eurder.exception.IllegalIdException;
@@ -9,7 +10,6 @@ import com.switchfully.eurder.exception.NoCustomersException;
 import org.junit.jupiter.api.*;
 import org.mockito.Mockito;
 
-import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;

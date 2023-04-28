@@ -4,14 +4,17 @@ package com.switchfully.eurder.components.customerComponent;
 import jakarta.persistence.*;
 
 import java.util.Objects;
-import java.util.UUID;
 
 @Entity
 @Table(name = "customers")
 public class Customer{
 
+
     @Id
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "customer_seq")
+    @SequenceGenerator(name = "customer_seq", sequenceName = "customer_seq", allocationSize = 1)
+    private Long id;
+
 
     @Column(name = "first_name")
     private String firstName;
@@ -24,8 +27,7 @@ public class Customer{
     @Column(name = "phone_number")
     private String phoneNumber;
 
-    Customer(UUID id,String firstName, String lastName, String emailAddress, String address, String phoneNumber) {
-        this.id = id;
+    public Customer(String firstName, String lastName, String emailAddress, String address, String phoneNumber) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.emailAddress = emailAddress;
@@ -37,11 +39,11 @@ public class Customer{
 
     }
 
-    String getFirstName() {
+    public String getFirstName() {
         return firstName;
     }
 
-    String getLastName() {
+    public String getLastName() {
         return lastName;
     }
 
@@ -53,11 +55,11 @@ public class Customer{
         return address;
     }
 
-    String getPhoneNumber() {
+    public String getPhoneNumber() {
         return phoneNumber;
     }
 
-    public UUID getId() {
+    public Long getId() {
         return id;
     }
 

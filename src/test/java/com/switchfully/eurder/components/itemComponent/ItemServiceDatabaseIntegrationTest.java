@@ -1,5 +1,6 @@
 package com.switchfully.eurder.components.itemComponent;
 
+import com.switchfully.eurder.api.ItemMapper;
 import com.switchfully.eurder.api.dto.item.CreateItemDTO;
 import com.switchfully.eurder.api.dto.item.ItemDTO;
 import com.switchfully.eurder.exception.NoItemsException;

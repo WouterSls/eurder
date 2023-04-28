@@ -1,5 +1,7 @@
 package com.switchfully.eurder.api.dto.item;
 
+import java.util.UUID;
+
 public class UpdateItemDTO {
     private final String name;
     private final String description;
@@ -28,4 +30,5 @@ public class UpdateItemDTO {
     public int getAmount() {
         return amount;
     }
+
 }

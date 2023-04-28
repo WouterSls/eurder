@@ -3,28 +3,30 @@ package com.switchfully.eurder.components.orderComponent;
 
 import com.switchfully.eurder.api.dto.order.OrderDTO;
 import com.switchfully.eurder.components.customerComponent.Customer;
-import com.switchfully.eurder.components.itemComponent.Item;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.UUID;
 
 @Component
-class OrderMapper {
+public class OrderMapper {
 
-    List<OrderDTO> mapToDTO(List<Order> orders){
-        return orders.stream()
+    public List<OrderDTO> mapToDTO(List<Order> orderSingles){
+        return orderSingles.stream()
                 .map(this::mapToDTO)
                 .toList();
     }
 
-    OrderDTO mapToDTO(Order order){
-        return new OrderDTO(order.getId(),order.getAmountOrdered(),order.getItem(),order.getShippingDate(),order.getTotalPrice(),order.getCustomer());
+    public OrderDTO mapToDTO(Order order){
+        return new OrderDTO(order.getId(),order.getItemGroups(),order.getCustomer(), order.getTotalPrice());
     }
 
-    Order mapToDomain(Item item,int amountOrdered, Customer customer){
-        return new Order(item,
-                amountOrdered,
-                customer);
+    Order mapToDomain(List<ItemGroup> orderedItems, Customer customer, double totalPrice){
+
+        return new Order(UUID.randomUUID(),
+                customer,
+                orderedItems,
+                totalPrice);
     }
 }
 

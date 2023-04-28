@@ -9,9 +9,9 @@ public class CustomerDTO{
     private final String emailAddress;
     private final String address;
     private final String phoneNumber;
-    private final UUID id;
+    private final Long id;
 
-    public CustomerDTO(String firstName, String lastName, String emailAddress, String address, String phoneNumber, UUID id) {
+    public CustomerDTO(String firstName, String lastName, String emailAddress, String address, String phoneNumber, Long id) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.emailAddress = emailAddress;
@@ -40,7 +40,7 @@ public class CustomerDTO{
         return phoneNumber;
     }
 
-    public UUID getId() {
+    public Long getId() {
         return id;
     }
 

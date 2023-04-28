@@ -1,21 +1,21 @@
-package com.switchfully.eurder.components.itemComponent;
+package com.switchfully.eurder.api;
 
 import com.switchfully.eurder.api.dto.item.CreateItemDTO;
 import com.switchfully.eurder.api.dto.item.ItemDTO;
+import com.switchfully.eurder.components.itemComponent.Item;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 @Component
-class ItemMapper{
+public class ItemMapper{
 
-    List<ItemDTO> mapToDTO(List<Item> items){
+    public List<ItemDTO> mapToDTO(List<Item> items){
         return items.stream()
                 .map(this::mapToDTO)
                 .toList();
     }
-
-    ItemDTO mapToDTO(Item item){
+    public ItemDTO mapToDTO(Item item){
         return new ItemDTO(item.getId(),
                 item.getName(),
                 item.getDescription(),
@@ -23,7 +23,7 @@ class ItemMapper{
                 item.getAmount());
     }
 
-    Item mapToDomain(CreateItemDTO createItemDTO){
+    public Item mapToDomain(CreateItemDTO createItemDTO){
         return new Item(createItemDTO.getName(),
                 createItemDTO.getDescription(),
                 createItemDTO.getPrice(),

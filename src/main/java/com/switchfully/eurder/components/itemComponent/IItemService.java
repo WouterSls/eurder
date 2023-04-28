@@ -8,13 +8,15 @@ import java.util.List;
 import java.util.UUID;
 
 public interface IItemService {
-    ItemDTO createNewItem(CreateItemDTO createItemDTO);
+    Item createNewItem(CreateItemDTO createItemDTO);
 
-    ItemDTO getItemById(UUID uuid);
+    Item findById(UUID uuid);
 
-    ItemDTO updateItemById(UpdateItemDTO updateItemDTO, UUID id);
+    Item updateItemById(UpdateItemDTO updateItemDTO, UUID id);
 
-    List<ItemDTO> getItemsSortedByUrgency();
+    List<Item> getItemsSortedByUrgency();
 
-    List<ItemDTO> getItemsOnUrgency(String urgency);
+    List<Item> getItemsOnUrgency(String urgency);
+
+    List<Item> findAllItems();
 }

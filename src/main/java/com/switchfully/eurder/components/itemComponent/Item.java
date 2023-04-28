@@ -23,7 +23,7 @@ public class Item{
     @Column(name = "urgency")
     private Urgency urgency;
 
-    Item(String name, String description, double price, int amount) {
+    public Item(String name, String description, double price, int amount) {
         this.id = UUID.randomUUID();
         this.name = name;
         this.description = description;
@@ -39,7 +39,7 @@ public class Item{
         return name;
     }
 
-    String getDescription() {
+    public String getDescription() {
         return description;
     }
 
