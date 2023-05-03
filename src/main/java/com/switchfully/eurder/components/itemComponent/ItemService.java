@@ -1,9 +1,9 @@
 package com.switchfully.eurder.components.itemComponent;
 
-import com.switchfully.eurder.api.ItemMapper;
 import com.switchfully.eurder.api.dto.item.CreateItemDTO;
 import com.switchfully.eurder.api.dto.item.UpdateItemDTO;
 import com.switchfully.eurder.exception.*;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,6 +11,7 @@ import java.util.*;
 
 
 @Service
+@Transactional
 class ItemService implements IItemService{
 
     private final ItemMapper itemMapper;
@@ -25,9 +26,9 @@ class ItemService implements IItemService{
     @Override
     public Item createNewItem(CreateItemDTO createItemDTO){
         verifyCreateItem(createItemDTO);
-        Item itemToBeAdded = itemMapper.mapToDomain(createItemDTO);
-        Item savedItem = itemRepository.save(itemToBeAdded);
-        return savedItem;
+        Item.Urgency urgency = calculateStockUrgency(createItemDTO.getAmount());
+        Item itemToBeAdded = itemMapper.mapToDomain(createItemDTO, urgency);
+        return itemRepository.save(itemToBeAdded);
     }
 
     @Override
@@ -44,6 +45,7 @@ class ItemService implements IItemService{
         itemToUpdate.setName(updateItemDTO.getName());
         itemToUpdate.setPrice(updateItemDTO.getPrice());
         itemToUpdate.setDescription(updateItemDTO.getDescription());
+        itemToUpdate.setUrgency(calculateStockUrgency(updateItemDTO.getAmount()));
 
         itemRepository.save(itemToUpdate);
 
@@ -139,6 +141,16 @@ class ItemService implements IItemService{
             throw new NoItemsException("There are currently no items in stock");
         }
 
+    }
+
+    private Item.Urgency calculateStockUrgency(int stockAmount){
+        if (stockAmount < 5){
+            return Item.Urgency.STOCK_LOW;
+        }
+        if (stockAmount <10){
+            return Item.Urgency.STOCK_MEDIUM;
+        }
+        return Item.Urgency.STOCK_HIGH;
     }
 
 }

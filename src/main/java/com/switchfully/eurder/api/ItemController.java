@@ -4,11 +4,11 @@ package com.switchfully.eurder.api;
 import com.switchfully.eurder.api.dto.item.CreateItemDTO;
 import com.switchfully.eurder.api.dto.item.ItemDTO;
 import com.switchfully.eurder.api.dto.item.UpdateItemDTO;
-import com.switchfully.eurder.components.customerComponent.ICustomerService;
 import com.switchfully.eurder.components.itemComponent.IItemService;
+import com.switchfully.eurder.components.itemComponent.ItemMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -45,6 +45,12 @@ public class ItemController {
     @PutMapping(path = "/{id}", consumes = "application/json", produces = "application/json")
     ItemDTO updateItem(@PathVariable UUID id, @RequestBody UpdateItemDTO updateItemDTO) {
         return itemMapper.mapToDTO(itemService.updateItemById(updateItemDTO, id));
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping(produces = "application/json", path = "/{id}")
+    ItemDTO getItemById(@PathVariable UUID id){
+        return itemMapper.mapToDTO(itemService.findById(id));
     }
 
     @ResponseStatus(HttpStatus.OK)

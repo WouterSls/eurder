@@ -1,4 +1,4 @@
-package com.switchfully.eurder.api;
+package com.switchfully.eurder.components.customerComponent;
 
 import com.switchfully.eurder.api.dto.customer.CreateCustomerDTO;
 import com.switchfully.eurder.api.dto.customer.CustomerDTO;
@@ -10,15 +10,15 @@ import java.util.List;
 import java.util.UUID;
 
 @Component
-class CustomerMapper {
+public class CustomerMapper {
 
-    List<CustomerDTO> mapToDTO(List<Customer> customerList){
+    public List<CustomerDTO> mapToDTO(List<Customer> customerList){
         return customerList.stream()
                 .map(this::mapToDTO)
                 .toList();
     }
 
-    CustomerDTO mapToDTO(Customer customer){
+    public CustomerDTO mapToDTO(Customer customer){
         return new CustomerDTO(customer.getFirstName(),
                 customer.getLastName(),
                 customer.getEmailAddress(),
@@ -27,7 +27,7 @@ class CustomerMapper {
                 customer.getId());
     }
 
-    Customer mapToDomain(Jwt jwt, CreateCustomerDTO createCustomerDTO){
+    public Customer mapToDomain(Jwt jwt, CreateCustomerDTO createCustomerDTO){
         return new Customer(
                 jwt.getClaim("given_name"),
                 jwt.getClaim("family_name"),

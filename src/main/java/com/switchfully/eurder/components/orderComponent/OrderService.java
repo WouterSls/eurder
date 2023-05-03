@@ -46,15 +46,15 @@ class OrderService implements IOrderService {
 
         List<ItemGroup> itemsToOrder = makeOrder(createOrderDTO);
 
-        itemsToOrder
-                .forEach(this::updateItemFromOrder);
-
         double totalPrice = calculateTotalPrice(itemsToOrder);
 
         Order newOrder = orderMapper.mapToDomain(itemsToOrder,customerWhoOrdered,totalPrice);
 
-        itemsToOrder.forEach(
-                itemGroup -> itemGroup.setFk_order(newOrder));
+        itemsToOrder
+                .forEach(this::updateItemFromOrder);
+
+        itemsToOrder.
+                forEach(itemGroup -> itemGroup.setFk_order(newOrder));
 
         return orderRepository.save(newOrder);
     }
@@ -70,8 +70,7 @@ class OrderService implements IOrderService {
             throw new IllegalOrderException("This is not your order");
         }
 
-        Order reOrder = new Order(UUID.randomUUID(),customerFromAuth,existingOrder.getItemGroups(),calculateTotalPrice(existingOrder.getItemGroups()));
-
+        Order reOrder = orderMapper.mapToDomain(existingOrder.getItemGroups(),customerFromAuth,calculateTotalPrice(existingOrder.getItemGroups()));
         return orderRepository.save(reOrder);
     }
 
@@ -170,6 +169,8 @@ class OrderService implements IOrderService {
                 .mapToDouble(itemGroup -> itemGroup.getAmountOrdered() * itemGroup.getItem().getPrice())
                 .sum();
     }
+
+
 
 
     private void updateItemFromOrder(ItemGroup itemGroup) {

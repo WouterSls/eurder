@@ -23,13 +23,13 @@ public class Item{
     @Column(name = "urgency")
     private Urgency urgency;
 
-    public Item(String name, String description, double price, int amount) {
-        this.id = UUID.randomUUID();
+    public Item(UUID id,String name, String description, double price, int amount, Urgency urgency) {
+        this.id = id;
         this.name = name;
         this.description = description;
         this.price = price;
         this.amount = amount;
-        this.urgency = calculateStockUrgency(amount);
+        this.urgency = urgency;
     }
 
     private Item(){
@@ -75,15 +75,8 @@ public class Item{
         this.amount = amount;
     }
 
-
-    private Urgency calculateStockUrgency(int stockAmount){
-        if (stockAmount < 5){
-            return Urgency.STOCK_LOW;
-        }
-        if (stockAmount <10){
-            return Urgency.STOCK_MEDIUM;
-        }
-        return Urgency.STOCK_HIGH;
+    void setUrgency(Urgency urgency){
+        this.urgency = urgency;
     }
     @Override
     public String toString() {

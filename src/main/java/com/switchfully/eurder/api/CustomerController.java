@@ -2,15 +2,18 @@ package com.switchfully.eurder.api;
 
 import com.switchfully.eurder.api.dto.customer.CreateCustomerDTO;
 import com.switchfully.eurder.api.dto.customer.CustomerDTO;
+import com.switchfully.eurder.components.customerComponent.CustomerMapper;
 import com.switchfully.eurder.components.customerComponent.ICustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@CrossOrigin(origins = "http://localhost:4200")
 @RestController
 @RequestMapping(value = "customers")
 public class CustomerController {
@@ -24,7 +27,7 @@ public class CustomerController {
         this.customerMapper = customerMapper;
     }
 
-    //@PreAuthorize("hasAuthority('member')")
+    @PreAuthorize("hasAuthority('member')")
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(path = "/register", produces = "application/json", consumes = "application/json")
     public CustomerDTO createNewCustomer(@AuthenticationPrincipal Jwt jwt, @RequestBody CreateCustomerDTO createCustomerDTO) {
